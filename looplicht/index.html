@@ -101,22 +101,26 @@
     transition:clip-path .7s var(--ease), visibility 0s}
   #light.dark{background:#000}
 
-  /* Uitknop: altijd zichtbaar, maar je moet hem vasthouden */
-  #off{position:fixed;z-index:11;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));
-    transform:translate(-50%,30px);opacity:0;pointer-events:none;
-    display:flex;align-items:center;gap:12px;padding:10px 20px 10px 10px;border-radius:999px;
-    background:rgba(0,0,0,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-    color:#fff;font-weight:600;font-size:.95rem;letter-spacing:.01em;white-space:nowrap;
+  /* Uitknop: op exact dezelfde plek als de aanknop, maar je moet hem vasthouden */
+  #off{position:fixed;z-index:11;left:var(--ox,50%);top:var(--oy,40%);width:96px;height:96px;
+    transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;border-radius:50%;
+    background:rgba(0,0,0,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;
     touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
     transition:transform .5s var(--ease), opacity .5s var(--ease)}
-  body.lit #off{transform:translate(-50%,0);opacity:1;pointer-events:auto;transition-delay:.35s}
-  body.lit #off.dim{opacity:.35;transition-delay:0s}
-  #off svg{width:40px;height:40px;transform:rotate(-90deg)}
+  body.lit #off{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto;transition-delay:.4s}
+  body.lit #off.dim{opacity:.4;transition-delay:0s}
+  #off.holding{transform:translate(-50%,-50%) scale(1.08)!important;opacity:1!important}
+  #off .ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
   #off .track{stroke:rgba(255,255,255,.18)}
-  #off .prog{stroke:#fff;stroke-dasharray:113;stroke-dashoffset:113}
+  #off .prog{stroke:#fff;stroke-dasharray:289;stroke-dashoffset:289}
   #off.holding .prog{stroke-dashoffset:0;transition:stroke-dashoffset .6s linear}
-  #off .ico{position:absolute;left:10px;top:50%;margin-top:-20px;width:40px;height:40px;display:grid;place-items:center}
-  #off .ico svg{width:18px;height:18px;transform:none}
+  #off .ico{position:absolute;inset:0;display:grid;place-items:center}
+  #off .ico svg{width:38px;height:38px}
+  /* Uitleg onder de knop, verdwijnt na enkele seconden */
+  #offtxt{position:fixed;z-index:11;left:var(--ox,50%);top:calc(var(--oy,40%) + 66px);transform:translateX(-50%);
+    padding:7px 14px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:.85rem;font-weight:600;
+    white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .5s var(--ease)}
+  body.lit #offtxt.show{opacity:1}
 
   @media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
 </style>
@@ -164,7 +168,7 @@
       <li><strong>Helderheid op maximum.</strong> Een website kan dat niet voor je doen.</li>
       <li><strong>Hoog en zichtbaar dragen.</strong> Armband of schouderband, scherm naar buiten.</li>
       <li><strong>Wit of geel vooraan, rood achteraan.</strong> Zo zien bestuurders meteen je richting.</li>
-      <li><strong>Uitzetten:</strong> houd de knop onderaan even vast, of gebruik de terug-knop of -veeg van je telefoon. Een toevallige tik doet niets.</li>
+      <li><strong>Uitzetten:</strong> houd dezelfde knop even vast, of gebruik de terug-knop of -veeg van je telefoon. Een toevallige tik doet niets.</li>
       <li><strong>Aanvulling, geen vervanging.</strong> Reflecterende kleding en een echt lampje blijven het sterkst.</li>
     </ul>
   </details>
@@ -174,11 +178,11 @@
 </main>
 
 <div id="light" aria-hidden="true"></div>
-<button id="off" aria-label="Houd vast om het licht uit te zetten">
-  <svg viewBox="0 0 40 40"><circle class="track" cx="20" cy="20" r="18" fill="none" stroke-width="3"/><circle class="prog" cx="20" cy="20" r="18" fill="none" stroke-width="3" stroke-linecap="round"/></svg>
-  <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.2a7.5 7.5 0 1 0 11.4 0"/></svg></span>
-  <span id="offtxt">Vasthouden om te doven</span>
+<button id="off" aria-label="Houd vast om het licht te doven">
+  <svg class="ring" viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="46" fill="none" stroke-width="4"/><circle class="prog" cx="50" cy="50" r="46" fill="none" stroke-width="4" stroke-linecap="round"/></svg>
+  <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.2a7.5 7.5 0 1 0 11.4 0"/></svg></span>
 </button>
+<div id="offtxt">Vasthouden om te doven</div>
 
 <script>
 const COLORS = [
@@ -248,7 +252,8 @@ async function start(){
   setTimeout(()=>{ if(body.classList.contains('lit')) play(light); },700);
   dim();
 }
-function dim(){ const o=$('#off'); o.classList.remove('dim'); clearTimeout(dimT); dimT=setTimeout(()=>o.classList.add('dim'),4000); }
+function dim(){ const o=$('#off'),t=$('#offtxt'); o.classList.remove('dim'); t.classList.add('show'); clearTimeout(dimT);
+  dimT=setTimeout(()=>{o.classList.add('dim');t.classList.remove('show');},4000); }
 
 // ---- Uit ----
 function stop(fromBack){
@@ -260,7 +265,9 @@ function stop(fromBack){
   if(!fromBack && history.state?.lit) history.back();
   setTimeout(preview,700);
 }
-$('#orb').onclick=start;
+// Na het doven valt de 'klik' van het loslaten op de aanknop eronder: die negeren we even.
+let quietUntil=0;
+$('#orb').onclick=()=>{ if(Date.now()<quietUntil) return; start(); };
 addEventListener('popstate',()=>stop(true));
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&body.classList.contains('lit'))stop();});
 addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
@@ -271,7 +278,7 @@ const off=$('#off'); let holdT=null;
 off.addEventListener('pointerdown',e=>{e.preventDefault();dim();off.classList.add('holding');
   try{off.setPointerCapture(e.pointerId);}catch(_){}   // vinger mag wat verschuiven
   $('#offtxt').textContent='Blijf vasthouden…';
-  holdT=setTimeout(()=>{off.classList.remove('holding');stop();if(navigator.vibrate)navigator.vibrate(30);},600);});
+  holdT=setTimeout(()=>{off.classList.remove('holding');quietUntil=Date.now()+600;stop();if(navigator.vibrate)navigator.vibrate(30);},600);});
 ['pointerup','pointercancel'].forEach(ev=>off.addEventListener(ev,()=>{
   clearTimeout(holdT);off.classList.remove('holding');$('#offtxt').textContent='Vasthouden om te doven';}));
 off.addEventListener('contextmenu',e=>e.preventDefault());
