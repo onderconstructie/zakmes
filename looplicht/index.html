@@ -323,26 +323,22 @@ $('#infoChip').onclick=()=>openSheet(`
 const standalone=matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone;
 const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 let deferred=null;
-if(!standalone) $('#installChip').style.display='flex';
-addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;});
+// Knop alleen tonen als installeren echt kan: op Android meteen met één tik, op iPhone via uitleg.
+const showChip=()=>{ if(!standalone) $('#installChip').style.display='flex'; };
+if(ios) showChip();
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;showChip();});
 addEventListener('appinstalled',()=>{ $('#installChip').style.display='none'; if(sheet.open) closeSheet(); });
-$('#installChip').onclick=()=>{
-  const intro=`<h2>Installeer Looplicht</h2><p class="lead">Dan staat hij als app op je beginscherm, opent hij schermvullend en werkt hij zonder internet.</p>`;
-  if(deferred){
-    openSheet(intro+`<button class="big" id="doInstall">Installeren</button><button class="ghost" data-close>Later</button>`);
-    $('#doInstall').onclick=async()=>{deferred.prompt();await deferred.userChoice;deferred=null;closeSheet();};
-  } else if(ios){
-    openSheet(intro+`<ol class="steps num">
-      <li><span>Open deze pagina in <strong>Safari</strong>.</span></li>
+$('#installChip').onclick=async()=>{
+  if(deferred){                                   // Android: één tik, meteen de installatievraag
+    const d=deferred; deferred=null; d.prompt();
+    const r=await d.userChoice; if(r.outcome==='accepted') $('#installChip').style.display='none';
+    return;
+  }
+  openSheet(`<h2>Installeer Looplicht</h2><p class="lead">Op een iPhone kan dat niet met één tik. Apple laat dat alleen via Safari toe:</p>
+    <ol class="steps num">
       <li><span>Tik op <strong>Deel</strong> ${SHARE} onderaan of bovenaan.</span></li>
       <li><span>Kies <strong>Zet op beginscherm</strong> en tik op <strong>Voeg toe</strong>.</span></li>
     </ol><button class="ghost" data-close>Begrepen</button>`);
-  } else {
-    openSheet(intro+`<ol class="steps num">
-      <li><span>Open het <strong>menu</strong> van je browser (⋮ of ⋯).</span></li>
-      <li><span>Kies <strong>App installeren</strong> of <strong>Toevoegen aan startscherm</strong>.</span></li>
-    </ol><button class="ghost" data-close>Begrepen</button>`);
-  }
 };
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>

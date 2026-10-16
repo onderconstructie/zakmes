@@ -1,4 +1,4 @@
-const CACHE = 'looplicht-v5';
+const CACHE = 'looplicht-v6';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

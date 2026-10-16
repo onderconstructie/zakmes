@@ -3,6 +3,7 @@
   "short_name": "Looplicht",
   "description": "Je telefoon als fel lichtvlak om gezien te worden in het donker.",
   "lang": "nl",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",
