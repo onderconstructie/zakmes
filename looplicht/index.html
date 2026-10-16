@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Looplicht – Onder Constructie</title>
+<meta name="description" content="Maak van je telefoon een fel lichtvlak om gezien te worden als je in het donker loopt of wandelt.">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Looplicht">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f172a; --panel:#1e293b; --line:#334155; --text:#f1f5f9; --muted:#94a3b8;
+    --accent:#10b981; --light:#FFE600;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--bg);color:var(--text);
+    font-family:'DM Sans',system-ui,sans-serif;overscroll-behavior:none}
+  body{display:flex;flex-direction:column;min-height:100dvh}
+  a{color:var(--accent)}
+
+  /* ---------- Instellingen ---------- */
+  #setup{flex:1;width:100%;max-width:480px;margin:0 auto;
+    padding:calc(20px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;gap:22px}
+  header .crumb{font-size:.8rem;color:var(--muted);text-decoration:none}
+  header h1{font-size:1.9rem;font-weight:700;margin-top:4px}
+  header p{color:var(--muted);margin-top:4px;line-height:1.45}
+  h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    font-weight:500;margin-bottom:10px}
+  .colors{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .color{aspect-ratio:1;border-radius:14px;border:3px solid transparent;cursor:pointer;
+    position:relative;transition:transform .12s}
+  .color[aria-pressed="true"]{border-color:var(--text);transform:scale(1.06)}
+  .color span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;
+    font-size:.72rem;color:var(--muted)}
+  .colors{margin-bottom:14px}
+  .hint{font-size:.85rem;color:var(--muted);line-height:1.45;margin-top:4px}
+  .seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+  .seg button{background:none;border:0;color:var(--muted);font:inherit;font-weight:500;
+    padding:11px 4px;border-radius:9px;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--line);color:var(--text)}
+  #start{margin-top:auto;background:var(--light);color:#000;border:0;border-radius:16px;
+    font:inherit;font-size:1.25rem;font-weight:700;padding:20px;cursor:pointer;
+    box-shadow:0 0 40px -8px var(--light)}
+  .tips{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .tips ul{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:.88rem;line-height:1.4}
+  .tips li::before{content:"·";color:var(--accent);font-weight:700;margin-right:8px}
+  footer{font-size:.75rem;color:var(--muted);text-align:center}
+  #install{display:none;background:none;border:1px solid var(--line);color:var(--text);
+    font:inherit;padding:12px;border-radius:12px;cursor:pointer}
+
+  /* ---------- Licht ---------- */
+  #light{position:fixed;inset:0;background:var(--light);display:none;z-index:10;
+    touch-action:none;user-select:none;-webkit-user-select:none}
+  #light.on{display:block}
+  #light.dark{background:#000}
+  #ctrl{position:fixed;left:50%;bottom:calc(32px + env(safe-area-inset-bottom));transform:translateX(-50%);
+    display:none;gap:10px;z-index:11}
+  #ctrl.show{display:flex}
+  #ctrl button{font:inherit;font-weight:700;font-size:1.05rem;padding:16px 26px;border-radius:14px;
+    border:0;cursor:pointer;background:#0f172a;color:#f1f5f9}
+  #hold{position:fixed;top:calc(20px + env(safe-area-inset-top));left:0;right:0;text-align:center;
+    z-index:11;color:rgba(0,0,0,.55);font-size:.85rem;font-weight:500;display:none;pointer-events:none}
+  #hold.show{display:block}
+  #ring{position:fixed;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;
+    border:5px solid rgba(0,0,0,.5);z-index:12;pointer-events:none;display:none;
+    clip-path:inset(0 0 100% 0)}
+  #ring.grow{display:block;animation:fill .7s linear forwards}
+  @keyframes fill{to{clip-path:inset(0 0 0 0)}}
+</style>
+</head>
+<body>
+
+<main id="setup">
+  <header>
+    <a class="crumb" href="https://onderconstructie.github.io/zakmes/">← Zakmes</a>
+    <h1>Looplicht</h1>
+    <p>Je telefoon als fel lichtvlak. Zodat anderen je zien als je in het donker loopt.</p>
+  </header>
+
+  <section>
+    <h2>Kleur</h2>
+    <div class="colors" id="colors" role="group" aria-label="Kleur"></div>
+    <p class="hint" id="colorhint"></p>
+  </section>
+
+  <section>
+    <h2>Ritme</h2>
+    <div class="seg" id="modes" role="group" aria-label="Ritme">
+      <button data-mode="vast">Vast</button>
+      <button data-mode="knipper">Knipper</button>
+      <button data-mode="flits">Dubbelflits</button>
+    </div>
+    <p class="hint" id="modehint"></p>
+  </section>
+
+  <section class="tips">
+    <h2>Voor het beste resultaat</h2>
+    <ul>
+      <li>Zet de schermhelderheid zelf op maximum. Een website kan dat niet voor je doen.</li>
+      <li>Draag de telefoon hoog en zichtbaar: armband of schouderband, scherm naar buiten.</li>
+      <li>Wit of geel vooraan, rood achteraan. Zo herkennen bestuurders meteen je looprichting.</li>
+      <li>Houd ingedrukt op het lichtvlak om te stoppen. Een toevallige tik doet niets.</li>
+    </ul>
+  </section>
+
+  <button id="install">Installeer als app</button>
+  <button id="start">Licht aan</button>
+
+  <footer>Werkt ook zonder internet · <a href="https://bit.ly/4azfO7S">contact</a></footer>
+</main>
+
+<div id="light" aria-hidden="true"></div>
+<div id="hold">Houd ingedrukt om te stoppen</div>
+<div id="ring"></div>
+<div id="ctrl"><button id="stop">Stop</button><button id="back">Verder</button></div>
+
+<script>
+const COLORS = [
+  {id:'wit',    hex:'#FFFFFF', name:'Wit',    hint:'Meeste licht. Beste keuze vooraan.'},
+  {id:'geel',   hex:'#FFE600', name:'Geel',   hint:'Bijna even fel als wit, en springt eruit tussen straatlantaarns.'},
+  {id:'groen',  hex:'#00FF5A', name:'Groen',  hint:'Fel en opvallend. Minder gebruikelijk in het verkeer, dus het valt op.'},
+  {id:'oranje', hex:'#FF8A00', name:'Oranje', hint:'Signaalkleur. Goed zichtbaar, iets minder fel dan geel.'},
+  {id:'rood',   hex:'#FF1F1F', name:'Rood',   hint:'Achterlicht-kleur. Let op: een scherm geeft in rood het minste licht, maar knipperen helpt veel.'}
+];
+const MODES = {
+  vast:    {hint:'Continu licht. Rustig voor jezelf, maar een stilstaand licht valt minder op.'},
+  knipper: {hint:'Twee keer per seconde. Beweging trekt de blik; zo werken ook fietslampjes.'},
+  flits:   {hint:'Twee korte flitsen, dan een pauze. Het meest opvallend, en veilig onder de grens voor flitsgevoeligheid.'}
+};
+// Patronen in ms: [aan, uit, aan, uit, ...]. Max 2 flitsen/seconde gemiddeld, nooit boven 3 Hz.
+const PATTERNS = {knipper:[300,200], flits:[110,140,110,640]};
+
+const store = {
+  get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+};
+let color = store.get('ll-color','geel');
+let mode  = store.get('ll-mode', matchMedia('(prefers-reduced-motion: reduce)').matches ? 'vast' : 'knipper');
+
+const $ = s => document.querySelector(s);
+const root = document.documentElement;
+
+// --- Kleurkeuze ---
+const colorsEl = $('#colors');
+COLORS.forEach(c=>{
+  const b=document.createElement('button');
+  b.className='color'; b.style.background=c.hex; b.dataset.id=c.id;
+  b.setAttribute('aria-label',c.name); b.innerHTML=`<span>${c.name}</span>`;
+  b.onclick=()=>setColor(c.id);
+  colorsEl.appendChild(b);
+});
+function setColor(id){
+  color=id; store.set('ll-color',id);
+  const c=COLORS.find(x=>x.id===id)||COLORS[1];
+  root.style.setProperty('--light',c.hex);
+  colorsEl.querySelectorAll('.color').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===id));
+  $('#colorhint').textContent=c.hint;
+}
+// --- Ritme ---
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+function setMode(m){
+  mode=m; store.set('ll-mode',m);
+  document.querySelectorAll('#modes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));
+  $('#modehint').textContent=MODES[m].hint;
+}
+setColor(color); setMode(mode);
+
+// --- Licht aan/uit ---
+const light=$('#light');
+let timer=null, wakeLock=null, running=false;
+
+async function lockWake(){
+  try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); } }catch(e){}
+}
+function runPattern(){
+  clearTimeout(timer);
+  light.classList.remove('dark');
+  const p=PATTERNS[mode]; if(!p) return;
+  let i=0;
+  const step=()=>{
+    light.classList.toggle('dark', i%2===1);
+    timer=setTimeout(()=>{ i=(i+1)%p.length; step(); }, p[i]);
+  };
+  step();
+}
+async function start(){
+  running=true;
+  light.classList.add('on');
+  $('#hold').classList.add('show');
+  setTimeout(()=>$('#hold').classList.remove('show'),3000);
+  try{ await (root.requestFullscreen?.({navigationUI:'hide'}) || root.webkitRequestFullscreen?.()); }catch(e){}
+  try{ await screen.orientation?.lock?.('portrait'); }catch(e){}
+  await lockWake();
+  runPattern();
+}
+function stop(){
+  running=false; clearTimeout(timer);
+  light.classList.remove('on','dark');
+  $('#ctrl').classList.remove('show');
+  try{ wakeLock?.release(); }catch(e){} wakeLock=null;
+  try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
+}
+$('#start').onclick=start;
+$('#stop').onclick=stop;
+$('#back').onclick=()=>{ $('#ctrl').classList.remove('show'); runPattern(); };
+
+// Ingedrukt houden (0,7 s) toont de knoppen. Zo zet een tik in je armband niets uit.
+const ring=$('#ring'); let holdT=null;
+light.addEventListener('pointerdown',e=>{
+  ring.style.left=e.clientX+'px'; ring.style.top=e.clientY+'px';
+  ring.classList.remove('grow'); void ring.offsetWidth; ring.classList.add('grow');
+  holdT=setTimeout(()=>{
+    ring.classList.remove('grow');
+    clearTimeout(timer); light.classList.remove('dark');
+    $('#ctrl').classList.add('show');
+  },700);
+});
+['pointerup','pointercancel','pointerleave'].forEach(ev=>light.addEventListener(ev,()=>{
+  clearTimeout(holdT); ring.classList.remove('grow');
+}));
+
+// Wake lock valt weg als je de app even verlaat; opnieuw aanvragen bij terugkeer.
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible' && running) lockWake();
+});
+
+// --- Installeren & offline ---
+let deferred=null;
+addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferred=e; $('#install').style.display='block'; });
+$('#install').onclick=async()=>{ if(!deferred) return; deferred.prompt(); await deferred.userChoice; deferred=null; $('#install').style.display='none'; };
+if('serviceWorker' in navigator){ addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+</script>
+</body>
+</html>
