@@ -42,12 +42,12 @@
   .crumb{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted);text-decoration:none;padding:8px 4px}
   .crumb svg{width:16px;height:16px}
   .top .sp{flex:1}
-  .chip{display:flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:999px;font-size:.85rem;
+  .chip{display:flex;align-items:center;gap:7px;height:44px;padding:0 14px;border-radius:999px;font-size:.85rem;
     font-weight:600;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
     transition:background .25s}
   .chip:active{background:var(--glass-2)}
   .chip svg{width:16px;height:16px}
-  .chip.icon{width:38px;padding:0;justify-content:center}
+  .chip.icon{width:44px;padding:0;justify-content:center}
   #installChip{display:none}
 
   /* Podium met de bol */
@@ -56,7 +56,7 @@
   .orbwrap::before,.orbwrap::after{content:"";position:absolute;inset:0;border-radius:50%;
     border:1.5px solid var(--c);opacity:0;animation:halo 3.2s var(--ease) infinite;pointer-events:none;z-index:0}
   .orbwrap::after{animation-delay:1.6s}
-  @keyframes halo{0%{transform:scale(1);opacity:.45}100%{transform:scale(1.65);opacity:0}}
+  @keyframes halo{0%{transform:scale(1);opacity:.45}100%{transform:scale(1.42);opacity:0}}
   #orb{position:absolute;inset:0;border-radius:50%;z-index:1;
     background:radial-gradient(circle at 34% 28%, #fff 0%, color-mix(in srgb,var(--c) 70%,#fff) 16%, var(--c) 46%, color-mix(in srgb,var(--c) 82%,#000) 100%);
     box-shadow:0 0 0 1px rgba(255,255,255,.15) inset, 0 -18px 40px -10px rgba(0,0,0,.25) inset,
@@ -67,7 +67,7 @@
     transition:background .6s var(--ease), opacity .12s}
   .orbwrap:has(#orb.off) .glow{opacity:.25}
   #orb:active{transform:scale(.95)}
-  #orb.off{opacity:.16}
+  #orb.off{opacity:.28}
   #orb .power{position:absolute;inset:0;display:grid;place-items:center;color:rgba(0,0,0,.5)}
   #orb .power svg{width:30%;height:30%}
 
@@ -142,11 +142,23 @@
   #off.holding .prog{stroke-dashoffset:0;transition:stroke-dashoffset .6s linear}
   #off .ico{position:absolute;inset:0;display:grid;place-items:center}
   #off .ico svg{width:38px;height:38px}
+  #warn{position:fixed;z-index:12;left:16px;right:16px;bottom:calc(20px + env(safe-area-inset-bottom));max-width:420px;margin:0 auto;
+    padding:14px 16px;border-radius:18px;background:rgba(0,0,0,.82);color:#fff;font-size:.88rem;line-height:1.45;
+    opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .4s var(--ease), transform .4s var(--ease)}
+  body.lit #warn.show{opacity:1;transform:none}
   #offtxt{position:fixed;z-index:11;left:var(--ox,50%);top:calc(var(--oy,40%) + 66px);transform:translateX(-50%);
     padding:7px 14px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:.85rem;font-weight:600;
     white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .5s var(--ease)}
   body.lit #offtxt.show{opacity:1}
 
+  @media (orientation:landscape) and (max-height:520px){
+    #app{max-width:860px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;column-gap:24px}
+    .top{grid-column:1/-1}
+    .stage{gap:12px}
+    .orbwrap{width:min(26vw,46vh,220px)}
+    .state h1{font-size:1.8rem}
+    .dock{align-self:center}
+  }
   @media (max-height:700px){ .state h1{font-size:2.1rem} .stage{gap:16px} .sw{width:44px;height:44px} }
   @media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms!important} .orbwrap::before,.orbwrap::after{animation:none} }
 </style>
@@ -194,14 +206,15 @@
   <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.2a7.5 7.5 0 1 0 11.4 0"/></svg></span>
 </button>
 <div id="offtxt">Vasthouden om te doven</div>
+<div id="warn" role="status"><strong>Let op:</strong> je browser kan het scherm niet wakker houden. Zet de automatische schermvergrendeling tijdelijk langer, anders gaat het licht vanzelf uit.</div>
 
 <script>
 const COLORS = [
-  {id:'wit',    hex:'#FFFFFF', name:'Wit',    note:'meeste licht · vooraan'},
-  {id:'geel',   hex:'#FFE600', name:'Geel',   note:'bijna even fel · vooraan'},
-  {id:'groen',  hex:'#00FF5A', name:'Groen',  note:'fel en ongewoon'},
-  {id:'oranje', hex:'#FF8A00', name:'Oranje', note:'signaalkleur'},
-  {id:'rood',   hex:'#FF1F1F', name:'Rood',   note:'achteraan · laat knipperen'}
+  {id:'wit',    hex:'#FFFFFF', name:'Wit',    note:'vooraan · het felst'},
+  {id:'geel',   hex:'#FFE600', name:'Geel',   note:'vooraan · bijna zo fel als wit'},
+  {id:'groen',  hex:'#00FF5A', name:'Groen',  note:'fel · valt op door ongewoon'},
+  {id:'oranje', hex:'#FF8A00', name:'Oranje', note:'signaalkleur · iets minder fel'},
+  {id:'rood',   hex:'#FF1F1F', name:'Rood',   note:'achteraan · liefst knipperend'}
 ];
 const MODES = {
   vast:    {name:'Vast',    note:'continu licht'},
@@ -247,12 +260,23 @@ function play(el){
   const step=()=>{el.classList.toggle(cls,i%2===1);timer=setTimeout(()=>{i=(i+1)%p.length;step();},p[i]);};
   step();
 }
-function preview(){ if(!body.classList.contains('lit')) play($('#orb')); }
-setColor(color); setMode(mode);
+let previewT=null;
+function preview(){
+  if(body.classList.contains('lit')) return;
+  const orb=$('#orb'); clearTimeout(previewT);
+  if(reduce){ clearTimeout(timer); orb.classList.remove('off'); return; }
+  play(orb);                                        // toon het ritme even…
+  previewT=setTimeout(()=>{ if(!body.classList.contains('lit')){ clearTimeout(timer); orb.classList.remove('off'); } },2600);  // …en daarna rustig
+}
+setColor(color); setMode(mode); clearTimeout(previewT); clearTimeout(timer); $('#orb').classList.remove('off');
 
 // ---- Aan ----
 const light=$('#light'); let wakeLock=null, dimT=null;
-async function lockWake(){try{if('wakeLock' in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}}
+async function lockWake(){
+  let ok=false;
+  try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); ok=true; } }catch(e){}
+  const w=$('#warn'); if(!ok && body.classList.contains('lit')){ w.classList.add('show'); setTimeout(()=>w.classList.remove('show'),7000); }
+}
 // Volledig scherm verbergt adres- en statusbalk: de pagina schuift dan omhoog.
 // We schuiven de uitknop even ver mee, zodat hij op het scherm exact blijft waar de bol stond.
 let ox=0, oy=0, h0=0;
@@ -261,7 +285,7 @@ addEventListener('resize',()=>{ if(body.classList.contains('lit')) place(); });
 async function start(){
   const r=$('#orb').getBoundingClientRect();
   ox=r.left+r.width/2; oy=r.top+r.height/2; h0=innerHeight; place();
-  clearTimeout(timer); $('#orb').classList.remove('off');
+  clearTimeout(timer); clearTimeout(previewT); $('#orb').classList.remove('off');
   body.classList.add('lit');
   history.pushState({lit:1},'');             // terug-knop of -veeg dooft het licht
   try{await (root.requestFullscreen?.({navigationUI:'hide'})||root.webkitRequestFullscreen?.());}catch(e){}
@@ -276,11 +300,10 @@ function dim(){ const o=$('#off'),t=$('#offtxt'); o.classList.remove('dim'); t.c
 function stop(fromBack){
   if(!body.classList.contains('lit')) return;
   clearTimeout(timer); light.classList.remove('dark');
-  body.classList.remove('lit');
+  body.classList.remove('lit'); $('#warn').classList.remove('show');
   try{wakeLock?.release();}catch(e){} wakeLock=null;
   try{if(document.fullscreenElement)document.exitFullscreen();}catch(e){}
   if(!fromBack && history.state?.lit) history.back();
-  setTimeout(preview,700);
 }
 // Na het doven valt de 'klik' van het loslaten op de aanknop eronder: die negeren we even.
 let quietUntil=0;
