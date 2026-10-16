@@ -253,9 +253,14 @@ setColor(color); setMode(mode);
 // ---- Aan ----
 const light=$('#light'); let wakeLock=null, dimT=null;
 async function lockWake(){try{if('wakeLock' in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}}
+// Volledig scherm verbergt adres- en statusbalk: de pagina schuift dan omhoog.
+// We schuiven de uitknop even ver mee, zodat hij op het scherm exact blijft waar de bol stond.
+let ox=0, oy=0, h0=0;
+function place(){ root.style.setProperty('--ox',ox+'px'); root.style.setProperty('--oy',(oy+(innerHeight-h0))+'px'); }
+addEventListener('resize',()=>{ if(body.classList.contains('lit')) place(); });
 async function start(){
   const r=$('#orb').getBoundingClientRect();
-  root.style.setProperty('--ox',(r.left+r.width/2)+'px'); root.style.setProperty('--oy',(r.top+r.height/2)+'px');
+  ox=r.left+r.width/2; oy=r.top+r.height/2; h0=innerHeight; place();
   clearTimeout(timer); $('#orb').classList.remove('off');
   body.classList.add('lit');
   history.pushState({lit:1},'');             // terug-knop of -veeg dooft het licht
