@@ -79,17 +79,22 @@
   /* Bedieningsdok */
   .dock{border-radius:28px;padding:16px;background:var(--glass);border:1px solid var(--line);
     backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column;gap:14px}
-  .row-label{display:flex;justify-content:space-between;align-items:baseline;font-size:.7rem;font-weight:650;
+  .row-label{display:flex;justify-content:space-between;align-items:baseline;gap:12px;white-space:nowrap;font-size:.7rem;font-weight:650;
     letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:0 4px}
   .row-label span:last-child{letter-spacing:.02em;text-transform:none;font-weight:500;font-size:.78rem}
   .swatches{display:flex;justify-content:space-between;padding:0 2px}
-  .sw{width:50px;height:50px;border-radius:50%;background:var(--s);position:relative;
+  .sw{width:min(50px,12.4vw);aspect-ratio:1;border-radius:50%;background:var(--s);position:relative;
     box-shadow:0 0 0 1px rgba(255,255,255,.12) inset;transition:transform .35s var(--ease), box-shadow .35s var(--ease)}
   .sw::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--s);
     opacity:0;transform:scale(.8);transition:opacity .35s var(--ease), transform .35s var(--ease)}
   .sw[aria-pressed="true"]{box-shadow:0 0 24px color-mix(in srgb,var(--s) 70%,transparent)}
   .sw[aria-pressed="true"]::after{opacity:1;transform:scale(1)}
   .sw:active{transform:scale(.9)}
+  .sw.disco{background:conic-gradient(from 0deg,#FFE600,#00FF5A,#00E5FF,#8B5CFF,#FF2BD6,#FF8A00,#FFE600)}
+  .sw.disco[aria-pressed="true"]{animation:spin 4s linear infinite}
+  @keyframes spin{to{transform:rotate(1turn)}}
+  /* Disco in vast ritme: zacht overvloeien van kleur naar kleur */
+  body.lit.fade #light{transition:background 1.1s linear, clip-path .7s var(--ease), visibility 0s}
   .seg{position:relative;display:grid;grid-template-columns:repeat(3,1fr);padding:4px;border-radius:999px;
     background:rgba(0,0,0,.35);border:1px solid var(--line)}
   .seg .pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/3);border-radius:999px;
@@ -159,7 +164,7 @@
     .state h1{font-size:1.8rem}
     .dock{align-self:center}
   }
-  @media (max-height:700px){ .state h1{font-size:2.1rem} .stage{gap:16px} .sw{width:44px;height:44px} }
+  @media (max-height:700px){ .state h1{font-size:2.1rem} .stage{gap:16px} .sw{width:min(44px,12.4vw)} }
   @media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms!important} .orbwrap::before,.orbwrap::after{animation:none} }
 </style>
 </head>
@@ -214,7 +219,8 @@ const COLORS = [
   {id:'geel',   hex:'#FFE600', name:'Geel',   note:'vooraan · bijna zo fel als wit'},
   {id:'groen',  hex:'#00FF5A', name:'Groen',  note:'fel · valt op door ongewoon'},
   {id:'oranje', hex:'#FF8A00', name:'Oranje', note:'signaalkleur · iets minder fel'},
-  {id:'rood',   hex:'#FF1F1F', name:'Rood',   note:'achteraan · liefst knipperend'}
+  {id:'rood',   hex:'#FF1F1F', name:'Rood',   note:'achteraan · liefst knipperend'},
+  {id:'disco',  hex:'#FFE600', name:'Disco',  note:'voor de fun · minder duidelijk'}
 ];
 const MODES = {
   vast:    {name:'Vast',    note:'continu licht'},
@@ -230,13 +236,25 @@ let color=store.get('ll-color','geel'), mode=store.get('ll-mode', reduce?'vast':
 const $=s=>document.querySelector(s), root=document.documentElement, body=document.body;
 const tick=()=>{try{navigator.vibrate?.(8)}catch(e){}};
 
+// ---- Disco ----
+// Geen rood in de reeks: snelle rode wissels zijn het riskantst bij flitsgevoeligheid, en rood vooraan verwart bestuurders.
+const DISCO=['#FFE600','#00FF5A','#00E5FF','#FF2BD6','#FF8A00','#8B5CFF'];
+let di=0, discoT=null;
+const isDisco=()=>color==='disco';
+function discoNext(){ di=(di+1)%DISCO.length; root.style.setProperty('--c',DISCO[di]); }
+function discoCycle(ms){ clearInterval(discoT); discoT=setInterval(discoNext,ms); }
+function discoStop(){ clearInterval(discoT); body.classList.remove('fade'); }
+function discoIdle(){ if(isDisco() && !body.classList.contains('lit')) discoCycle(reduce?4000:1600); }
+
 // ---- Kleur ----
 const sw=$('#swatches');
-COLORS.forEach(c=>{const b=document.createElement('button');b.className='sw';b.style.setProperty('--s',c.hex);
+COLORS.forEach(c=>{const b=document.createElement('button');b.className='sw'+(c.id==='disco'?' disco':'');b.style.setProperty('--s',c.id==='disco'?'#FF2BD6':c.hex);
   b.dataset.id=c.id;b.setAttribute('aria-label',c.name);b.onclick=()=>{tick();setColor(c.id);};sw.appendChild(b);});
 function setColor(id){
   const c=COLORS.find(x=>x.id===id)||COLORS[1]; color=c.id; store.set('ll-color',c.id);
-  root.style.setProperty('--c',c.hex);
+  discoStop();
+  root.style.setProperty('--c', c.id==='disco' ? DISCO[di] : c.hex);
+  discoIdle();
   sw.querySelectorAll('.sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===c.id));
   $('#cname').textContent=c.name; $('#cnote').textContent=c.note;
 }
@@ -257,7 +275,8 @@ function play(el){
   clearTimeout(timer); el.classList.remove('off','dark');
   const p=PATTERNS[mode]; if(!p) return;
   let i=0; const cls=el.id==='orb'?'off':'dark';
-  const step=()=>{el.classList.toggle(cls,i%2===1);timer=setTimeout(()=>{i=(i+1)%p.length;step();},p[i]);};
+  const step=()=>{ if(i%2===0 && i>0 && isDisco()) discoNext();
+    el.classList.toggle(cls,i%2===1);timer=setTimeout(()=>{i=(i+1)%p.length; if(i===0&&isDisco()) discoNext(); step();},p[i]);};
   step();
 }
 let previewT=null;
@@ -265,8 +284,8 @@ function preview(){
   if(body.classList.contains('lit')) return;
   const orb=$('#orb'); clearTimeout(previewT);
   if(reduce){ clearTimeout(timer); orb.classList.remove('off'); return; }
-  play(orb);                                        // toon het ritme even…
-  previewT=setTimeout(()=>{ if(!body.classList.contains('lit')){ clearTimeout(timer); orb.classList.remove('off'); } },2600);  // …en daarna rustig
+  clearInterval(discoT); play(orb);                 // toon het ritme even…
+  previewT=setTimeout(()=>{ if(!body.classList.contains('lit')){ clearTimeout(timer); orb.classList.remove('off'); discoIdle(); } },2600);  // …en daarna rustig
 }
 setColor(color); setMode(mode); clearTimeout(previewT); clearTimeout(timer); $('#orb').classList.remove('off');
 
@@ -286,7 +305,9 @@ async function start(){
   const r=$('#orb').getBoundingClientRect();
   ox=r.left+r.width/2; oy=r.top+r.height/2; h0=innerHeight; place();
   clearTimeout(timer); clearTimeout(previewT); $('#orb').classList.remove('off');
+  discoStop();
   body.classList.add('lit');
+  if(isDisco() && !PATTERNS[mode]){ body.classList.add('fade'); discoCycle(1200); }
   history.pushState({lit:1},'');             // terug-knop of -veeg dooft het licht
   try{await (root.requestFullscreen?.({navigationUI:'hide'})||root.webkitRequestFullscreen?.());}catch(e){}
   await lockWake();
@@ -301,6 +322,7 @@ function stop(fromBack){
   if(!body.classList.contains('lit')) return;
   clearTimeout(timer); light.classList.remove('dark');
   body.classList.remove('lit'); $('#warn').classList.remove('show');
+  discoStop(); setTimeout(discoIdle,700);
   try{wakeLock?.release();}catch(e){} wakeLock=null;
   try{if(document.fullscreenElement)document.exitFullscreen();}catch(e){}
   if(!fromBack && history.state?.lit) history.back();
