@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>Looplicht – Onder Constructie</title>
-<meta name="description" content="Maak van je telefoon een fel lichtvlak om gezien te worden als je in het donker loopt of wandelt.">
-<meta name="theme-color" content="#07090f">
+<meta name="description" content="Maak van je telefoon een fel lichtbaken om gezien te worden als je in het donker loopt of wandelt.">
+<meta name="theme-color" content="#06070b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,83 +15,109 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
   :root{
-    --bg:#07090f; --glass:rgba(255,255,255,.05); --glass-2:rgba(255,255,255,.09);
-    --line:rgba(255,255,255,.08); --text:#f4f6fb; --muted:rgba(244,246,251,.5);
+    --bg:#06070b; --glass:rgba(255,255,255,.055); --glass-2:rgba(255,255,255,.1);
+    --line:rgba(255,255,255,.09); --text:#f5f7fb; --muted:rgba(245,247,251,.52);
     --c:#FFE600; --ease:cubic-bezier(.22,1,.36,1);
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;background:var(--bg);color:var(--text);overscroll-behavior:none;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  html,body{height:100%;background:var(--bg);color:var(--text);overscroll-behavior:none;font-family:var(--sans);
     -webkit-font-smoothing:antialiased}
-  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-action:manipulation}
 
-  /* Zachte gloed van de gekozen kleur achter alles */
-  body::before{content:"";position:fixed;inset:-20%;pointer-events:none;z-index:0;
-    background:radial-gradient(40% 32% at 50% 34%, color-mix(in srgb,var(--c) 22%,transparent), transparent 70%);
-    transition:background .8s var(--ease)}
+  /* Sfeer: gloed in de gekozen kleur + fijn raster als nachtelijke grond */
 
-  #setup{position:relative;z-index:1;min-height:100dvh;max-width:440px;margin:0 auto;
-    padding:calc(18px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;gap:26px;transition:opacity .5s var(--ease), transform .5s var(--ease)}
-  body.lit #setup{opacity:0;transform:scale(.96)}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background-image:radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);background-size:22px 22px;
+    -webkit-mask-image:linear-gradient(to bottom, transparent, #000 30%, #000 60%, transparent);
+            mask-image:linear-gradient(to bottom, transparent, #000 30%, #000 60%, transparent)}
 
-  .top{display:flex;justify-content:space-between;align-items:center}
-  .crumb{font-size:.82rem;color:var(--muted);text-decoration:none;letter-spacing:.01em}
-  .brand{font-weight:650;font-size:.95rem;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
-  .brand i{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 12px var(--c);
-    transition:background .6s,box-shadow .6s}
+  #app{position:relative;z-index:1;height:100dvh;max-width:460px;margin:0 auto;display:flex;flex-direction:column;
+    padding:calc(14px + env(safe-area-inset-top)) 16px calc(14px + env(safe-area-inset-bottom));
+    transition:opacity .5s var(--ease), transform .6s var(--ease)}
+  body.lit #app{opacity:0;transform:scale(.94)}
 
-  /* Hero-orb: voorbeeld én startknop */
-  .hero{display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:8px}
-  #orb{width:min(62vw,240px);aspect-ratio:1;border-radius:50%;position:relative;
-    background:radial-gradient(circle at 35% 30%, #fff 0%, var(--c) 34%, var(--c) 100%);
-    box-shadow:0 0 0 1px rgba(255,255,255,.12) inset, 0 0 60px 6px color-mix(in srgb,var(--c) 55%,transparent),
-      0 0 160px 30px color-mix(in srgb,var(--c) 25%,transparent);
-    transition:background .6s var(--ease), box-shadow .6s var(--ease), transform .35s var(--ease)}
-  #orb:active{transform:scale(.96)}
-  #orb.off{opacity:.18;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
-  #orb .power{position:absolute;inset:0;display:grid;place-items:center;color:rgba(0,0,0,.55)}
-  #orb .power svg{width:34%;height:34%}
-  .cta{font-size:.9rem;color:var(--muted);letter-spacing:.02em}
-  h1{font-size:2.3rem;font-weight:700;letter-spacing:-.04em;text-align:center;line-height:1}
-  .sub{font-size:.95rem;color:var(--muted);text-align:center;margin-top:-10px}
+  /* Kopregel */
+  .top{display:flex;align-items:center;gap:8px}
+  .crumb{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted);text-decoration:none;padding:8px 4px}
+  .crumb svg{width:16px;height:16px}
+  .top .sp{flex:1}
+  .chip{display:flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:999px;font-size:.85rem;
+    font-weight:600;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    transition:background .25s}
+  .chip:active{background:var(--glass-2)}
+  .chip svg{width:16px;height:16px}
+  .chip.icon{width:38px;padding:0;justify-content:center}
+  #installChip{display:none}
 
-  .label{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
-    margin-bottom:12px;display:flex;justify-content:space-between}
-  .label b{color:var(--text);font-weight:600;letter-spacing:.06em}
+  /* Podium met de bol */
+  .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;min-height:0}
+  .orbwrap{position:relative;width:min(58vw,34vh,260px);aspect-ratio:1}
+  .orbwrap::before,.orbwrap::after{content:"";position:absolute;inset:0;border-radius:50%;
+    border:1.5px solid var(--c);opacity:0;animation:halo 3.2s var(--ease) infinite;pointer-events:none;z-index:0}
+  .orbwrap::after{animation-delay:1.6s}
+  @keyframes halo{0%{transform:scale(1);opacity:.45}100%{transform:scale(1.65);opacity:0}}
+  #orb{position:absolute;inset:0;border-radius:50%;z-index:1;
+    background:radial-gradient(circle at 34% 28%, #fff 0%, color-mix(in srgb,var(--c) 70%,#fff) 16%, var(--c) 46%, color-mix(in srgb,var(--c) 82%,#000) 100%);
+    box-shadow:0 0 0 1px rgba(255,255,255,.15) inset, 0 -18px 40px -10px rgba(0,0,0,.25) inset,
+      0 0 36px 2px color-mix(in srgb,var(--c) 55%,transparent);
+    transition:background .6s var(--ease), box-shadow .6s var(--ease), transform .4s var(--ease), opacity .12s}
+  .glow{position:absolute;inset:-55%;border-radius:50%;pointer-events:none;z-index:0;
+    background:radial-gradient(circle, color-mix(in srgb,var(--c) 42%,transparent) 0%, color-mix(in srgb,var(--c) 14%,transparent) 32%, transparent 68%);
+    transition:background .6s var(--ease), opacity .12s}
+  .orbwrap:has(#orb.off) .glow{opacity:.25}
+  #orb:active{transform:scale(.95)}
+  #orb.off{opacity:.16}
+  #orb .power{position:absolute;inset:0;display:grid;place-items:center;color:rgba(0,0,0,.5)}
+  #orb .power svg{width:30%;height:30%}
 
-  /* Kleuren */
-  .swatches{display:flex;justify-content:space-between;gap:8px;padding:10px;border-radius:999px;
-    background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(20px)}
-  .sw{width:46px;height:46px;border-radius:50%;background:var(--s);position:relative;
-    transition:transform .35s var(--ease), box-shadow .35s var(--ease)}
-  .sw::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--s);
-    opacity:0;transform:scale(.85);transition:opacity .35s var(--ease), transform .35s var(--ease)}
-  .sw[aria-pressed="true"]{transform:scale(1.04);box-shadow:0 0 22px color-mix(in srgb,var(--s) 70%,transparent)}
+  .state{text-align:center}
+  .state h1{font-size:2.6rem;font-weight:750;letter-spacing:-.045em;line-height:1}
+  .state p{margin-top:8px;font-size:.92rem;color:var(--muted)}
+  .state p b{color:var(--text);font-weight:600}
+
+  /* Bedieningsdok */
+  .dock{border-radius:28px;padding:16px;background:var(--glass);border:1px solid var(--line);
+    backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column;gap:14px}
+  .row-label{display:flex;justify-content:space-between;align-items:baseline;font-size:.7rem;font-weight:650;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:0 4px}
+  .row-label span:last-child{letter-spacing:.02em;text-transform:none;font-weight:500;font-size:.78rem}
+  .swatches{display:flex;justify-content:space-between;padding:0 2px}
+  .sw{width:50px;height:50px;border-radius:50%;background:var(--s);position:relative;
+    box-shadow:0 0 0 1px rgba(255,255,255,.12) inset;transition:transform .35s var(--ease), box-shadow .35s var(--ease)}
+  .sw::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--s);
+    opacity:0;transform:scale(.8);transition:opacity .35s var(--ease), transform .35s var(--ease)}
+  .sw[aria-pressed="true"]{box-shadow:0 0 24px color-mix(in srgb,var(--s) 70%,transparent)}
   .sw[aria-pressed="true"]::after{opacity:1;transform:scale(1)}
-  .note{font-size:.84rem;color:var(--muted);line-height:1.5;margin-top:12px;min-height:2.6em}
-
-  /* Ritme: segmented control met schuivende pil */
-  .seg{position:relative;display:grid;grid-template-columns:repeat(3,1fr);padding:5px;border-radius:999px;
-    background:var(--glass);border:1px solid var(--line)}
-  .seg .pill{position:absolute;top:5px;bottom:5px;left:5px;width:calc((100% - 10px)/3);border-radius:999px;
-    background:var(--glass-2);box-shadow:0 1px 0 rgba(255,255,255,.08) inset;transition:transform .45s var(--ease)}
-  .seg button{position:relative;padding:12px 0;font-size:.92rem;font-weight:550;color:var(--muted);
-    transition:color .3s}
+  .sw:active{transform:scale(.9)}
+  .seg{position:relative;display:grid;grid-template-columns:repeat(3,1fr);padding:4px;border-radius:999px;
+    background:rgba(0,0,0,.35);border:1px solid var(--line)}
+  .seg .pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/3);border-radius:999px;
+    background:var(--glass-2);box-shadow:0 1px 0 rgba(255,255,255,.1) inset;transition:transform .45s var(--ease)}
+  .seg button{position:relative;height:44px;display:flex;align-items:center;justify-content:center;gap:7px;
+    font-size:.9rem;font-weight:600;color:var(--muted);transition:color .3s}
   .seg button[aria-pressed="true"]{color:var(--text)}
+  .seg svg{width:22px;height:10px}
 
-  details{border-radius:18px;background:var(--glass);border:1px solid var(--line);overflow:hidden}
-  summary{list-style:none;padding:16px 18px;font-size:.9rem;font-weight:550;display:flex;justify-content:space-between;cursor:pointer}
-  summary::-webkit-details-marker{display:none}
-  summary span{color:var(--muted);transition:transform .3s var(--ease)}
-  details[open] summary span{transform:rotate(45deg)}
-  details ul{list-style:none;padding:0 18px 16px;display:flex;flex-direction:column;gap:10px;font-size:.86rem;
-    line-height:1.5;color:var(--muted)}
-  details li strong{color:var(--text);font-weight:550}
-
-  #install{display:none;padding:14px;border-radius:999px;border:1px solid var(--line);background:var(--glass);font-size:.92rem}
-  footer{margin-top:auto;font-size:.75rem;color:var(--muted);text-align:center;letter-spacing:.02em}
-  footer a{color:inherit}
+  /* Onderblad (uitleg & installeren) */
+  dialog{margin:auto auto 0;width:100%;max-width:460px;border:0;color:var(--text);background:#12141b;
+    border-radius:28px 28px 0 0;padding:10px 22px calc(24px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--line);transform:translateY(100%);transition:transform .45s var(--ease)}
+  dialog[open].in{transform:translateY(0)}
+  dialog::backdrop{background:rgba(0,0,0,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+  .grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 18px}
+  dialog h2{font-size:1.4rem;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
+  dialog .lead{color:var(--muted);font-size:.92rem;line-height:1.5;margin-bottom:18px}
+  .steps{list-style:none;display:flex;flex-direction:column;gap:10px;counter-reset:s}
+  .steps li{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:16px;background:var(--glass);
+    font-size:.92rem;line-height:1.45;counter-increment:s}
+  .steps.num li::before{content:counter(s);flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;
+    background:var(--c);color:#000;font-weight:700;font-size:.8rem}
+  .steps li strong{font-weight:650}
+  .steps .ic{display:inline-flex;vertical-align:-3px;width:18px;height:18px}
+  .big{width:100%;height:56px;border-radius:18px;background:var(--c);color:#000;font-weight:700;font-size:1.05rem;
+    margin-top:18px;box-shadow:0 0 30px -6px var(--c)}
+  .ghost{width:100%;height:48px;border-radius:16px;margin-top:10px;color:var(--muted);font-weight:600}
 
   /* ---------- Licht ---------- */
   #light{position:fixed;inset:0;z-index:10;background:var(--c);visibility:hidden;
@@ -101,7 +127,7 @@
     transition:clip-path .7s var(--ease), visibility 0s}
   #light.dark{background:#000}
 
-  /* Uitknop: op exact dezelfde plek als de aanknop, maar je moet hem vasthouden */
+  /* Uitknop: op exact dezelfde plek als de aanknop; vasthouden om te doven */
   #off{position:fixed;z-index:11;left:var(--ox,50%);top:var(--oy,40%);width:96px;height:96px;
     transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;border-radius:50%;
     background:rgba(0,0,0,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;
@@ -116,66 +142,51 @@
   #off.holding .prog{stroke-dashoffset:0;transition:stroke-dashoffset .6s linear}
   #off .ico{position:absolute;inset:0;display:grid;place-items:center}
   #off .ico svg{width:38px;height:38px}
-  /* Uitleg onder de knop, verdwijnt na enkele seconden */
   #offtxt{position:fixed;z-index:11;left:var(--ox,50%);top:calc(var(--oy,40%) + 66px);transform:translateX(-50%);
     padding:7px 14px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:.85rem;font-weight:600;
     white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .5s var(--ease)}
   body.lit #offtxt.show{opacity:1}
 
-  @media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+  @media (max-height:700px){ .state h1{font-size:2.1rem} .stage{gap:16px} .sw{width:44px;height:44px} }
+  @media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms!important} .orbwrap::before,.orbwrap::after{animation:none} }
 </style>
 </head>
 <body>
 
-<main id="setup">
+<div id="app">
   <div class="top">
-    <a class="crumb" href="../">← Zakmes</a>
-    <span class="brand"><i></i>Looplicht</span>
+    <a class="crumb" href="../"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Zakmes</a>
+    <span class="sp"></span>
+    <button class="chip" id="installChip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Installeer</button>
+    <button class="chip icon" id="infoChip" aria-label="Tips"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button>
   </div>
 
-  <section class="hero">
-    <button id="orb" aria-label="Licht aanzetten">
-      <span class="power"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.2a7.5 7.5 0 1 0 11.4 0"/></svg></span>
-    </button>
-    <span class="cta">Tik om aan te zetten</span>
+  <section class="stage">
+    <div class="orbwrap"><span class="glow"></span>
+      <button id="orb" aria-label="Licht aanzetten">
+        <span class="power"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.2a7.5 7.5 0 1 0 11.4 0"/></svg></span>
+      </button>
+    </div>
+    <div class="state">
+      <h1 id="cname">Geel</h1>
+      <p><b id="mname">Knipper</b> · tik op de bol om te starten</p>
+    </div>
   </section>
 
-  <div>
-    <h1>Gezien worden.</h1>
-    <p class="sub" style="margin-top:8px">Je telefoon als lichtbaken in het donker.</p>
-  </div>
-
-  <section>
-    <div class="label">Kleur <b id="cname"></b></div>
+  <section class="dock">
+    <div class="row-label"><span>Kleur</span><span id="cnote"></span></div>
     <div class="swatches" id="swatches" role="group" aria-label="Kleur"></div>
-    <p class="note" id="cnote"></p>
-  </section>
-
-  <section>
-    <div class="label">Ritme</div>
+    <div class="row-label"><span>Ritme</span><span id="mnote"></span></div>
     <div class="seg" id="modes" role="group" aria-label="Ritme">
       <span class="pill"></span>
-      <button data-mode="vast">Vast</button>
-      <button data-mode="knipper">Knipper</button>
-      <button data-mode="flits">Dubbelflits</button>
+      <button data-mode="vast"><svg viewBox="0 0 22 10"><rect x="1" y="3" width="20" height="4" rx="2" fill="currentColor"/></svg>Vast</button>
+      <button data-mode="knipper"><svg viewBox="0 0 22 10"><rect x="1" y="3" width="6" height="4" rx="2" fill="currentColor"/><rect x="15" y="3" width="6" height="4" rx="2" fill="currentColor"/></svg>Knipper</button>
+      <button data-mode="flits"><svg viewBox="0 0 22 10"><rect x="1" y="3" width="3" height="4" rx="1.5" fill="currentColor"/><rect x="6" y="3" width="3" height="4" rx="1.5" fill="currentColor"/><rect x="18" y="3" width="3" height="4" rx="1.5" fill="currentColor"/></svg>Flits</button>
     </div>
-    <p class="note" id="mnote"></p>
   </section>
+</div>
 
-  <details>
-    <summary>Zo zie je het best <span>+</span></summary>
-    <ul>
-      <li><strong>Helderheid op maximum.</strong> Een website kan dat niet voor je doen.</li>
-      <li><strong>Hoog en zichtbaar dragen.</strong> Armband of schouderband, scherm naar buiten.</li>
-      <li><strong>Wit of geel vooraan, rood achteraan.</strong> Zo zien bestuurders meteen je richting.</li>
-      <li><strong>Uitzetten:</strong> houd dezelfde knop even vast, of gebruik de terug-knop of -veeg van je telefoon. Een toevallige tik doet niets.</li>
-      <li><strong>Aanvulling, geen vervanging.</strong> Reflecterende kleding en een echt lampje blijven het sterkst.</li>
-    </ul>
-  </details>
-
-  <button id="install">Installeer als app</button>
-  <footer>Werkt offline · geen tracking · <a href="https://bit.ly/4azfO7S">contact</a></footer>
-</main>
+<dialog id="sheet"><div class="grab"></div><div id="sheetBody"></div></dialog>
 
 <div id="light" aria-hidden="true"></div>
 <button id="off" aria-label="Houd vast om het licht te doven">
@@ -186,29 +197,30 @@
 
 <script>
 const COLORS = [
-  {id:'wit',    hex:'#FFFFFF', name:'Wit',    note:'Het meeste licht. De beste keuze vooraan.'},
-  {id:'geel',   hex:'#FFE600', name:'Geel',   note:'Bijna even fel als wit, en springt eruit tussen de straatlantaarns.'},
-  {id:'groen',  hex:'#00FF5A', name:'Groen',  note:'Fel en ongewoon in het verkeer. Daardoor valt het op.'},
-  {id:'oranje', hex:'#FF8A00', name:'Oranje', note:'Signaalkleur. Goed zichtbaar, iets minder fel dan geel.'},
-  {id:'rood',   hex:'#FF1F1F', name:'Rood',   note:'Achterlichtkleur. Een scherm geeft in rood het minste licht, dus laat het knipperen.'}
+  {id:'wit',    hex:'#FFFFFF', name:'Wit',    note:'meeste licht · vooraan'},
+  {id:'geel',   hex:'#FFE600', name:'Geel',   note:'bijna even fel · vooraan'},
+  {id:'groen',  hex:'#00FF5A', name:'Groen',  note:'fel en ongewoon'},
+  {id:'oranje', hex:'#FF8A00', name:'Oranje', note:'signaalkleur'},
+  {id:'rood',   hex:'#FF1F1F', name:'Rood',   note:'achteraan · laat knipperen'}
 ];
 const MODES = {
-  vast:    'Continu licht. Rustig, maar een stilstaand licht valt minder op.',
-  knipper: 'Twee keer per seconde. Beweging trekt de blik, net als bij fietslampjes.',
-  flits:   'Twee korte flitsen en een pauze. Het meest opvallend, en veilig voor wie gevoelig is voor flitsen.'
+  vast:    {name:'Vast',    note:'continu licht'},
+  knipper: {name:'Knipper', note:'2× per seconde'},
+  flits:   {name:'Flits',   note:'dubbelflits · valt het meest op'}
 };
-// Patronen in ms [aan, uit, ...]. Nooit sneller dan 3 flitsen per seconde.
+// Patronen in ms [aan, uit, ...]. Nooit sneller dan 3 flitsen per seconde (veilig bij flitsgevoeligheid).
 const PATTERNS = {knipper:[300,200], flits:[110,140,110,640]};
 
 const store={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let color=store.get('ll-color','geel'), mode=store.get('ll-mode', reduce?'vast':'knipper');
 const $=s=>document.querySelector(s), root=document.documentElement, body=document.body;
+const tick=()=>{try{navigator.vibrate?.(8)}catch(e){}};
 
 // ---- Kleur ----
 const sw=$('#swatches');
 COLORS.forEach(c=>{const b=document.createElement('button');b.className='sw';b.style.setProperty('--s',c.hex);
-  b.dataset.id=c.id;b.setAttribute('aria-label',c.name);b.onclick=()=>setColor(c.id);sw.appendChild(b);});
+  b.dataset.id=c.id;b.setAttribute('aria-label',c.name);b.onclick=()=>{tick();setColor(c.id);};sw.appendChild(b);});
 function setColor(id){
   const c=COLORS.find(x=>x.id===id)||COLORS[1]; color=c.id; store.set('ll-color',c.id);
   root.style.setProperty('--c',c.hex);
@@ -217,12 +229,12 @@ function setColor(id){
 }
 // ---- Ritme ----
 const btns=[...document.querySelectorAll('#modes button')];
-btns.forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+btns.forEach(b=>b.onclick=()=>{tick();setMode(b.dataset.mode);});
 function setMode(m){
-  mode=m; store.set('ll-mode',m);
+  if(!MODES[m]) m='knipper'; mode=m; store.set('ll-mode',m);
   btns.forEach((b,i)=>{const on=b.dataset.mode===m;b.setAttribute('aria-pressed',on);
     if(on)$('#modes .pill').style.transform=`translateX(${i*100}%)`;});
-  $('#mnote').textContent=MODES[m];
+  $('#mname').textContent=MODES[m].name; $('#mnote').textContent=MODES[m].note;
   preview();
 }
 
@@ -246,7 +258,7 @@ async function start(){
   root.style.setProperty('--ox',(r.left+r.width/2)+'px'); root.style.setProperty('--oy',(r.top+r.height/2)+'px');
   clearTimeout(timer); $('#orb').classList.remove('off');
   body.classList.add('lit');
-  history.pushState({lit:1},'');             // terug-knop of -veeg zet het licht uit
+  history.pushState({lit:1},'');             // terug-knop of -veeg dooft het licht
   try{await (root.requestFullscreen?.({navigationUI:'hide'})||root.webkitRequestFullscreen?.());}catch(e){}
   await lockWake();
   setTimeout(()=>{ if(body.classList.contains('lit')) play(light); },700);
@@ -273,21 +285,65 @@ document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement
 addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&body.classList.contains('lit'))lockWake();});
 
-// Vasthouden (0,6 s) om uit te zetten; loslaten annuleert.
+// Vasthouden (0,6 s) om te doven; loslaten annuleert. De vinger mag wat verschuiven.
 const off=$('#off'); let holdT=null;
 off.addEventListener('pointerdown',e=>{e.preventDefault();dim();off.classList.add('holding');
-  try{off.setPointerCapture(e.pointerId);}catch(_){}   // vinger mag wat verschuiven
+  try{off.setPointerCapture(e.pointerId);}catch(_){}
   $('#offtxt').textContent='Blijf vasthouden…';
-  holdT=setTimeout(()=>{off.classList.remove('holding');quietUntil=Date.now()+600;stop();if(navigator.vibrate)navigator.vibrate(30);},600);});
+  holdT=setTimeout(()=>{off.classList.remove('holding');quietUntil=Date.now()+600;stop();try{navigator.vibrate?.(30)}catch(_){}},600);});
 ['pointerup','pointercancel'].forEach(ev=>off.addEventListener(ev,()=>{
   clearTimeout(holdT);off.classList.remove('holding');$('#offtxt').textContent='Vasthouden om te doven';}));
 off.addEventListener('contextmenu',e=>e.preventDefault());
 light.addEventListener('pointerdown',dim);   // tik op het licht: uitknop even goed zichtbaar
 
-// ---- Installeren & offline ----
+// ---- Onderblad ----
+const sheet=$('#sheet');
+function openSheet(html){
+  $('#sheetBody').innerHTML=html;
+  sheet.showModal(); requestAnimationFrame(()=>requestAnimationFrame(()=>sheet.classList.add('in')));
+  sheet.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeSheet);
+}
+function closeSheet(){ sheet.classList.remove('in'); setTimeout(()=>sheet.close(),350); }
+sheet.addEventListener('click',e=>{ if(e.target===sheet) closeSheet(); });   // tik naast het blad
+sheet.addEventListener('cancel',e=>{ e.preventDefault(); closeSheet(); });
+
+const SHARE='<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8"/></svg>';
+$('#infoChip').onclick=()=>openSheet(`
+  <h2>Zo zie je het best</h2>
+  <p class="lead">Een scherm is een aanvulling. Reflecterende kleding en een echt lampje blijven het sterkst.</p>
+  <ul class="steps">
+    <li><span><strong>Helderheid op maximum.</strong> Een website kan dat niet voor je doen.</span></li>
+    <li><span><strong>Hoog en zichtbaar dragen.</strong> Armband of schouderband, scherm naar buiten.</span></li>
+    <li><span><strong>Wit of geel vooraan, rood achteraan.</strong> Zo zien bestuurders meteen je richting.</span></li>
+    <li><span><strong>Doven:</strong> houd de aan/uit-knop even vast, of veeg terug. Een toevallige tik doet niets.</span></li>
+  </ul>
+  <button class="ghost" data-close>Sluiten</button>`);
+
+// ---- Installeren ----
+const standalone=matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone;
+const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 let deferred=null;
-addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('#install').style.display='block';});
-$('#install').onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;$('#install').style.display='none';};
+if(!standalone) $('#installChip').style.display='flex';
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;});
+addEventListener('appinstalled',()=>{ $('#installChip').style.display='none'; if(sheet.open) closeSheet(); });
+$('#installChip').onclick=()=>{
+  const intro=`<h2>Installeer Looplicht</h2><p class="lead">Dan staat hij als app op je beginscherm, opent hij schermvullend en werkt hij zonder internet.</p>`;
+  if(deferred){
+    openSheet(intro+`<button class="big" id="doInstall">Installeren</button><button class="ghost" data-close>Later</button>`);
+    $('#doInstall').onclick=async()=>{deferred.prompt();await deferred.userChoice;deferred=null;closeSheet();};
+  } else if(ios){
+    openSheet(intro+`<ol class="steps num">
+      <li><span>Open deze pagina in <strong>Safari</strong>.</span></li>
+      <li><span>Tik op <strong>Deel</strong> ${SHARE} onderaan of bovenaan.</span></li>
+      <li><span>Kies <strong>Zet op beginscherm</strong> en tik op <strong>Voeg toe</strong>.</span></li>
+    </ol><button class="ghost" data-close>Begrepen</button>`);
+  } else {
+    openSheet(intro+`<ol class="steps num">
+      <li><span>Open het <strong>menu</strong> van je browser (⋮ of ⋯).</span></li>
+      <li><span>Kies <strong>App installeren</strong> of <strong>Toevoegen aan startscherm</strong>.</span></li>
+    </ol><button class="ghost" data-close>Begrepen</button>`);
+  }
+};
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
