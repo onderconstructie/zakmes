@@ -107,6 +107,7 @@
     display:flex;align-items:center;gap:12px;padding:10px 20px 10px 10px;border-radius:999px;
     background:rgba(0,0,0,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
     color:#fff;font-weight:600;font-size:.95rem;letter-spacing:.01em;white-space:nowrap;
+    touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
     transition:transform .5s var(--ease), opacity .5s var(--ease)}
   body.lit #off{transform:translate(-50%,0);opacity:1;pointer-events:auto;transition-delay:.35s}
   body.lit #off.dim{opacity:.35;transition-delay:0s}
@@ -268,9 +269,10 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 // Vasthouden (0,6 s) om uit te zetten; loslaten annuleert.
 const off=$('#off'); let holdT=null;
 off.addEventListener('pointerdown',e=>{e.preventDefault();dim();off.classList.add('holding');
+  try{off.setPointerCapture(e.pointerId);}catch(_){}   // vinger mag wat verschuiven
   $('#offtxt').textContent='Blijf vasthouden…';
   holdT=setTimeout(()=>{off.classList.remove('holding');stop();if(navigator.vibrate)navigator.vibrate(30);},600);});
-['pointerup','pointercancel','pointerleave'].forEach(ev=>off.addEventListener(ev,()=>{
+['pointerup','pointercancel'].forEach(ev=>off.addEventListener(ev,()=>{
   clearTimeout(holdT);off.classList.remove('holding');$('#offtxt').textContent='Vasthouden om te doven';}));
 off.addEventListener('contextmenu',e=>e.preventDefault());
 light.addEventListener('pointerdown',dim);   // tik op het licht: uitknop even goed zichtbaar
