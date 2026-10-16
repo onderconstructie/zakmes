@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>Looplicht – Onder Constructie</title>
 <meta name="description" content="Maak van je telefoon een fel lichtvlak om gezien te worden als je in het donker loopt of wandelt.">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#07090f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,232 +13,273 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0f172a; --panel:#1e293b; --line:#334155; --text:#f1f5f9; --muted:#94a3b8;
-    --accent:#10b981; --light:#FFE600;
+    --bg:#07090f; --glass:rgba(255,255,255,.05); --glass-2:rgba(255,255,255,.09);
+    --line:rgba(255,255,255,.08); --text:#f4f6fb; --muted:rgba(244,246,251,.5);
+    --c:#FFE600; --ease:cubic-bezier(.22,1,.36,1);
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;background:var(--bg);color:var(--text);
-    font-family:'DM Sans',system-ui,sans-serif;overscroll-behavior:none}
-  body{display:flex;flex-direction:column;min-height:100dvh}
-  a{color:var(--accent)}
+  html,body{height:100%;background:var(--bg);color:var(--text);overscroll-behavior:none;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
-  /* ---------- Instellingen ---------- */
-  #setup{flex:1;width:100%;max-width:480px;margin:0 auto;
-    padding:calc(20px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;gap:22px}
-  header .crumb{font-size:.8rem;color:var(--muted);text-decoration:none}
-  header h1{font-size:1.9rem;font-weight:700;margin-top:4px}
-  header p{color:var(--muted);margin-top:4px;line-height:1.45}
-  h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
-    font-weight:500;margin-bottom:10px}
-  .colors{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-  .color{aspect-ratio:1;border-radius:14px;border:3px solid transparent;cursor:pointer;
-    position:relative;transition:transform .12s}
-  .color[aria-pressed="true"]{border-color:var(--text);transform:scale(1.06)}
-  .color span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;
-    font-size:.72rem;color:var(--muted)}
-  .colors{margin-bottom:14px}
-  .hint{font-size:.85rem;color:var(--muted);line-height:1.45;margin-top:4px}
-  .seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--panel);
-    border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
-  .seg button{background:none;border:0;color:var(--muted);font:inherit;font-weight:500;
-    padding:11px 4px;border-radius:9px;cursor:pointer}
-  .seg button[aria-pressed="true"]{background:var(--line);color:var(--text)}
-  #start{margin-top:auto;background:var(--light);color:#000;border:0;border-radius:16px;
-    font:inherit;font-size:1.25rem;font-weight:700;padding:20px;cursor:pointer;
-    box-shadow:0 0 40px -8px var(--light)}
-  .tips{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .tips ul{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:.88rem;line-height:1.4}
-  .tips li::before{content:"·";color:var(--accent);font-weight:700;margin-right:8px}
-  footer{font-size:.75rem;color:var(--muted);text-align:center}
-  #install{display:none;background:none;border:1px solid var(--line);color:var(--text);
-    font:inherit;padding:12px;border-radius:12px;cursor:pointer}
+  /* Zachte gloed van de gekozen kleur achter alles */
+  body::before{content:"";position:fixed;inset:-20%;pointer-events:none;z-index:0;
+    background:radial-gradient(40% 32% at 50% 34%, color-mix(in srgb,var(--c) 22%,transparent), transparent 70%);
+    transition:background .8s var(--ease)}
+
+  #setup{position:relative;z-index:1;min-height:100dvh;max-width:440px;margin:0 auto;
+    padding:calc(18px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;gap:26px;transition:opacity .5s var(--ease), transform .5s var(--ease)}
+  body.lit #setup{opacity:0;transform:scale(.96)}
+
+  .top{display:flex;justify-content:space-between;align-items:center}
+  .crumb{font-size:.82rem;color:var(--muted);text-decoration:none;letter-spacing:.01em}
+  .brand{font-weight:650;font-size:.95rem;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+  .brand i{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 12px var(--c);
+    transition:background .6s,box-shadow .6s}
+
+  /* Hero-orb: voorbeeld én startknop */
+  .hero{display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:8px}
+  #orb{width:min(62vw,240px);aspect-ratio:1;border-radius:50%;position:relative;
+    background:radial-gradient(circle at 35% 30%, #fff 0%, var(--c) 34%, var(--c) 100%);
+    box-shadow:0 0 0 1px rgba(255,255,255,.12) inset, 0 0 60px 6px color-mix(in srgb,var(--c) 55%,transparent),
+      0 0 160px 30px color-mix(in srgb,var(--c) 25%,transparent);
+    transition:background .6s var(--ease), box-shadow .6s var(--ease), transform .35s var(--ease)}
+  #orb:active{transform:scale(.96)}
+  #orb.off{opacity:.18;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
+  #orb .power{position:absolute;inset:0;display:grid;place-items:center;color:rgba(0,0,0,.55)}
+  #orb .power svg{width:34%;height:34%}
+  .cta{font-size:.9rem;color:var(--muted);letter-spacing:.02em}
+  h1{font-size:2.3rem;font-weight:700;letter-spacing:-.04em;text-align:center;line-height:1}
+  .sub{font-size:.95rem;color:var(--muted);text-align:center;margin-top:-10px}
+
+  .label{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+    margin-bottom:12px;display:flex;justify-content:space-between}
+  .label b{color:var(--text);font-weight:600;letter-spacing:.06em}
+
+  /* Kleuren */
+  .swatches{display:flex;justify-content:space-between;gap:8px;padding:10px;border-radius:999px;
+    background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(20px)}
+  .sw{width:46px;height:46px;border-radius:50%;background:var(--s);position:relative;
+    transition:transform .35s var(--ease), box-shadow .35s var(--ease)}
+  .sw::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--s);
+    opacity:0;transform:scale(.85);transition:opacity .35s var(--ease), transform .35s var(--ease)}
+  .sw[aria-pressed="true"]{transform:scale(1.04);box-shadow:0 0 22px color-mix(in srgb,var(--s) 70%,transparent)}
+  .sw[aria-pressed="true"]::after{opacity:1;transform:scale(1)}
+  .note{font-size:.84rem;color:var(--muted);line-height:1.5;margin-top:12px;min-height:2.6em}
+
+  /* Ritme: segmented control met schuivende pil */
+  .seg{position:relative;display:grid;grid-template-columns:repeat(3,1fr);padding:5px;border-radius:999px;
+    background:var(--glass);border:1px solid var(--line)}
+  .seg .pill{position:absolute;top:5px;bottom:5px;left:5px;width:calc((100% - 10px)/3);border-radius:999px;
+    background:var(--glass-2);box-shadow:0 1px 0 rgba(255,255,255,.08) inset;transition:transform .45s var(--ease)}
+  .seg button{position:relative;padding:12px 0;font-size:.92rem;font-weight:550;color:var(--muted);
+    transition:color .3s}
+  .seg button[aria-pressed="true"]{color:var(--text)}
+
+  details{border-radius:18px;background:var(--glass);border:1px solid var(--line);overflow:hidden}
+  summary{list-style:none;padding:16px 18px;font-size:.9rem;font-weight:550;display:flex;justify-content:space-between;cursor:pointer}
+  summary::-webkit-details-marker{display:none}
+  summary span{color:var(--muted);transition:transform .3s var(--ease)}
+  details[open] summary span{transform:rotate(45deg)}
+  details ul{list-style:none;padding:0 18px 16px;display:flex;flex-direction:column;gap:10px;font-size:.86rem;
+    line-height:1.5;color:var(--muted)}
+  details li strong{color:var(--text);font-weight:550}
+
+  #install{display:none;padding:14px;border-radius:999px;border:1px solid var(--line);background:var(--glass);font-size:.92rem}
+  footer{margin-top:auto;font-size:.75rem;color:var(--muted);text-align:center;letter-spacing:.02em}
+  footer a{color:inherit}
 
   /* ---------- Licht ---------- */
-  #light{position:fixed;inset:0;background:var(--light);display:none;z-index:10;
-    touch-action:none;user-select:none;-webkit-user-select:none}
-  #light.on{display:block}
+  #light{position:fixed;inset:0;z-index:10;background:var(--c);visibility:hidden;
+    clip-path:circle(0 at var(--ox,50%) var(--oy,40%));
+    transition:clip-path .7s var(--ease), visibility 0s .7s;touch-action:none;user-select:none;-webkit-user-select:none}
+  body.lit #light{visibility:visible;clip-path:circle(150% at var(--ox,50%) var(--oy,40%));
+    transition:clip-path .7s var(--ease), visibility 0s}
   #light.dark{background:#000}
-  #ctrl{position:fixed;left:50%;bottom:calc(32px + env(safe-area-inset-bottom));transform:translateX(-50%);
-    display:none;gap:10px;z-index:11}
-  #ctrl.show{display:flex}
-  #ctrl button{font:inherit;font-weight:700;font-size:1.05rem;padding:16px 26px;border-radius:14px;
-    border:0;cursor:pointer;background:#0f172a;color:#f1f5f9}
-  #hold{position:fixed;top:calc(20px + env(safe-area-inset-top));left:0;right:0;text-align:center;
-    z-index:11;color:rgba(0,0,0,.55);font-size:.85rem;font-weight:500;display:none;pointer-events:none}
-  #hold.show{display:block}
-  #ring{position:fixed;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;
-    border:5px solid rgba(0,0,0,.5);z-index:12;pointer-events:none;display:none;
-    clip-path:inset(0 0 100% 0)}
-  #ring.grow{display:block;animation:fill .7s linear forwards}
-  @keyframes fill{to{clip-path:inset(0 0 0 0)}}
+
+  /* Uitknop: altijd zichtbaar, maar je moet hem vasthouden */
+  #off{position:fixed;z-index:11;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));
+    transform:translate(-50%,30px);opacity:0;pointer-events:none;
+    display:flex;align-items:center;gap:12px;padding:10px 20px 10px 10px;border-radius:999px;
+    background:rgba(0,0,0,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    color:#fff;font-weight:600;font-size:.95rem;letter-spacing:.01em;white-space:nowrap;
+    transition:transform .5s var(--ease), opacity .5s var(--ease)}
+  body.lit #off{transform:translate(-50%,0);opacity:1;pointer-events:auto;transition-delay:.35s}
+  body.lit #off.dim{opacity:.35;transition-delay:0s}
+  #off svg{width:40px;height:40px;transform:rotate(-90deg)}
+  #off .track{stroke:rgba(255,255,255,.18)}
+  #off .prog{stroke:#fff;stroke-dasharray:113;stroke-dashoffset:113}
+  #off.holding .prog{stroke-dashoffset:0;transition:stroke-dashoffset .6s linear}
+  #off .ico{position:absolute;left:10px;top:50%;margin-top:-20px;width:40px;height:40px;display:grid;place-items:center}
+  #off .ico svg{width:18px;height:18px;transform:none}
+
+  @media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
 
 <main id="setup">
-  <header>
-    <a class="crumb" href="https://onderconstructie.github.io/zakmes/">← Zakmes</a>
-    <h1>Looplicht</h1>
-    <p>Je telefoon als fel lichtvlak. Zodat anderen je zien als je in het donker loopt.</p>
-  </header>
+  <div class="top">
+    <a class="crumb" href="../">← Zakmes</a>
+    <span class="brand"><i></i>Looplicht</span>
+  </div>
+
+  <section class="hero">
+    <button id="orb" aria-label="Licht aanzetten">
+      <span class="power"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.2a7.5 7.5 0 1 0 11.4 0"/></svg></span>
+    </button>
+    <span class="cta">Tik om aan te zetten</span>
+  </section>
+
+  <div>
+    <h1>Gezien worden.</h1>
+    <p class="sub" style="margin-top:8px">Je telefoon als lichtbaken in het donker.</p>
+  </div>
 
   <section>
-    <h2>Kleur</h2>
-    <div class="colors" id="colors" role="group" aria-label="Kleur"></div>
-    <p class="hint" id="colorhint"></p>
+    <div class="label">Kleur <b id="cname"></b></div>
+    <div class="swatches" id="swatches" role="group" aria-label="Kleur"></div>
+    <p class="note" id="cnote"></p>
   </section>
 
   <section>
-    <h2>Ritme</h2>
+    <div class="label">Ritme</div>
     <div class="seg" id="modes" role="group" aria-label="Ritme">
+      <span class="pill"></span>
       <button data-mode="vast">Vast</button>
       <button data-mode="knipper">Knipper</button>
       <button data-mode="flits">Dubbelflits</button>
     </div>
-    <p class="hint" id="modehint"></p>
+    <p class="note" id="mnote"></p>
   </section>
 
-  <section class="tips">
-    <h2>Voor het beste resultaat</h2>
+  <details>
+    <summary>Zo zie je het best <span>+</span></summary>
     <ul>
-      <li>Zet de schermhelderheid zelf op maximum. Een website kan dat niet voor je doen.</li>
-      <li>Draag de telefoon hoog en zichtbaar: armband of schouderband, scherm naar buiten.</li>
-      <li>Wit of geel vooraan, rood achteraan. Zo herkennen bestuurders meteen je looprichting.</li>
-      <li>Houd ingedrukt op het lichtvlak om te stoppen. Een toevallige tik doet niets.</li>
+      <li><strong>Helderheid op maximum.</strong> Een website kan dat niet voor je doen.</li>
+      <li><strong>Hoog en zichtbaar dragen.</strong> Armband of schouderband, scherm naar buiten.</li>
+      <li><strong>Wit of geel vooraan, rood achteraan.</strong> Zo zien bestuurders meteen je richting.</li>
+      <li><strong>Uitzetten:</strong> houd de knop onderaan even vast, of gebruik de terug-knop of -veeg van je telefoon. Een toevallige tik doet niets.</li>
+      <li><strong>Aanvulling, geen vervanging.</strong> Reflecterende kleding en een echt lampje blijven het sterkst.</li>
     </ul>
-  </section>
+  </details>
 
   <button id="install">Installeer als app</button>
-  <button id="start">Licht aan</button>
-
-  <footer>Werkt ook zonder internet · <a href="https://bit.ly/4azfO7S">contact</a></footer>
+  <footer>Werkt offline · geen tracking · <a href="https://bit.ly/4azfO7S">contact</a></footer>
 </main>
 
 <div id="light" aria-hidden="true"></div>
-<div id="hold">Houd ingedrukt om te stoppen</div>
-<div id="ring"></div>
-<div id="ctrl"><button id="stop">Stop</button><button id="back">Verder</button></div>
+<button id="off" aria-label="Houd vast om het licht uit te zetten">
+  <svg viewBox="0 0 40 40"><circle class="track" cx="20" cy="20" r="18" fill="none" stroke-width="3"/><circle class="prog" cx="20" cy="20" r="18" fill="none" stroke-width="3" stroke-linecap="round"/></svg>
+  <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.2a7.5 7.5 0 1 0 11.4 0"/></svg></span>
+  <span id="offtxt">Vasthouden om te doven</span>
+</button>
 
 <script>
 const COLORS = [
-  {id:'wit',    hex:'#FFFFFF', name:'Wit',    hint:'Meeste licht. Beste keuze vooraan.'},
-  {id:'geel',   hex:'#FFE600', name:'Geel',   hint:'Bijna even fel als wit, en springt eruit tussen straatlantaarns.'},
-  {id:'groen',  hex:'#00FF5A', name:'Groen',  hint:'Fel en opvallend. Minder gebruikelijk in het verkeer, dus het valt op.'},
-  {id:'oranje', hex:'#FF8A00', name:'Oranje', hint:'Signaalkleur. Goed zichtbaar, iets minder fel dan geel.'},
-  {id:'rood',   hex:'#FF1F1F', name:'Rood',   hint:'Achterlicht-kleur. Let op: een scherm geeft in rood het minste licht, maar knipperen helpt veel.'}
+  {id:'wit',    hex:'#FFFFFF', name:'Wit',    note:'Het meeste licht. De beste keuze vooraan.'},
+  {id:'geel',   hex:'#FFE600', name:'Geel',   note:'Bijna even fel als wit, en springt eruit tussen de straatlantaarns.'},
+  {id:'groen',  hex:'#00FF5A', name:'Groen',  note:'Fel en ongewoon in het verkeer. Daardoor valt het op.'},
+  {id:'oranje', hex:'#FF8A00', name:'Oranje', note:'Signaalkleur. Goed zichtbaar, iets minder fel dan geel.'},
+  {id:'rood',   hex:'#FF1F1F', name:'Rood',   note:'Achterlichtkleur. Een scherm geeft in rood het minste licht, dus laat het knipperen.'}
 ];
 const MODES = {
-  vast:    {hint:'Continu licht. Rustig voor jezelf, maar een stilstaand licht valt minder op.'},
-  knipper: {hint:'Twee keer per seconde. Beweging trekt de blik; zo werken ook fietslampjes.'},
-  flits:   {hint:'Twee korte flitsen, dan een pauze. Het meest opvallend, en veilig onder de grens voor flitsgevoeligheid.'}
+  vast:    'Continu licht. Rustig, maar een stilstaand licht valt minder op.',
+  knipper: 'Twee keer per seconde. Beweging trekt de blik, net als bij fietslampjes.',
+  flits:   'Twee korte flitsen en een pauze. Het meest opvallend, en veilig voor wie gevoelig is voor flitsen.'
 };
-// Patronen in ms: [aan, uit, aan, uit, ...]. Max 2 flitsen/seconde gemiddeld, nooit boven 3 Hz.
+// Patronen in ms [aan, uit, ...]. Nooit sneller dan 3 flitsen per seconde.
 const PATTERNS = {knipper:[300,200], flits:[110,140,110,640]};
 
-const store = {
-  get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},
-  set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-};
-let color = store.get('ll-color','geel');
-let mode  = store.get('ll-mode', matchMedia('(prefers-reduced-motion: reduce)').matches ? 'vast' : 'knipper');
+const store={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let color=store.get('ll-color','geel'), mode=store.get('ll-mode', reduce?'vast':'knipper');
+const $=s=>document.querySelector(s), root=document.documentElement, body=document.body;
 
-const $ = s => document.querySelector(s);
-const root = document.documentElement;
-
-// --- Kleurkeuze ---
-const colorsEl = $('#colors');
-COLORS.forEach(c=>{
-  const b=document.createElement('button');
-  b.className='color'; b.style.background=c.hex; b.dataset.id=c.id;
-  b.setAttribute('aria-label',c.name); b.innerHTML=`<span>${c.name}</span>`;
-  b.onclick=()=>setColor(c.id);
-  colorsEl.appendChild(b);
-});
+// ---- Kleur ----
+const sw=$('#swatches');
+COLORS.forEach(c=>{const b=document.createElement('button');b.className='sw';b.style.setProperty('--s',c.hex);
+  b.dataset.id=c.id;b.setAttribute('aria-label',c.name);b.onclick=()=>setColor(c.id);sw.appendChild(b);});
 function setColor(id){
-  color=id; store.set('ll-color',id);
-  const c=COLORS.find(x=>x.id===id)||COLORS[1];
-  root.style.setProperty('--light',c.hex);
-  colorsEl.querySelectorAll('.color').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===id));
-  $('#colorhint').textContent=c.hint;
+  const c=COLORS.find(x=>x.id===id)||COLORS[1]; color=c.id; store.set('ll-color',c.id);
+  root.style.setProperty('--c',c.hex);
+  sw.querySelectorAll('.sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===c.id));
+  $('#cname').textContent=c.name; $('#cnote').textContent=c.note;
 }
-// --- Ritme ---
-document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+// ---- Ritme ----
+const btns=[...document.querySelectorAll('#modes button')];
+btns.forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 function setMode(m){
   mode=m; store.set('ll-mode',m);
-  document.querySelectorAll('#modes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));
-  $('#modehint').textContent=MODES[m].hint;
+  btns.forEach((b,i)=>{const on=b.dataset.mode===m;b.setAttribute('aria-pressed',on);
+    if(on)$('#modes .pill').style.transform=`translateX(${i*100}%)`;});
+  $('#mnote').textContent=MODES[m];
+  preview();
 }
-setColor(color); setMode(mode);
 
-// --- Licht aan/uit ---
-const light=$('#light');
-let timer=null, wakeLock=null, running=false;
-
-async function lockWake(){
-  try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); } }catch(e){}
-}
-function runPattern(){
-  clearTimeout(timer);
-  light.classList.remove('dark');
+// ---- Patroonmotor (zelfde voor voorbeeld en licht) ----
+let timer=null;
+function play(el){
+  clearTimeout(timer); el.classList.remove('off','dark');
   const p=PATTERNS[mode]; if(!p) return;
-  let i=0;
-  const step=()=>{
-    light.classList.toggle('dark', i%2===1);
-    timer=setTimeout(()=>{ i=(i+1)%p.length; step(); }, p[i]);
-  };
+  let i=0; const cls=el.id==='orb'?'off':'dark';
+  const step=()=>{el.classList.toggle(cls,i%2===1);timer=setTimeout(()=>{i=(i+1)%p.length;step();},p[i]);};
   step();
 }
+function preview(){ if(!body.classList.contains('lit')) play($('#orb')); }
+setColor(color); setMode(mode);
+
+// ---- Aan ----
+const light=$('#light'); let wakeLock=null, dimT=null;
+async function lockWake(){try{if('wakeLock' in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}}
 async function start(){
-  running=true;
-  light.classList.add('on');
-  $('#hold').classList.add('show');
-  setTimeout(()=>$('#hold').classList.remove('show'),3000);
-  try{ await (root.requestFullscreen?.({navigationUI:'hide'}) || root.webkitRequestFullscreen?.()); }catch(e){}
-  try{ await screen.orientation?.lock?.('portrait'); }catch(e){}
+  const r=$('#orb').getBoundingClientRect();
+  root.style.setProperty('--ox',(r.left+r.width/2)+'px'); root.style.setProperty('--oy',(r.top+r.height/2)+'px');
+  clearTimeout(timer); $('#orb').classList.remove('off');
+  body.classList.add('lit');
+  history.pushState({lit:1},'');             // terug-knop of -veeg zet het licht uit
+  try{await (root.requestFullscreen?.({navigationUI:'hide'})||root.webkitRequestFullscreen?.());}catch(e){}
   await lockWake();
-  runPattern();
+  setTimeout(()=>{ if(body.classList.contains('lit')) play(light); },700);
+  dim();
 }
-function stop(){
-  running=false; clearTimeout(timer);
-  light.classList.remove('on','dark');
-  $('#ctrl').classList.remove('show');
-  try{ wakeLock?.release(); }catch(e){} wakeLock=null;
-  try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
+function dim(){ const o=$('#off'); o.classList.remove('dim'); clearTimeout(dimT); dimT=setTimeout(()=>o.classList.add('dim'),4000); }
+
+// ---- Uit ----
+function stop(fromBack){
+  if(!body.classList.contains('lit')) return;
+  clearTimeout(timer); light.classList.remove('dark');
+  body.classList.remove('lit');
+  try{wakeLock?.release();}catch(e){} wakeLock=null;
+  try{if(document.fullscreenElement)document.exitFullscreen();}catch(e){}
+  if(!fromBack && history.state?.lit) history.back();
+  setTimeout(preview,700);
 }
-$('#start').onclick=start;
-$('#stop').onclick=stop;
-$('#back').onclick=()=>{ $('#ctrl').classList.remove('show'); runPattern(); };
+$('#orb').onclick=start;
+addEventListener('popstate',()=>stop(true));
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&body.classList.contains('lit'))stop();});
+addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&body.classList.contains('lit'))lockWake();});
 
-// Ingedrukt houden (0,7 s) toont de knoppen. Zo zet een tik in je armband niets uit.
-const ring=$('#ring'); let holdT=null;
-light.addEventListener('pointerdown',e=>{
-  ring.style.left=e.clientX+'px'; ring.style.top=e.clientY+'px';
-  ring.classList.remove('grow'); void ring.offsetWidth; ring.classList.add('grow');
-  holdT=setTimeout(()=>{
-    ring.classList.remove('grow');
-    clearTimeout(timer); light.classList.remove('dark');
-    $('#ctrl').classList.add('show');
-  },700);
-});
-['pointerup','pointercancel','pointerleave'].forEach(ev=>light.addEventListener(ev,()=>{
-  clearTimeout(holdT); ring.classList.remove('grow');
-}));
+// Vasthouden (0,6 s) om uit te zetten; loslaten annuleert.
+const off=$('#off'); let holdT=null;
+off.addEventListener('pointerdown',e=>{e.preventDefault();dim();off.classList.add('holding');
+  $('#offtxt').textContent='Blijf vasthouden…';
+  holdT=setTimeout(()=>{off.classList.remove('holding');stop();if(navigator.vibrate)navigator.vibrate(30);},600);});
+['pointerup','pointercancel','pointerleave'].forEach(ev=>off.addEventListener(ev,()=>{
+  clearTimeout(holdT);off.classList.remove('holding');$('#offtxt').textContent='Vasthouden om te doven';}));
+off.addEventListener('contextmenu',e=>e.preventDefault());
+light.addEventListener('pointerdown',dim);   // tik op het licht: uitknop even goed zichtbaar
 
-// Wake lock valt weg als je de app even verlaat; opnieuw aanvragen bij terugkeer.
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible' && running) lockWake();
-});
-
-// --- Installeren & offline ---
+// ---- Installeren & offline ----
 let deferred=null;
-addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferred=e; $('#install').style.display='block'; });
-$('#install').onclick=async()=>{ if(!deferred) return; deferred.prompt(); await deferred.userChoice; deferred=null; $('#install').style.display='none'; };
-if('serviceWorker' in navigator){ addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('#install').style.display='block';});
+$('#install').onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;$('#install').style.display='none';};
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
 </html>
