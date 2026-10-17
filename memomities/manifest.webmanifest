@@ -1,0 +1,30 @@
+{
+  "name": "MemoMities",
+  "short_name": "MemoMities",
+  "description": "Spreek iets in, trek een foto of neem geluid op, en stuur het met één tik naar je eigen inbox.",
+  "lang": "nl",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#070b09",
+  "theme_color": "#070b09",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Spreek", "short_name": "Spreek", "url": "./?mode=spreek", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Foto", "short_name": "Foto", "url": "./?mode=foto", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Geluid", "short_name": "Geluid", "url": "./?mode=geluid", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ],
+  "share_target": {
+    "action": "./",
+    "method": "GET",
+    "params": { "title": "title", "text": "text", "url": "url" }
+  }
+}
