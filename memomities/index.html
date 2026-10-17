@@ -101,6 +101,31 @@
   .mini.live{background:rgba(16,185,129,.2);border-color:rgba(52,211,153,.5);color:var(--acc-3);animation:breathe 1.2s infinite}
   @keyframes breathe{50%{box-shadow:0 0 0 6px rgba(16,185,129,.12)}}
 
+  /* Zoeker: de camera draait in de app zelf, zodat de sluiter meteen kan versturen */
+  .viewfinder{flex:1;min-height:0;position:relative;display:none;background:#000}
+  .viewfinder video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .viewfinder .flip{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.4);border-color:rgba(255,255,255,.15);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .viewfinder .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+  .viewfinder .flash.go{animation:flash .45s ease-out}
+  @keyframes flash{0%{opacity:.85}100%{opacity:0}}
+  #pane-foto.cam-on .viewfinder{display:block}
+  #pane-foto.cam-on .empty{display:none}
+  #pane-foto.has-photo .viewfinder{display:none}
+
+  /* Schakelaars in de instellingen */
+  .toggle{position:relative;display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;background:var(--glass);
+    border:1px solid var(--line);margin-bottom:10px;cursor:pointer}
+  .toggle span{flex:1}
+  .toggle b{display:block;font-size:.96rem;font-weight:600}
+  .toggle small{display:block;color:var(--faint);font-size:.78rem;line-height:1.4;margin-top:3px}
+  .toggle input{position:absolute;opacity:0;width:0;height:0}
+  .toggle i{position:relative;width:48px;height:28px;border-radius:999px;background:var(--glass-2);flex-shrink:0;transition:background .25s}
+  .toggle i::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .3s var(--spring)}
+  .toggle input:checked + i{background:var(--acc)}
+  .toggle input:checked + i::after{transform:translateX(20px)}
+  .toggles{margin:4px 0 20px}
+
   /* Geluid */
   .sound{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px}
   .clock{font-size:3.4rem;font-weight:300;letter-spacing:-.04em;font-variant-numeric:tabular-nums;transition:color .3s}
@@ -249,6 +274,8 @@
         <h2>Een beeld zegt meer</h2>
         <p>Een whiteboard, een affiche, een parkeerplek. Tik op de sluiter.</p>
       </div>
+      <div class="viewfinder"><video id="viewer" playsinline muted autoplay></video><span class="flash" id="flash"></span>
+        <button class="mini flip" id="flipBtn" aria-label="Andere camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9.5 12.5a2.6 2.6 0 0 1 4.6-1.6M14.5 14a2.6 2.6 0 0 1-4.6 1.6M14.6 9.7v1.5h-1.5M9.4 17.3v-1.5h1.5"/></svg></button></div>
       <div class="shot"><img id="photo" alt="Je foto"></div>
       <div class="caption"><input id="photoCap" placeholder="Iets erbij zeggen? (mag leeg)" enterkeyhint="send"><button class="mini dict" data-for="photoCap" aria-label="Inspreken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
       <input type="file" id="camInput" accept="image/*" capture="environment" hidden>
@@ -269,7 +296,7 @@
   <p class="status" id="status" aria-live="polite"></p>
 
   <div class="dock">
-    <button class="side hide" id="clearBtn" aria-label="Wissen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <button class="side hide" id="clearBtn" aria-label="Wissen"><svg id="clearIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg></button>
     <button class="orb" id="orb" aria-label="Inspreken"><svg id="orbIcon" viewBox="0 0 24 24"></svg></button>
     <button class="side" id="sendBtn" aria-label="Naar je inbox" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg></button>
   </div>
@@ -288,6 +315,10 @@
     <option value="nl-BE">Nederlands (België)</option><option value="nl-NL">Nederlands (Nederland)</option>
     <option value="fr-BE">Français (Belgique)</option><option value="en-GB">English (UK)</option><option value="en-US">English (US)</option>
     <option value="de-DE">Deutsch</option></select></label>
+  <div class="toggles">
+    <label class="toggle"><span><b>Meteen luisteren</b><small>Open de app en begin te praten. Geen tik op de microfoon nodig.</small></span><input type="checkbox" id="fAuto"><i></i></label>
+    <label class="toggle"><span><b>Sluiter verstuurt meteen</b><small>Foto trekken of opname stoppen is ook meteen versturen. Een bijschrift zeg of typ je vooraf.</small></span><input type="checkbox" id="fQuick"><i></i></label>
+  </div>
   <button class="btn primary" id="saveSet">Bewaren</button>
   <p class="fine">Dicteren gebeurt door de spraakherkenning van je telefoon zelf (Google op Android, Apple op iPhone). MemoMities heeft geen server en ziet niets van wat je inspreekt.</p>
 </section>
@@ -341,7 +372,7 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem('mm.' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem('mm.' + k, JSON.stringify(v)); } catch (e) {} }
 };
-const cfg = Object.assign({ addr: '', prefix: 'Memo:', lang: 'nl-BE' }, store.get('cfg', {}));
+const cfg = Object.assign({ addr: '', prefix: 'Memo:', lang: 'nl-BE', auto: true, quick: true }, store.get('cfg', {}));
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 
 /* ---------- Kleine hulpjes ---------- */
@@ -370,6 +401,8 @@ const ICON = {
   stop: '<rect x="6.5" y="6.5" width="11" height="11" rx="2.5" fill="currentColor"/>',
   cam: '<path d="M3.5 8h3.2l2-3h6.6l2 3h3.2v11.5H3.5z" fill="currentColor"/><circle cx="12" cy="13.2" r="3.6" fill="#0d6b4f"/>',
   rec: '<circle cx="12" cy="12" r="6.5" fill="#be123c"/>',
+  send: '<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>',
+  shutter: '<circle cx="12" cy="12" r="8.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="5.6" fill="currentColor"/>',
   keys: '<rect x="3" y="6" width="18" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M8 14h8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'
 };
 
@@ -382,7 +415,8 @@ const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let srBroken = !SR || store.get('srBroken', false);
 const Dict = {
   rec: null, on: false, el: null, base: '', committed: '', fin: '', interim: '', token: 0,
-  start(el) {
+  start(el, auto) {
+    this.auto = !!auto;
     this.el = el; this.base = el.value.replace(/\s+$/, ''); this.committed = ''; this.on = true; this.token++;
     this.spin(this.token);
     document.body.classList.add('live'); el.classList.add('live');
@@ -400,10 +434,12 @@ const Dict = {
       if (tok !== this.token) return;
       let f = '', i = '';
       for (let k = 0; k < e.results.length; k++) { const t = e.results[k][0].transcript; if (e.results[k].isFinal) f += t; else i += t; }
-      this.fin = f; this.interim = i; this.paint(); bump();
+      this.auto = false; this.fin = f; this.interim = i; this.paint(); bump();
     };
     r.onerror = e => {
       if (tok !== this.token) return;
+      // Vanzelf gestart en meteen geweigerd (bijvoorbeeld iPhone zonder tik): stil terugvallen op de microfoonknop.
+      if (this.auto && e.error !== 'no-speech' && e.error !== 'aborted') return this.fail(null);
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
         if (e.error === 'service-not-allowed') { srBroken = true; store.set('srBroken', true); }
         this.fail(e.error === 'not-allowed' ? 'Geef MemoMities toegang tot je microfoon in de instellingen van je telefoon.' : 'Dicteren werkt hier niet. Tik in het tekstvak en gebruik de microfoon van je toetsenbord.');
@@ -421,7 +457,7 @@ const Dict = {
       if (this.on) { setTimeout(() => { if (this.on && tok === this.token) this.spin(tok); }, IS_ANDROID ? 60 : 250); }
       else this.finish();
     };
-    try { r.start(); this.rec = r; } catch (e) { this.fail('Dicteren kon niet starten.'); }
+    try { r.start(); this.rec = r; } catch (e) { this.fail(this.auto ? null : 'Dicteren kon niet starten.'); }
   },
   current() { return joinText(joinText(this.base, this.committed), this.fin || this.interim); },
   paint() {
@@ -449,7 +485,7 @@ const Dict = {
     $$('.mini.dict').forEach(b => b.classList.remove('live'));
     saveDraft(); render();
   },
-  fail(msg) { this.on = false; this.token++; try { this.rec && this.rec.abort(); } catch (e) {} this.finish(); toast(msg); render(); }
+  fail(msg) { this.on = false; this.token++; try { this.rec && this.rec.abort(); } catch (e) {} this.finish(); if (msg) toast(msg); render(); }
 };
 const bump = () => { orb.classList.add('bump'); clearTimeout(bump.t); bump.t = setTimeout(() => orb.classList.remove('bump'), 120); };
 
@@ -464,13 +500,52 @@ cam.addEventListener('change', async () => {
   const f = cam.files && cam.files[0]; cam.value = '';
   if (!f) return;
   status.innerHTML = 'Foto verkleinen…';
-  const blob = await shrink(f);
+  setPhoto(await shrink(f));
+});
+function setPhoto(blob) {
   if (S.photo) URL.revokeObjectURL(S.photo.url);
   S.photo = { blob, url: URL.createObjectURL(blob), when: new Date() };
   $('#photo').src = S.photo.url;
   $('#pane-foto').classList.add('has-photo');
   buzz(10); render();
-});
+}
+const viewer = $('#viewer'), paneFoto = $('#pane-foto');
+const Cam = {
+  stream: null, facing: 'environment', busy: false,
+  async start() {
+    if (this.stream || this.busy || S.photo || S.mode !== 'foto' || store.get('camOff', false)) return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+    this.busy = true;
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ audio: false,
+        video: { facingMode: { ideal: this.facing }, width: { ideal: 2560 }, height: { ideal: 1920 } } });
+    } catch (e) {
+      this.stream = null; this.busy = false;
+      if (e && e.name === 'NotAllowedError') store.set('camOff', true); // geweigerd: voortaan de gewone camera-app
+      render(); return;
+    }
+    this.busy = false;
+    if (S.mode !== 'foto' || S.photo || document.hidden) return this.stop();
+    viewer.srcObject = this.stream;
+    try { await viewer.play(); } catch (e) {}
+    paneFoto.classList.add('cam-on'); render();
+  },
+  stop() {
+    this.stream && this.stream.getTracks().forEach(t => t.stop());
+    this.stream = null; viewer.srcObject = null; paneFoto.classList.remove('cam-on'); render();
+  },
+  on() { return !!this.stream && paneFoto.classList.contains('cam-on'); },
+  async shoot() {
+    const w = viewer.videoWidth, h = viewer.videoHeight;
+    if (!w) return null;
+    const k = Math.min(1, 2048 / Math.max(w, h)), c = document.createElement('canvas');
+    c.width = Math.round(w * k); c.height = Math.round(h * k);
+    c.getContext('2d').drawImage(viewer, 0, 0, c.width, c.height);
+    const f = $('#flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
+    return new Promise(ok => c.toBlob(ok, 'image/jpeg', .88));
+  }
+};
+$('#flipBtn').addEventListener('click', () => { Cam.facing = Cam.facing === 'environment' ? 'user' : 'environment'; Cam.stop(); Cam.start(); buzz(6); });
 async function shrink(file) {
   // Telefoonfoto's zijn al snel 4 tot 8 MB. Verkleind tot 2048 px blijft alles leesbaar en blijft je mailbox licht.
   try {
@@ -547,6 +622,7 @@ const Rec = {
     player.src = S.audio.url;
     clock.textContent = mmss(dur); drawWave(this.levels, false);
     $('#pane-geluid').classList.add('has-audio'); render();
+    if (cfg.quick && S.mode === 'geluid') send();
   }
 };
 async function toWav(blob) {
@@ -600,6 +676,7 @@ function setMode(m, quiet) {
   $$('.seg button').forEach((b, i) => { const on = b.dataset.mode === m; b.setAttribute('aria-selected', on); if (on) $('.seg .knob').style.transform = `translateX(${i * 100}%)`; });
   $$('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-' + m));
   if (m === 'geluid') requestAnimationFrame(() => drawWave(S.audio ? Rec.levels : [], false));
+  if (m === 'foto') Cam.start(); else if (Cam.stream) Cam.stop();
   buzz(6); render();
 }
 $$('.seg button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
@@ -614,22 +691,28 @@ function render() {
   const wasReady = send.classList.contains('ready');
   send.classList.toggle('ready', !send.disabled);
   if (!wasReady && !send.disabled) { send.style.animation = 'none'; void send.offsetWidth; send.style.animation = ''; }
-  $('#clearBtn').classList.toggle('hide', !(ready && !live));
+  const liveNote = live && Dict.el === note;
+  // Tijdens het luisteren wordt de grote knop zelf versturen; links kan je pauzeren om bij te werken.
+  $('#clearBtn').classList.toggle('hide', !((ready && !live) || liveNote));
+  $('#clearIcon').innerHTML = liveNote ? '<rect x="7" y="5" width="3.2" height="14" rx="1"/><rect x="13.8" y="5" width="3.2" height="14" rx="1"/>' : '<path d="M18 6 6 18M6 6l12 12"/>';
+  $('#clearBtn').setAttribute('aria-label', liveNote ? 'Pauzeer om bij te werken' : 'Wissen');
+  send.classList.toggle('hide', liveNote);
   $('#livePill').classList.toggle('on', live && Dict.el === note);
   const n = note.value.trim() ? note.value.trim().split(/\s+/).length : 0;
   $('#count').textContent = n ? `${n} ${n === 1 ? 'woord' : 'woorden'}` : '';
 
   let icon = 'mic', label = 'Inspreken', msg = '';
   if (S.mode === 'spreek') {
-    if (live && Dict.el === note) { icon = 'stop'; label = 'Stop'; msg = 'Ik luister. Tik op <b>versturen</b> zodra je klaar bent.'; }
+    if (liveNote) { icon = 'send'; label = 'Verstuur'; msg = Dict.current().trim() ? 'Ik luister. Klaar? <b>Tik en weg.</b>' : 'Ik luister. Zeg het maar.'; }
     else if (srBroken) { icon = 'keys'; label = 'Typen'; msg = ready ? 'Klaar om te versturen.' : 'Tik om te typen, of gebruik de microfoon van je toetsenbord.'; }
     else msg = ready ? 'Tik op de microfoon om verder te spreken.' : 'Tik en spreek. Wat je zegt, wordt tekst.';
   } else if (S.mode === 'foto') {
-    icon = 'cam'; label = S.photo ? 'Opnieuw' : 'Foto trekken';
-    msg = S.photo ? 'Klaar om te versturen.' : 'Tik op de sluiter.';
+    const viewing = Cam.on();
+    icon = viewing ? 'shutter' : 'cam'; label = S.photo ? 'Opnieuw' : 'Foto trekken';
+    msg = S.photo ? 'Klaar om te versturen.' : viewing ? (cfg.quick ? 'Eén tik: foto en weg.' : 'Tik om de foto te trekken.') : 'Tik op de sluiter.';
     if (live) msg = 'Ik luister…';
   } else {
-    if (S.recording) { icon = 'stop'; label = 'Stop opname'; msg = 'Opname loopt. Tik om te stoppen.'; }
+    if (S.recording) { icon = cfg.quick ? 'send' : 'stop'; label = cfg.quick ? 'Stop en verstuur' : 'Stop opname'; msg = cfg.quick ? 'Opname loopt. Tik om te stoppen en te versturen.' : 'Opname loopt. Tik om te stoppen.'; }
     else { icon = 'rec'; label = 'Opnemen'; msg = S.audio ? `Klaar om te versturen (${mmss(S.audio.dur)}).` : 'Tik om op te nemen.'; }
   }
   orbIcon.innerHTML = ICON[icon]; orb.setAttribute('aria-label', label);
@@ -640,12 +723,16 @@ function render() {
 /* ---------- De grote knop ---------- */
 orb.addEventListener('click', () => {
   if (S.mode === 'spreek') {
-    if (Dict.on) return Dict.stop();
+    if (Dict.on && Dict.el === note) return send();
     if (srBroken) { note.focus(); return; }
     Dict.start(note);
   } else if (S.mode === 'foto') {
-    if (Dict.on) Dict.stop();
-    cam.click();
+    if (Dict.on) Dict.cut();
+    if (Cam.on() && !S.photo) {
+      Cam.shoot().then(blob => { if (!blob) return; Cam.stop(); setPhoto(blob); if (cfg.quick) send(); });
+    } else if (S.photo && !store.get('camOff', false) && navigator.mediaDevices) {
+      clearCurrent(); // opnieuw: terug naar de zoeker
+    } else cam.click();
   } else {
     if (S.recording) return Rec.stop();
     // Een bestaande opname gaat niet verloren door één verkeerde tik.
@@ -660,10 +747,10 @@ $$('.mini.dict').forEach(b => {
     Dict.start($('#' + b.dataset.for)); b.classList.add('live');
   });
 });
-$('#clearBtn').addEventListener('click', () => { clearCurrent(); buzz(8); });
+$('#clearBtn').addEventListener('click', () => { if (Dict.on && Dict.el === note) { Dict.stop(); return; } clearCurrent(); buzz(8); });
 function clearCurrent() {
   if (S.mode === 'spreek') { const prev = note.value; note.value = ''; S.spoken = false; saveDraft(); if (prev.trim()) undoToast(prev); }
-  if (S.mode === 'foto') { if (S.photo) URL.revokeObjectURL(S.photo.url); S.photo = null; photoCap.value = ''; $('#pane-foto').classList.remove('has-photo'); $('#photo').removeAttribute('src'); }
+  if (S.mode === 'foto') { if (S.photo) URL.revokeObjectURL(S.photo.url); S.photo = null; photoCap.value = ''; $('#pane-foto').classList.remove('has-photo'); $('#photo').removeAttribute('src'); Cam.start(); }
   if (S.mode === 'geluid') { if (S.audio) URL.revokeObjectURL(S.audio.url); S.audio = null; audioCap.value = ''; player.removeAttribute('src'); clock.textContent = '0:00'; Rec.levels = []; drawWave([], false); $('#pane-geluid').classList.remove('has-audio'); }
   render();
 }
@@ -690,6 +777,7 @@ async function send() {
     const subj = subject(text, 'memo');
     openMail(subj, text + footer(now, S.spoken ? 'Ingesproken' : 'Genoteerd'));
     remember({ kind: 'spreek', subj, text });
+    clearTimeout(draftT); store.set('draft', null);
     showDone('mail');
   } else if (S.mode === 'foto') {
     if (!S.photo) return;
@@ -727,6 +815,7 @@ async function shareFile(file, subj, body, hist) {
       remember(hist); showDone('share');
     } catch (e) {
       if (e && e.name === 'AbortError') toast('Niet verstuurd. Je memo staat er nog.');
+      else if (e && e.name === 'NotAllowedError') { render(); toast('Tik op versturen om te delen.'); }
       else fallbackDownload(file, subj, body, hist);
     }
   } else fallbackDownload(file, subj, body, hist);
@@ -752,6 +841,7 @@ $('#newBtn').addEventListener('click', () => {
   $('#done').classList.remove('on');
   clearCurrent();
   const t = $('#toast'); t.classList.remove('on'); t.style.pointerEvents = '';
+  if (S.mode === 'spreek' && cfg.auto && !srBroken) Dict.start(note); // de tik zelf start het luisteren
 });
 $('#backBtn').addEventListener('click', () => $('#done').classList.remove('on'));
 
@@ -789,6 +879,8 @@ function openSheet(k) {
   if (Dict.on) Dict.stop();
   if (k === 'set') {
     $('#fAddr').value = cfg.addr; $('#fPrefix').value = cfg.prefix; $('#fLang').value = cfg.lang;
+    $('#fAuto').checked = cfg.auto; $('#fQuick').checked = cfg.quick;
+    $('#fAuto').closest('.toggle').style.display = srBroken ? 'none' : '';
     $('#setTitle').textContent = cfg.addr ? 'Instellingen' : 'Waar moet het heen?';
     $('#setLead').textContent = cfg.addr ? 'Je memo\'s gaan naar dit adres.' : 'Eén adres, en je memo\'s landen daar. Zet het één keer goed.';
     validate();
@@ -824,8 +916,11 @@ $('#saveSet').addEventListener('click', () => {
   cfg.addr = $('#fAddr').value.split(',').map(s => s.trim()).filter(Boolean).join(', ');
   cfg.prefix = $('#fPrefix').value.trim();
   cfg.lang = $('#fLang').value;
+  cfg.auto = $('#fAuto').checked; cfg.quick = $('#fQuick').checked;
   store.set('cfg', cfg); closeSheets(); render(); buzz(10);
-  toast(first ? 'Ingesteld. Tik op de microfoon en spreek.' : 'Bewaard.');
+  if (first && S.mode === 'spreek' && cfg.auto && !srBroken) { Dict.start(note); toast('Ingesteld. Ik luister al: zeg het maar.'); }
+  else toast(first ? 'Ingesteld. Tik op de microfoon en spreek.' : 'Bewaard.');
+  if (S.mode === 'foto') Cam.start();
 });
 
 /* ---------- Installeren ---------- */
@@ -852,9 +947,13 @@ if (q.toString()) history.replaceState(null, '', location.pathname);
 setMode(['spreek', 'foto', 'geluid'].includes(startMode) ? startMode : 'spreek', true);
 drawWave([], false);
 addEventListener('resize', () => { if (S.mode === 'geluid' && !S.recording) drawWave(S.audio ? Rec.levels : [], false); });
-document.addEventListener('visibilitychange', () => { if (document.hidden && Dict.on) Dict.stop(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { if (Dict.on) Dict.stop(); if (Cam.stream) Cam.stop(); }
+  else if (S.mode === 'foto' && !S.photo && !$('#done').classList.contains('on')) Cam.start();
+});
 if (!cfg.addr) setTimeout(() => openSheet('set'), 350);
 else if (shared) toast('Gedeeld en klaar. Tik op versturen.');
+else if (S.mode === 'spreek' && cfg.auto && !srBroken) Dict.start(note, true);
 render();
 })();
 </script>
