@@ -22,7 +22,7 @@
 <style>
   :root{
     --bg:#070b09; --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.09);
-    --line:rgba(255,255,255,.085); --text:#eef5f1; --muted:rgba(238,245,241,.5); --faint:rgba(238,245,241,.28);
+    --line:rgba(255,255,255,.085); --text:#eef5f1; --muted:rgba(238,245,241,.66); --faint:rgba(238,245,241,.28);
     --acc:#10b981; --acc-2:#34d399; --acc-3:#a7f3d0; --rec:#fb7185;
     --ease:cubic-bezier(.22,1,.36,1); --spring:cubic-bezier(.34,1.56,.64,1);
     --sans:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
@@ -32,6 +32,7 @@
     -webkit-font-smoothing:antialiased}
   button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-action:manipulation}
   input,textarea,select{font:inherit;color:inherit}
+  :focus-visible{outline:2px solid #047857;outline-offset:2px}
   svg{display:block}
 
   /* Sfeer: een groene gloed onderaan die oplicht als je spreekt */
@@ -47,21 +48,27 @@
 
   /* Kopregel */
   .top{display:flex;align-items:center;gap:8px;min-height:44px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em;font-size:1.06rem;text-decoration:none;color:var(--text)}
-  .brand img{width:30px;height:30px;border-radius:9px}
+  .back{display:inline-flex;align-items:center;gap:6px;min-height:44px;min-width:44px;padding:0 6px 0 2px;font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s;flex-shrink:0}
+  .back:hover{color:var(--text)}
+  .back svg{width:16px;height:16px}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;font-weight:700;letter-spacing:-.02em;font-size:1.06rem;color:var(--text);margin:0}
+  .brand img{width:30px;height:30px;border-radius:9px;flex-shrink:0}
+  .brand span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  @media (max-width:479px){ .back span{display:none} .back{justify-content:center;padding:0} }
+  @media (max-width:399px){ #installChip .lbl{display:none} #installChip{width:44px;padding:0;justify-content:center} .brand img{display:none} }
   .top .sp{flex:1}
-  .chip{display:flex;align-items:center;gap:7px;height:40px;padding:0 13px;border-radius:999px;font-size:.84rem;font-weight:600;
+  .chip{display:flex;align-items:center;gap:7px;height:44px;padding:0 13px;flex-shrink:0;border-radius:999px;font-size:.84rem;font-weight:600;
     background:var(--glass);border:1px solid var(--line);transition:background .25s}
   .chip:active{background:var(--glass-2)}
   .chip svg{width:18px;height:18px}
-  .chip.icon{width:40px;padding:0;justify-content:center}
+  .chip.icon{width:44px;padding:0;justify-content:center}
   .chip.acc{background:rgba(16,185,129,.14);border-color:rgba(52,211,153,.35);color:var(--acc-3)}
   #installChip{display:none}
 
   /* Modus-schakelaar */
   .seg{position:relative;display:grid;grid-template-columns:repeat(3,1fr);padding:4px;border-radius:16px;
     background:var(--glass);border:1px solid var(--line)}
-  .seg button{position:relative;z-index:1;height:40px;border-radius:12px;font-size:.9rem;font-weight:600;color:var(--muted);
+  .seg button{position:relative;z-index:1;height:44px;min-width:0;border-radius:12px;font-size:.9rem;font-weight:600;color:var(--muted);
     display:flex;align-items:center;justify-content:center;gap:7px;transition:color .3s}
   .seg button svg{width:17px;height:17px}
   .seg button[aria-selected="true"]{color:var(--text)}
@@ -80,7 +87,7 @@
     font-size:1.42rem;line-height:1.38;font-weight:500;letter-spacing:-.015em;color:var(--text)}
   #note::placeholder{color:var(--faint)}
   #note.live{caret-color:transparent}
-  .meta{display:flex;align-items:center;gap:8px;padding:0 22px 16px;font-size:.78rem;color:var(--faint);min-height:32px}
+  .meta{display:flex;align-items:center;gap:8px;padding:0 22px 16px;font-size:.78rem;color:var(--muted);min-height:32px}
   .meta .sp{flex:1}
   .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(16,185,129,.12);
     color:var(--acc-3);font-weight:600;opacity:0;transition:opacity .3s}
@@ -100,7 +107,7 @@
   .has-photo .shot{display:block}
   .has-photo .empty{display:none}
   .caption{display:flex;align-items:center;gap:8px;padding:10px 10px 10px 18px;border-top:1px solid var(--line);background:rgba(7,11,9,.6)}
-  .caption input{flex:1;min-width:0;height:44px;border:0;outline:0;background:transparent;font-size:1rem}
+  .caption input{flex:1;min-width:0;height:44px;border:0;background:transparent;font-size:1rem;border-radius:10px}
   .caption input::placeholder{color:var(--faint)}
   .mini{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--glass);border:1px solid var(--line);flex-shrink:0}
   .mini svg{width:20px;height:20px}
@@ -124,8 +131,9 @@
     border:1px solid var(--line);margin-bottom:10px;cursor:pointer}
   .toggle span{flex:1}
   .toggle b{display:block;font-size:.96rem;font-weight:600}
-  .toggle small{display:block;color:var(--faint);font-size:.78rem;line-height:1.4;margin-top:3px}
+  .toggle small{display:block;color:var(--muted);font-size:.78rem;line-height:1.4;margin-top:3px}
   .toggle input{position:absolute;opacity:0;width:0;height:0}
+  .toggle:has(input:focus-visible){outline:2px solid #047857;outline-offset:2px}
   .toggle i{position:relative;width:48px;height:28px;border-radius:999px;background:var(--glass-2);flex-shrink:0;transition:background .25s}
   .toggle i::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .3s var(--spring)}
   .toggle input:checked + i{background:var(--acc)}
@@ -146,6 +154,10 @@
   /* Status en dok */
   .status{text-align:center;font-size:.86rem;color:var(--muted);min-height:1.2em;transition:color .3s}
   .status b{color:var(--text);font-weight:600}
+  .setup{display:none;align-self:center;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;font-size:.9rem;font-weight:600;
+    background:rgba(16,185,129,.14);border:1px solid rgba(52,211,153,.35);color:var(--acc-3)}
+  .setup svg{width:18px;height:18px}
+  .setup.on{display:inline-flex}
   .dock{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 10px}
   .side{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:var(--glass);border:1px solid var(--line);
     transition:opacity .3s var(--ease), transform .4s var(--spring), background .25s}
@@ -188,9 +200,9 @@
   .field{display:block;margin-bottom:16px}
   .field span{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:7px;letter-spacing:.02em}
   .field input,.field select{width:100%;height:52px;padding:0 16px;border-radius:14px;border:1px solid var(--line);background:var(--glass);
-    outline:0;font-size:1.02rem;-webkit-appearance:none;appearance:none}
+    font-size:1.02rem;-webkit-appearance:none;appearance:none}
   .field input:focus,.field select:focus{border-color:rgba(52,211,153,.6);background:rgba(16,185,129,.06)}
-  .field small{display:block;color:var(--faint);font-size:.78rem;margin-top:7px;line-height:1.45}
+  .field small{display:block;color:var(--muted);font-size:.78rem;margin-top:7px;line-height:1.45}
   .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23889' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat:no-repeat;background-position:right 14px center;background-size:18px}
   .field select option{background:#0e1512}
@@ -199,7 +211,7 @@
   .btn.primary:disabled{opacity:.35;box-shadow:none}
   .btn.ghost{background:var(--glass);border:1px solid var(--line);margin-top:10px}
   .btn svg{width:20px;height:20px}
-  .fine{color:var(--faint);font-size:.76rem;line-height:1.5;margin-top:18px}
+  .fine{color:var(--muted);font-size:.76rem;line-height:1.5;margin-top:18px}
   .lock{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:rgba(16,185,129,.07);
     border:1px solid rgba(52,211,153,.18);color:var(--acc-3);font-size:.82rem;line-height:1.45;margin-bottom:20px}
   .lock svg{width:18px;height:18px;flex-shrink:0;margin-top:1px}
@@ -210,8 +222,8 @@
   .hist .k svg{width:17px;height:17px;color:var(--acc-2)}
   .hist .tx{flex:1;min-width:0}
   .hist .s{font-size:.92rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .hist .d{font-size:.76rem;color:var(--faint);margin-top:2px}
-  .hist button{height:36px;padding:0 12px;border-radius:11px;background:var(--glass-2);font-size:.8rem;font-weight:600;flex-shrink:0}
+  .hist .d{font-size:.76rem;color:var(--muted);margin-top:2px}
+  .hist button{height:44px;padding:0 14px;border-radius:11px;background:var(--glass-2);font-size:.8rem;font-weight:600;flex-shrink:0}
   .nohist{color:var(--muted);text-align:center;padding:28px 0;font-size:.92rem}
 
   .steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px;margin-bottom:6px}
@@ -254,9 +266,10 @@
 <body>
 <div id="app">
   <header class="top">
-    <a class="brand" href="../" aria-label="Terug naar Zakmes"><img src="icon.svg" alt="">MemoMities</a>
+    <a class="back" href="../" aria-label="Terug naar Zakmes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Zakmes</span></a>
+    <h1 class="brand"><img src="icon.svg" alt=""><span>MemoMities</span></h1>
     <span class="sp"></span>
-    <button class="chip acc" id="installChip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg>Installeer</button>
+    <button class="chip acc" id="installChip" aria-label="Installeer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg><span class="lbl">Installeer</span></button>
     <button class="chip icon" id="histBtn" aria-label="Geschiedenis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></button>
     <button class="chip icon" id="setBtn" aria-label="Instellingen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
   </header>
@@ -283,7 +296,7 @@
       <div class="viewfinder"><video id="viewer" playsinline muted autoplay></video><span class="flash" id="flash"></span>
         <button class="mini flip" id="flipBtn" aria-label="Andere camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9.5 12.5a2.6 2.6 0 0 1 4.6-1.6M14.5 14a2.6 2.6 0 0 1-4.6 1.6M14.6 9.7v1.5h-1.5M9.4 17.3v-1.5h1.5"/></svg></button></div>
       <div class="shot"><img id="photo" alt="Je foto"></div>
-      <div class="caption"><input id="photoCap" placeholder="Iets erbij zeggen? (mag leeg)" enterkeyhint="send"><button class="mini dict" data-for="photoCap" aria-label="Inspreken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
+      <div class="caption"><input id="photoCap" aria-label="Bijschrift bij de foto" placeholder="Iets erbij zeggen? (mag leeg)" enterkeyhint="send"><button class="mini dict" data-for="photoCap" aria-label="Inspreken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
       <input type="file" id="camInput" accept="image/*" capture="environment" hidden>
     </section>
 
@@ -295,11 +308,12 @@
         <p class="hint" id="soundHint">Voor als tekst niet volstaat: een melodie, een sfeer, een gesprek.</p>
         <audio id="player" preload="auto"></audio>
       </div>
-      <div class="caption"><input id="audioCap" placeholder="Waarover gaat het? (mag leeg)" enterkeyhint="send"></div>
+      <div class="caption"><input id="audioCap" aria-label="Bijschrift bij de opname" placeholder="Waarover gaat het? (mag leeg)" enterkeyhint="send"></div>
     </section>
   </main>
 
   <p class="status" id="status" aria-live="polite"></p>
+  <button class="setup" id="setupBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Stel je e-mailadres in</button>
 
   <div class="dock">
     <button class="side hide" id="clearBtn" aria-label="Wissen"><svg id="clearIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg></button>
@@ -326,6 +340,7 @@
     <label class="toggle"><span><b>Sluiter verstuurt meteen</b><small>Foto trekken of opname stoppen is ook meteen versturen. Een bijschrift zeg of typ je vooraf.</small></span><input type="checkbox" id="fQuick"><i></i></label>
   </div>
   <button class="btn primary" id="saveSet">Bewaren</button>
+  <button class="btn ghost" id="wipeAll">Alles wissen op dit toestel</button>
   <p class="fine">Dicteren gebeurt door de spraakherkenning van je telefoon zelf (Google op Android, Apple op iPhone). MemoMities heeft geen server en ziet niets van wat je inspreekt.</p>
 </section>
 
@@ -683,7 +698,8 @@ function setMode(m, quiet) {
   $$('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-' + m));
   if (m === 'geluid') requestAnimationFrame(() => drawWave(S.audio ? Rec.levels : [], false));
   if (m === 'foto') Cam.start(); else if (Cam.stream) Cam.stop();
-  buzz(6); render();
+  if (!quiet) buzz(6);
+  render();
 }
 $$('.seg button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
 
@@ -722,7 +738,9 @@ function render() {
     else { icon = 'rec'; label = 'Opnemen'; msg = S.audio ? `Klaar om te versturen (${mmss(S.audio.dur)}).` : 'Tik om op te nemen.'; }
   }
   orbIcon.innerHTML = ICON[icon]; orb.setAttribute('aria-label', label);
-  if (!cfg.addr) msg = 'Eerst nog je e-mailadres instellen.';
+  // Nog geen bestemming: geen paneel opdringen, wel zeggen wat er ontbreekt.
+  if (!cfg.addr) msg = ready ? 'Bijna klaar. Bij versturen vragen we eerst waar het heen moet.' : 'Nog geen bestemming ingesteld. ' + msg;
+  $('#setupBtn').classList.toggle('on', !cfg.addr && !live);
   status.innerHTML = msg;
 }
 
@@ -761,7 +779,7 @@ function clearCurrent() {
   render();
 }
 function undoToast(prev) {
-  const t = $('#toast'); t.innerHTML = 'Gewist. <button style="color:var(--acc-2);font-weight:700;margin-left:6px;text-decoration:underline">Herstel</button>';
+  const t = $('#toast'); t.innerHTML = 'Gewist. <button style="color:var(--acc-2);font-weight:700;margin-left:6px;text-decoration:underline;min-height:44px;padding:0 8px">Herstel</button>';
   t.classList.add('on'); t.style.pointerEvents = 'auto';
   t.querySelector('button').onclick = () => { note.value = prev; saveDraft(); render(); t.classList.remove('on'); };
   clearTimeout(toastT); toastT = setTimeout(() => { t.classList.remove('on'); t.style.pointerEvents = ''; }, 4000);
@@ -897,19 +915,29 @@ function openSheet(k) {
   if (k === 'set' && !cfg.addr) setTimeout(() => $('#fAddr').focus(), 450);
 }
 function closeSheets() {
-  if (!cfg.addr && sheets.set.classList.contains('on')) { $('#fAddr').focus(); return; } // eerst een adres
   Object.values(sheets).forEach(s => s.classList.remove('on')); $('#scrim').classList.remove('on');
   document.activeElement && document.activeElement.blur && document.activeElement.blur();
 }
 $('#scrim').addEventListener('click', closeSheets);
 $('#setBtn').addEventListener('click', () => openSheet('set'));
+$('#setupBtn').addEventListener('click', () => openSheet('set'));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#scrim').classList.contains('on')) closeSheets(); });
+// Alles wissen: alle sleutels met het voorvoegsel mm. (adres, voorkeuren, concept, geschiedenis)
+$('#wipeAll').addEventListener('click', () => {
+  if (!$('#wipeAll').dataset.armed) { $('#wipeAll').dataset.armed = '1'; $('#wipeAll').textContent = 'Zeker? Tik nog eens om alles te wissen'; setTimeout(() => { delete $('#wipeAll').dataset.armed; $('#wipeAll').textContent = 'Alles wissen op dit toestel'; }, 4000); return; }
+  try { Object.keys(localStorage).filter(k => k.startsWith('mm.')).forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  Object.assign(cfg, { addr: '', prefix: 'Memo:', lang: 'nl-BE', auto: true, quick: true });
+  note.value = ''; S.spoken = false; clearTimeout(draftT);
+  delete $('#wipeAll').dataset.armed; $('#wipeAll').textContent = 'Alles wissen op dit toestel';
+  closeSheets(); render(); toast('Alles gewist op dit toestel.');
+});
 $('#histBtn').addEventListener('click', () => openSheet('hist'));
 $('#iosOk').addEventListener('click', closeSheets);
 // Veeg een blad naar beneden om het te sluiten
 Object.values(sheets).forEach(sh => {
   let y0 = null, dy = 0;
   sh.addEventListener('touchstart', e => { if (sh.scrollTop > 0) return; y0 = e.touches[0].clientY; dy = 0; sh.style.transition = 'none'; }, { passive: true });
-  sh.addEventListener('touchmove', e => { if (y0 === null) return; dy = Math.max(0, e.touches[0].clientY - y0); if (dy > 0 && !(sh === sheets.set && !cfg.addr)) sh.style.transform = `translateY(${dy}px)`; }, { passive: true });
+  sh.addEventListener('touchmove', e => { if (y0 === null) return; dy = Math.max(0, e.touches[0].clientY - y0); if (dy > 0) sh.style.transform = `translateY(${dy}px)`; }, { passive: true });
   sh.addEventListener('touchend', () => { if (y0 === null) return; sh.style.transition = ''; sh.style.transform = ''; if (dy > 90) closeSheets(); y0 = null; });
 });
 
@@ -957,7 +985,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { if (Dict.on) Dict.stop(); if (Cam.stream) Cam.stop(); }
   else if (S.mode === 'foto' && !S.photo && !$('#done').classList.contains('on')) Cam.start();
 });
-if (!cfg.addr) setTimeout(() => openSheet('set'), 350);
+if (!cfg.addr) { /* geen paneel bij het eerste bezoek: de lege toestand toont de knop om in te stellen */ }
 else if (shared) toast('Gedeeld en klaar. Tik op versturen.');
 else if (S.mode === 'spreek' && cfg.auto && !srBroken) Dict.start(note, true);
 render();

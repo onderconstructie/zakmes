@@ -54,14 +54,15 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            min-height: 44px;
             font-size: 0.875rem;
-            color: var(--slate-400);
+            color: var(--slate-500);
             text-decoration: none;
             transition: color 0.2s;
         }
 
         .back-link:hover {
-            color: var(--accent);
+            color: #047857;
         }
 
         .back-link svg {
@@ -106,7 +107,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.12em;
-            color: var(--slate-400);
+            color: var(--slate-500);
             margin-bottom: 1.25rem;
         }
 
@@ -185,7 +186,7 @@
         }
 
         .tool-card:hover .tool-arrow {
-            background: var(--accent);
+            background: #047857;
             transform: translateX(2px);
         }
 
@@ -213,11 +214,14 @@
             align-items: center;
             gap: 0.625rem;
             font-size: 0.8125rem;
-            color: var(--slate-400);
+            color: var(--slate-500);
         }
 
         .footer-badge a {
-            color: var(--slate-400);
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
+            color: var(--slate-500);
             text-decoration: none;
             transition: color 0.2s;
         }
@@ -239,6 +243,15 @@
             color: var(--slate-600);
         }
 
+        :focus-visible {
+            outline: 2px solid #047857;
+            outline-offset: 2px;
+        }
+
+        .tool-card:hover .tool-title {
+            color: #047857;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
@@ -252,7 +265,9 @@
 
             .back-link {
                 position: static;
-                margin-bottom: 1.5rem;
+                display: flex;
+                width: fit-content;
+                margin: 0 auto 1rem;
                 justify-content: center;
             }
 
@@ -264,8 +279,12 @@
                 padding: 2rem 1.25rem 3rem;
             }
 
+            .tools {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
             .tool-card {
-                grid-template-columns: 48px 1fr;
+                grid-template-columns: 48px minmax(0, 1fr);
                 gap: 1rem;
                 padding: 1.25rem;
             }
@@ -288,8 +307,8 @@
 </head>
 <body>
     <header class="header">
-        <a href="https://onderconstructie.github.io/" class="back-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <a href="https://onderconstructie.github.io/" class="back-link" aria-label="Terug naar Onder Constructie">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
             Onder Constructie
