@@ -358,7 +358,7 @@
   <h2 id="iosTitle">Zet MemoMities op je beginscherm</h2>
   <p class="lead">Dan opent het als een echte app, zonder adresbalk, in één tik.</p>
   <ol class="steps">
-    <li><span>Tik onderaan in Safari op <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg> Deel</span></li>
+    <li><span>Tik in je browser op de deelknop <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg></span></li>
     <li>Kies <b>&nbsp;Zet op beginscherm</b></li>
     <li>Open MemoMities via het nieuwe icoon en vul daar je adres in</li>
   </ol>
@@ -449,7 +449,7 @@ const Dict = {
     let r;
     try { r = new SR(); } catch (e) { return this.fail('Dicteren lukt niet op dit toestel.'); }
     r.lang = cfg.lang; r.interimResults = true; r.maxAlternatives = 1;
-    // Android geeft bij doorlopend luisteren dubbele zinnen: daar korte sessies die vanzelf herstarten.
+    // Sommige telefoons geven bij doorlopend luisteren dubbele zinnen: daar korte sessies die vanzelf herstarten.
     r.continuous = !IS_ANDROID;
     this.fin = ''; this.interim = '';
     r.onresult = e => {
@@ -460,7 +460,7 @@ const Dict = {
     };
     r.onerror = e => {
       if (tok !== this.token) return;
-      // Vanzelf gestart en meteen geweigerd (bijvoorbeeld iPhone zonder tik): stil terugvallen op de microfoonknop.
+      // Vanzelf gestart en meteen geweigerd (bijvoorbeeld zonder tik): stil terugvallen op de microfoonknop.
       if (this.auto && e.error !== 'no-speech' && e.error !== 'aborted') return this.fail(null);
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
         if (e.error === 'service-not-allowed') { srBroken = true; store.set('srBroken', true); }
@@ -594,7 +594,7 @@ const Rec = {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
     } catch (e) { return toast('Geef MemoMities toegang tot je microfoon om op te nemen.'); }
     this.mime = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].find(m => MediaRecorder.isTypeSupported(m)) || '';
-    // Chrome kan soms mp4 opnemen maar met een codec die niet overal speelt: daar liever webm, dat zetten we straks om naar wav.
+    // Sommige browsers kunnen mp4 opnemen maar met een codec die niet overal speelt: daar liever webm, dat zetten we straks om naar wav.
     if (!IS_IOS && MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) this.mime = 'audio/webm;codecs=opus';
     this.chunks = []; this.levels = [];
     this.mr = new MediaRecorder(this.stream, this.mime ? { mimeType: this.mime } : undefined);
@@ -834,7 +834,7 @@ function copy(t) { try { navigator.clipboard && navigator.clipboard.writeText(t)
 async function shareFile(file, subj, body, hist) {
   const canFiles = navigator.canShare && (() => { try { return navigator.canShare({ files: [file] }); } catch (e) { return false; } })();
   if (canFiles) {
-    copy(cfg.addr); // niet op wachten: anders vervalt de tik en weigert iOS het deelmenu
+    copy(cfg.addr); // niet op wachten: anders vervalt de tik en weigert de telefoon het deelmenu
     try {
       await navigator.share({ files: [file], title: subj, text: body });
       remember(hist); showDone('share');
@@ -974,7 +974,7 @@ if ('serviceWorker' in navigator) window.addEventListener('load', () => navigato
 const d = store.get('draft', null);
 if (d && d.t) { note.value = d.t; S.spoken = !!d.s; }
 const q = new URLSearchParams(location.search);
-// Gedeeld vanuit een andere app (Android): link of tekst komt in je memo terecht.
+// Gedeeld vanuit een andere app: link of tekst komt in je memo terecht.
 const shared = [q.get('title'), q.get('text'), q.get('url')].filter(Boolean).join('\n');
 if (shared) { note.value = joinText(note.value, shared); S.spoken = false; saveDraft(); }
 const startMode = q.get('mode');
