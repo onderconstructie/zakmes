@@ -17,14 +17,15 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Looplicht">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=&quot;0 0 40 40&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E %3Ccircle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;16&quot; fill=&quot;%23f8fafc&quot; stroke=&quot;%23e2e8f0&quot; stroke-width=&quot;2&quot;/%3E %3Crect x=&quot;15&quot; y=&quot;11&quot; width=&quot;10&quot; height=&quot;18&quot; rx=&quot;2&quot; fill=&quot;%2310b981&quot;/%3E %3Cg stroke=&quot;%2310b981&quot; stroke-width=&quot;1.6&quot; stroke-linecap=&quot;round&quot;%3E %3Cline x1=&quot;11.5&quot; y1=&quot;16&quot; x2=&quot;9&quot; y2=&quot;15&quot;/%3E %3Cline x1=&quot;11.5&quot; y1=&quot;20&quot; x2=&quot;8.5&quot; y2=&quot;20&quot;/%3E %3Cline x1=&quot;11.5&quot; y1=&quot;24&quot; x2=&quot;9&quot; y2=&quot;25&quot;/%3E %3Cline x1=&quot;28.5&quot; y1=&quot;16&quot; x2=&quot;31&quot; y2=&quot;15&quot;/%3E %3Cline x1=&quot;28.5&quot; y1=&quot;20&quot; x2=&quot;31.5&quot; y2=&quot;20&quot;/%3E %3Cline x1=&quot;28.5&quot; y1=&quot;24&quot; x2=&quot;31&quot; y2=&quot;25&quot;/%3E %3C/g%3E %3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=&quot;0 0 40 40&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Ccircle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;18&quot; fill=&quot;%23f8fafc&quot; stroke=&quot;%23e2e8f0&quot; stroke-width=&quot;1.5&quot;/%3E%3Crect x=&quot;15&quot; y=&quot;10.5&quot; width=&quot;10&quot; height=&quot;19&quot; rx=&quot;2.5&quot; fill=&quot;%2310b981&quot;/%3E%3Crect x=&quot;17.2&quot; y=&quot;13&quot; width=&quot;5.6&quot; height=&quot;12.5&quot; rx=&quot;1&quot; fill=&quot;%23ecfdf5&quot;/%3E%3Cg stroke=&quot;%23047857&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot;%3E%3Cline x1=&quot;11.5&quot; y1=&quot;15&quot; x2=&quot;8.5&quot; y2=&quot;13.5&quot;/%3E%3Cline x1=&quot;11.5&quot; y1=&quot;20&quot; x2=&quot;8&quot; y2=&quot;20&quot;/%3E%3Cline x1=&quot;11.5&quot; y1=&quot;25&quot; x2=&quot;8.5&quot; y2=&quot;26.5&quot;/%3E%3Cline x1=&quot;28.5&quot; y1=&quot;15&quot; x2=&quot;31.5&quot; y2=&quot;13.5&quot;/%3E%3Cline x1=&quot;28.5&quot; y1=&quot;20&quot; x2=&quot;32&quot; y2=&quot;20&quot;/%3E%3Cline x1=&quot;28.5&quot; y1=&quot;25&quot; x2=&quot;31.5&quot; y2=&quot;26.5&quot;/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
 <style>
   :root{
     --bg:#06070b; --glass:rgba(255,255,255,.055); --glass-2:rgba(255,255,255,.1);
     --line:rgba(255,255,255,.09); --text:#f5f7fb; --muted:rgba(245,247,251,.66);
     --c:#FFE600; --ease:cubic-bezier(.22,1,.36,1);
-    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+    --sans:'DM Sans',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{height:100%;background:var(--bg);color:var(--text);overscroll-behavior:none;font-family:var(--sans);overflow-x:clip;
@@ -387,7 +388,12 @@ $('#infoChip').onclick=()=>{ openSheet(`
   </ul>
   <button class="ghost" data-close>Sluiten</button>
   <button class="ghost reset" id="resetAll">Instellingen terugzetten</button>`);
-  $('#resetAll').onclick=()=>{ resetAll(); closeSheet(); };
+  // Twee tikken: de eerste vraagt bevestiging, zo zet je niets per ongeluk terug.
+  const rb=$('#resetAll'); let armed=null;
+  rb.onclick=()=>{
+    if(!armed){ rb.textContent='Zeker? Tik nog eens om terug te zetten';
+      armed=setTimeout(()=>{armed=null; rb.textContent='Instellingen terugzetten';},4000); return; }
+    clearTimeout(armed); armed=null; resetAll(); closeSheet(); };
 };
 
 // ---- Installeren ----

@@ -17,15 +17,16 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MemoMities">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=&quot;0 0 40 40&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E %3Ccircle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;16&quot; fill=&quot;%23f8fafc&quot; stroke=&quot;%23e2e8f0&quot; stroke-width=&quot;2&quot;/%3E %3Crect x=&quot;11&quot; y=&quot;14&quot; width=&quot;18&quot; height=&quot;12&quot; rx=&quot;2.5&quot; fill=&quot;%2310b981&quot;/%3E %3Cpath d=&quot;M12.5 15.5 L20 21 L27.5 15.5&quot; stroke=&quot;%23f8fafc&quot; stroke-width=&quot;1.6&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; fill=&quot;none&quot;/%3E %3Ccircle cx=&quot;28.5&quot; cy=&quot;13.5&quot; r=&quot;3.6&quot; fill=&quot;%23f8fafc&quot;/%3E %3Ccircle cx=&quot;28.5&quot; cy=&quot;13.5&quot; r=&quot;2.3&quot; fill=&quot;%2334d399&quot;/%3E %3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=&quot;0 0 40 40&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Ccircle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;18&quot; fill=&quot;%23f8fafc&quot; stroke=&quot;%23e2e8f0&quot; stroke-width=&quot;1.5&quot;/%3E%3Crect x=&quot;10&quot; y=&quot;13&quot; width=&quot;19&quot; height=&quot;14&quot; rx=&quot;2.5&quot; fill=&quot;%2310b981&quot;/%3E%3Cpath d=&quot;M11.5 14.8 L19.5 21 L27.5 14.8&quot; stroke=&quot;%23f8fafc&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/%3E%3Ccircle cx=&quot;29&quot; cy=&quot;13&quot; r=&quot;4.2&quot; fill=&quot;%23f8fafc&quot;/%3E%3Ccircle cx=&quot;29&quot; cy=&quot;13&quot; r=&quot;2.8&quot; fill=&quot;%23047857&quot;/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
 <style>
   :root{
     --bg:#070b09; --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.09);
     --line:rgba(255,255,255,.085); --text:#eef5f1; --muted:rgba(238,245,241,.66); --faint:rgba(238,245,241,.28);
     --acc:#10b981; --acc-2:#34d399; --acc-3:#a7f3d0; --rec:#fb7185;
     --ease:cubic-bezier(.22,1,.36,1); --spring:cubic-bezier(.34,1.56,.64,1);
-    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+    --sans:'DM Sans',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{height:100%;background:var(--bg);color:var(--text);overscroll-behavior:none;font-family:var(--sans);
@@ -54,7 +55,7 @@
   .brand{display:flex;align-items:center;gap:10px;min-width:0;font-weight:700;letter-spacing:-.02em;font-size:1.06rem;color:var(--text);margin:0}
   .brand img{width:30px;height:30px;border-radius:9px;flex-shrink:0}
   .brand span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  @media (max-width:479px){ .back span{display:none} .back{justify-content:center;padding:0} }
+  @media (max-width:479px){ .back{padding:0 4px 0 0} }
   @media (max-width:399px){ #installChip .lbl{display:none} #installChip{width:44px;padding:0;justify-content:center} .brand img{display:none} }
   .top .sp{flex:1}
   .chip{display:flex;align-items:center;gap:7px;height:44px;padding:0 13px;flex-shrink:0;border-radius:999px;font-size:.84rem;font-weight:600;
@@ -266,7 +267,7 @@
 <body>
 <div id="app">
   <header class="top">
-    <a class="back" href="../" aria-label="Terug naar Zakmes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Zakmes</span></a>
+    <a class="back back-link" href="../" aria-label="Terug naar Zakmes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Zakmes</span></a>
     <h1 class="brand"><img src="icon.svg" alt=""><span>MemoMities</span></h1>
     <span class="sp"></span>
     <button class="chip acc" id="installChip" aria-label="Installeer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg><span class="lbl">Installeer</span></button>
@@ -739,7 +740,7 @@ function render() {
   }
   orbIcon.innerHTML = ICON[icon]; orb.setAttribute('aria-label', label);
   // Nog geen bestemming: geen paneel opdringen, wel zeggen wat er ontbreekt.
-  if (!cfg.addr) msg = ready ? 'Bijna klaar. Bij versturen vragen we eerst waar het heen moet.' : 'Nog geen bestemming ingesteld. ' + msg;
+  if (!cfg.addr) msg = ready ? 'Bijna klaar. Bij versturen vragen we eerst waar het heen moet.' : 'Nog geen e-mailadres ingesteld. ' + msg;
   $('#setupBtn').classList.toggle('on', !cfg.addr && !live);
   status.innerHTML = msg;
 }
