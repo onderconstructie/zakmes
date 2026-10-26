@@ -87,6 +87,7 @@
   #note{flex:1;width:100%;resize:none;border:0;outline:0;background:transparent;padding:22px 22px 12px;
     font-size:1.42rem;line-height:1.38;font-weight:500;letter-spacing:-.015em;color:var(--text)}
   #note::placeholder{color:var(--faint)}
+  .card:has(#note:focus-visible){outline:2px solid var(--acc-2);outline-offset:2px}
   #note.live{caret-color:transparent}
   .meta{display:flex;align-items:center;gap:8px;padding:0 22px 16px;font-size:.78rem;color:var(--muted);min-height:32px}
   .meta .sp{flex:1}
@@ -271,7 +272,7 @@
     .toggle input:checked + i{forced-color-adjust:none;background:Highlight}
     .toggle input:checked + i::after{background:Canvas}
     .orb,.side{border:2px solid ButtonText}
-    :focus-visible,.toggle:has(input:focus-visible){outline:3px solid Highlight}
+    :focus-visible,.toggle:has(input:focus-visible),.card:has(#note:focus-visible){outline:3px solid Highlight}
   }
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
   @media (min-height:780px){#note{font-size:1.55rem}.orb{width:104px;height:104px}}
