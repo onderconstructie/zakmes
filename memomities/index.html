@@ -33,7 +33,7 @@
     -webkit-font-smoothing:antialiased}
   button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-action:manipulation}
   input,textarea,select{font:inherit;color:inherit}
-  :focus-visible{outline:2px solid #047857;outline-offset:2px}
+  :focus-visible{outline:2px solid var(--acc-2);outline-offset:2px}
   svg{display:block}
 
   /* Sfeer: een groene gloed onderaan die oplicht als je spreekt */
@@ -134,7 +134,7 @@
   .toggle b{display:block;font-size:.96rem;font-weight:600}
   .toggle small{display:block;color:var(--muted);font-size:.78rem;line-height:1.4;margin-top:3px}
   .toggle input{position:absolute;opacity:0;width:0;height:0}
-  .toggle:has(input:focus-visible){outline:2px solid #047857;outline-offset:2px}
+  .toggle:has(input:focus-visible){outline:2px solid var(--acc-2);outline-offset:2px}
   .toggle i{position:relative;width:48px;height:28px;border-radius:999px;background:var(--glass-2);flex-shrink:0;transition:background .25s}
   .toggle i::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .3s var(--spring)}
   .toggle input:checked + i{background:var(--acc)}
@@ -260,6 +260,19 @@
   .toast.on{opacity:1;transform:translate(-50%,0)}
 
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  /* Hoog contrast: gekozen soort memo en aan/uit-knoppen blijven zichtbaar */
+  @media (forced-colors:active){
+    .seg .knob{display:none}
+    .seg button{border:1px solid ButtonText}
+    .seg button[aria-selected="true"]{border:3px solid Highlight}
+    .seg button[aria-selected="true"]::after{content:"\2713";margin-left:4px}
+    .toggle i{border:1px solid CanvasText}
+    .toggle i::after{forced-color-adjust:none;background:CanvasText}
+    .toggle input:checked + i{forced-color-adjust:none;background:Highlight}
+    .toggle input:checked + i::after{background:Canvas}
+    .orb,.side{border:2px solid ButtonText}
+    :focus-visible,.toggle:has(input:focus-visible){outline:3px solid Highlight}
+  }
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
   @media (min-height:780px){#note{font-size:1.55rem}.orb{width:104px;height:104px}}
 </style>
@@ -394,7 +407,8 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem('mm.' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem('mm.' + k, JSON.stringify(v)); } catch (e) {} }
 };
-const cfg = Object.assign({ addr: '', prefix: 'Memo:', lang: 'nl-BE', auto: true, quick: true }, store.get('cfg', {}));
+// Meteen luisteren staat standaard uit. Wie het zelf aanzette (bewaard in mm.cfg), houdt die keuze.
+const cfg = Object.assign({ addr: '', prefix: 'Memo:', lang: 'nl-BE', auto: false, quick: true }, store.get('cfg', {}));
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 
 /* ---------- Kleine hulpjes ---------- */
@@ -435,9 +449,13 @@ const note = $('#note'), orb = $('#orb'), orbIcon = $('#orbIcon'), status = $('#
 /* ---------- Dictee via de spraakherkenning van het toestel ---------- */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let srBroken = !SR || store.get('srBroken', false);
+// Zonder internet werkt dicteren niet: dan zeggen we dat eerlijk en kan je typen.
+const isOffline = () => navigator.onLine === false;
+const OFFLINE_MSG = 'Geen internet: dicteren lukt nu niet. Typ je memo.';
 const Dict = {
   rec: null, on: false, el: null, base: '', committed: '', fin: '', interim: '', token: 0,
   start(el, auto) {
+    if (isOffline()) { if (!auto) toast(OFFLINE_MSG); render(); return; }
     this.auto = !!auto;
     this.el = el; this.base = el.value.replace(/\s+$/, ''); this.committed = ''; this.on = true; this.token++;
     this.spin(this.token);
@@ -715,19 +733,22 @@ function render() {
   send.classList.toggle('ready', !send.disabled);
   if (!wasReady && !send.disabled) { send.style.animation = 'none'; void send.offsetWidth; send.style.animation = ''; }
   const liveNote = live && Dict.el === note;
-  // Tijdens het luisteren wordt de grote knop zelf versturen; links kan je pauzeren om bij te werken.
-  $('#clearBtn').classList.toggle('hide', !((ready && !live) || liveNote));
-  $('#clearIcon').innerHTML = liveNote ? '<rect x="7" y="5" width="3.2" height="14" rx="1"/><rect x="13.8" y="5" width="3.2" height="14" rx="1"/>' : '<path d="M18 6 6 18M6 6l12 12"/>';
-  $('#clearBtn').setAttribute('aria-label', liveNote ? 'Pauzeer om bij te werken' : 'Wissen');
-  send.classList.toggle('hide', liveNote);
+  // Vaste functies: links wissen, midden de microfoon (of sluiter, opname), rechts versturen.
+  $('#clearBtn').classList.toggle('hide', !(ready && !live));
+  $('#clearIcon').innerHTML = '<path d="M18 6 6 18M6 6l12 12"/>';
+  $('#clearBtn').setAttribute('aria-label', 'Wissen');
+  send.classList.remove('hide');
   $('#livePill').classList.toggle('on', live && Dict.el === note);
   const n = note.value.trim() ? note.value.trim().split(/\s+/).length : 0;
   $('#count').textContent = n ? `${n} ${n === 1 ? 'woord' : 'woorden'}` : '';
 
   let icon = 'mic', label = 'Inspreken', msg = '';
+  const offline = isOffline();
+  if (S.mode === 'spreek' && !srBroken && !offline) orb.setAttribute('aria-pressed', liveNote ? 'true' : 'false'); else orb.removeAttribute('aria-pressed');
   if (S.mode === 'spreek') {
-    if (liveNote) { icon = 'send'; label = 'Verstuur'; msg = Dict.current().trim() ? 'Ik luister. Klaar? <b>Tik en weg.</b>' : 'Ik luister. Zeg het maar.'; }
+    if (liveNote) { icon = 'stop'; label = 'Stop met luisteren'; msg = Dict.current().trim() ? 'Ik luister. Klaar? Tik rechts op <b>versturen</b>.' : 'Ik luister. Zeg het maar.'; }
     else if (srBroken) { icon = 'keys'; label = 'Typen'; msg = ready ? 'Klaar om te versturen.' : 'Tik om te typen, of gebruik de microfoon van je toetsenbord.'; }
+    else if (offline) { icon = 'keys'; label = 'Typen'; msg = ready ? 'Geen internet: dicteren lukt nu niet. Versturen kan wel.' : OFFLINE_MSG; }
     else msg = ready ? 'Tik op de microfoon om verder te spreken.' : 'Tik en spreek. Wat je zegt, wordt tekst.';
   } else if (S.mode === 'foto') {
     const viewing = Cam.on();
@@ -735,7 +756,7 @@ function render() {
     msg = S.photo ? 'Klaar om te versturen.' : viewing ? (cfg.quick ? 'Eén tik: foto en weg.' : 'Tik om de foto te trekken.') : 'Tik op de sluiter.';
     if (live) msg = 'Ik luister…';
   } else {
-    if (S.recording) { icon = cfg.quick ? 'send' : 'stop'; label = cfg.quick ? 'Stop en verstuur' : 'Stop opname'; msg = cfg.quick ? 'Opname loopt. Tik om te stoppen en te versturen.' : 'Opname loopt. Tik om te stoppen.'; }
+    if (S.recording) { icon = 'stop'; label = cfg.quick ? 'Stop en verstuur' : 'Stop opname'; msg = cfg.quick ? 'Opname loopt. Tik om te stoppen en te versturen.' : 'Opname loopt. Tik om te stoppen.'; }
     else { icon = 'rec'; label = 'Opnemen'; msg = S.audio ? `Klaar om te versturen (${mmss(S.audio.dur)}).` : 'Tik om op te nemen.'; }
   }
   orbIcon.innerHTML = ICON[icon]; orb.setAttribute('aria-label', label);
@@ -748,8 +769,8 @@ function render() {
 /* ---------- De grote knop ---------- */
 orb.addEventListener('click', () => {
   if (S.mode === 'spreek') {
-    if (Dict.on && Dict.el === note) return send();
-    if (srBroken) { note.focus(); return; }
+    if (Dict.on && Dict.el === note) return Dict.stop();
+    if (srBroken || isOffline()) { note.focus(); if (isOffline() && !srBroken) toast(OFFLINE_MSG); return; }
     Dict.start(note);
   } else if (S.mode === 'foto') {
     if (Dict.on) Dict.cut();
@@ -769,10 +790,10 @@ $$('.mini.dict').forEach(b => {
   if (srBroken) { b.style.display = 'none'; return; }
   b.addEventListener('click', () => {
     if (Dict.on) return Dict.stop();
-    Dict.start($('#' + b.dataset.for)); b.classList.add('live');
+    Dict.start($('#' + b.dataset.for)); if (Dict.on) b.classList.add('live');
   });
 });
-$('#clearBtn').addEventListener('click', () => { if (Dict.on && Dict.el === note) { Dict.stop(); return; } clearCurrent(); buzz(8); });
+$('#clearBtn').addEventListener('click', () => { if (Dict.on && Dict.el === note) Dict.cut(); clearCurrent(); buzz(8); });
 function clearCurrent() {
   if (S.mode === 'spreek') { const prev = note.value; note.value = ''; S.spoken = false; saveDraft(); if (prev.trim()) undoToast(prev); }
   if (S.mode === 'foto') { if (S.photo) URL.revokeObjectURL(S.photo.url); S.photo = null; photoCap.value = ''; $('#pane-foto').classList.remove('has-photo'); $('#photo').removeAttribute('src'); Cam.start(); }
@@ -866,7 +887,7 @@ $('#newBtn').addEventListener('click', () => {
   $('#done').classList.remove('on');
   clearCurrent();
   const t = $('#toast'); t.classList.remove('on'); t.style.pointerEvents = '';
-  if (S.mode === 'spreek' && cfg.auto && !srBroken) Dict.start(note); // de tik zelf start het luisteren
+  if (S.mode === 'spreek' && cfg.auto && !srBroken && !isOffline()) Dict.start(note); // de tik zelf start het luisteren
 });
 $('#backBtn').addEventListener('click', () => $('#done').classList.remove('on'));
 
@@ -927,7 +948,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#scrim'
 $('#wipeAll').addEventListener('click', () => {
   if (!$('#wipeAll').dataset.armed) { $('#wipeAll').dataset.armed = '1'; $('#wipeAll').textContent = 'Zeker? Tik nog eens om alles te wissen'; setTimeout(() => { delete $('#wipeAll').dataset.armed; $('#wipeAll').textContent = 'Alles wissen op dit toestel'; }, 4000); return; }
   try { Object.keys(localStorage).filter(k => k.startsWith('mm.')).forEach(k => localStorage.removeItem(k)); } catch (e) {}
-  Object.assign(cfg, { addr: '', prefix: 'Memo:', lang: 'nl-BE', auto: true, quick: true });
+  Object.assign(cfg, { addr: '', prefix: 'Memo:', lang: 'nl-BE', auto: false, quick: true });
   note.value = ''; S.spoken = false; clearTimeout(draftT);
   delete $('#wipeAll').dataset.armed; $('#wipeAll').textContent = 'Alles wissen op dit toestel';
   closeSheets(); render(); toast('Alles gewist op dit toestel.');
@@ -953,8 +974,8 @@ $('#saveSet').addEventListener('click', () => {
   cfg.lang = $('#fLang').value;
   cfg.auto = $('#fAuto').checked; cfg.quick = $('#fQuick').checked;
   store.set('cfg', cfg); closeSheets(); render(); buzz(10);
-  if (first && S.mode === 'spreek' && cfg.auto && !srBroken) { Dict.start(note); toast('Ingesteld. Ik luister al: zeg het maar.'); }
-  else toast(first ? 'Ingesteld. Tik op de microfoon en spreek.' : 'Bewaard.');
+  if (first && S.mode === 'spreek' && cfg.auto && !srBroken && !isOffline()) { Dict.start(note); toast('Ingesteld. Ik luister al: zeg het maar.'); }
+  else toast(first ? (note.value.trim() ? 'Ingesteld. Tik op versturen.' : 'Ingesteld. Tik op de microfoon en spreek.') : 'Bewaard.');
   if (S.mode === 'foto') Cam.start();
 });
 
@@ -988,7 +1009,9 @@ document.addEventListener('visibilitychange', () => {
 });
 if (!cfg.addr) { /* geen paneel bij het eerste bezoek: de lege toestand toont de knop om in te stellen */ }
 else if (shared) toast('Gedeeld en klaar. Tik op versturen.');
-else if (S.mode === 'spreek' && cfg.auto && !srBroken) Dict.start(note, true);
+else if (S.mode === 'spreek' && cfg.auto && !srBroken && !isOffline()) Dict.start(note, true);
+addEventListener('online', render);
+addEventListener('offline', () => { if (Dict.on) Dict.cut(); render(); });
 render();
 })();
 </script>
