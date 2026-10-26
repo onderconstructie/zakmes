@@ -276,6 +276,11 @@
   }
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
   @media (min-height:780px){#note{font-size:1.55rem}.orb{width:104px;height:104px}}
+
+/* Soepel op gsm: geen tikvertraging, zichtbare tikfeedback, vensters scrollen de pagina niet mee */
+a, button, summary, select, label, [role="button"], [role="tab"] { touch-action: manipulation; }
+button:not(:disabled):active, summary:active, [role="button"]:active { filter: brightness(0.93); }
+dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscroll-behavior: contain; }
 </style>
 </head>
 <body>
@@ -540,7 +545,7 @@ const cam = $('#camInput');
 cam.addEventListener('change', async () => {
   const f = cam.files && cam.files[0]; cam.value = '';
   if (!f) return;
-  status.innerHTML = 'Foto verkleinen…';
+  setHTML(status, 'Foto verkleinen…');
   setPhoto(await shrink(f));
 });
 function setPhoto(blob) {
@@ -635,7 +640,7 @@ const Rec = {
     let last = 0;
     const tick = now => {
       if (!S.recording) return;
-      clock.textContent = mmss((now - this.t0) / 1000);
+      const t = mmss((now - this.t0) / 1000); if (clock.textContent !== t) clock.textContent = t;
       if (now - last > 50) {
         last = now; let rms = 0;
         if (buf) { this.an.getFloatTimeDomainData(buf); for (let i = 0; i < buf.length; i++) rms += buf[i] * buf[i]; rms = Math.sqrt(rms / buf.length); }
@@ -654,7 +659,7 @@ const Rec = {
     try { this.lock && this.lock.release(); } catch (e) {}
     document.body.classList.remove('rec');
     if (dur < .6 || !this.chunks.length) { toast('Te kort om te bewaren.'); clock.textContent = '0:00'; drawWave([], false); render(); return; }
-    status.innerHTML = 'Opname klaarzetten…';
+    setHTML(status, 'Opname klaarzetten…');
     const type = (this.mr.mimeType || this.mime || 'audio/webm').split(';')[0];
     let blob = new Blob(this.chunks, { type }), ext = type.includes('mp4') ? 'm4a' : type.includes('ogg') ? 'ogg' : 'weba';
     // webm speelt niet overal af; wav wel, op elke telefoon en computer.
@@ -685,7 +690,13 @@ async function toWav(blob) {
     return new Blob([dv], { type: 'audio/wav' });
   } catch (e) { return null; }
 }
-function sizeWave() { const r = wave.getBoundingClientRect(), d = devicePixelRatio || 1; wave.width = Math.max(1, r.width * d); wave.height = Math.max(1, r.height * d); }
+// Canvas alleen opnieuw schalen als de maat echt verandert (meten en schalen per frame kost veel op een trage gsm)
+function sizeWave() {
+  const r = wave.getBoundingClientRect(), d = devicePixelRatio || 1;
+  const w = Math.max(1, Math.round(r.width * d)), h = Math.max(1, Math.round(r.height * d));
+  if (wave.width !== w) wave.width = w;
+  if (wave.height !== h) wave.height = h;
+}
 function drawWave(levels, live) {
   sizeWave();
   const W = wave.width, H = wave.height, d = devicePixelRatio || 1, gap = 3 * d, bw = 3 * d, n = Math.floor(W / (bw + gap));
@@ -726,6 +737,8 @@ $$('.seg button').forEach(b => b.addEventListener('click', () => setMode(b.datas
 /* ---------- Wat staat er klaar? ---------- */
 const photoCap = $('#photoCap'), audioCap = $('#audioCap');
 const hasContent = () => S.mode === 'spreek' ? note.value.trim().length > 0 : S.mode === 'foto' ? !!S.photo : !!S.audio;
+// Alleen bijwerken wat echt verandert: typen blijft vlot, ook met een lange memo
+const setHTML = (el, html) => { if (el.__h !== html) { el.innerHTML = html; el.__h = html; } };
 function render() {
   const live = Dict.on, ready = hasContent() && !S.recording;
   const send = $('#sendBtn');
@@ -736,7 +749,7 @@ function render() {
   const liveNote = live && Dict.el === note;
   // Vaste functies: links wissen, midden de microfoon (of sluiter, opname), rechts versturen.
   $('#clearBtn').classList.toggle('hide', !(ready && !live));
-  $('#clearIcon').innerHTML = '<path d="M18 6 6 18M6 6l12 12"/>';
+  setHTML($('#clearIcon'), '<path d="M18 6 6 18M6 6l12 12"/>');
   $('#clearBtn').setAttribute('aria-label', 'Wissen');
   send.classList.remove('hide');
   $('#livePill').classList.toggle('on', live && Dict.el === note);
@@ -760,11 +773,11 @@ function render() {
     if (S.recording) { icon = 'stop'; label = cfg.quick ? 'Stop en verstuur' : 'Stop opname'; msg = cfg.quick ? 'Opname loopt. Tik om te stoppen en te versturen.' : 'Opname loopt. Tik om te stoppen.'; }
     else { icon = 'rec'; label = 'Opnemen'; msg = S.audio ? `Klaar om te versturen (${mmss(S.audio.dur)}).` : 'Tik om op te nemen.'; }
   }
-  orbIcon.innerHTML = ICON[icon]; orb.setAttribute('aria-label', label);
+  setHTML(orbIcon, ICON[icon]); orb.setAttribute('aria-label', label);
   // Nog geen bestemming: geen paneel opdringen, wel zeggen wat er ontbreekt.
   if (!cfg.addr) msg = ready ? 'Bijna klaar. Bij versturen vragen we eerst waar het heen moet.' : 'Nog geen e-mailadres ingesteld. ' + msg;
   $('#setupBtn').classList.toggle('on', !cfg.addr && !live);
-  status.innerHTML = msg;
+  setHTML(status, msg);
 }
 
 /* ---------- De grote knop ---------- */
@@ -1002,7 +1015,7 @@ if (shared) { note.value = joinText(note.value, shared); S.spoken = false; saveD
 const startMode = q.get('mode');
 if (q.toString()) history.replaceState(null, '', location.pathname);
 setMode(['spreek', 'foto', 'geluid'].includes(startMode) ? startMode : 'spreek', true);
-drawWave([], false);
+// De golf tekenen we pas als het geluidspaneel open is (setMode doet dat): niet meten wat nog verborgen is
 addEventListener('resize', () => { if (S.mode === 'geluid' && !S.recording) drawWave(S.audio ? Rec.levels : [], false); });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { if (Dict.on) Dict.stop(); if (Cam.stream) Cam.stop(); }
