@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-<title>MemoMities – Onder Constructie</title>
+<title>MemoMiles – Onder Constructie</title>
 <meta name="description" content="Spreek iets in, trek een foto of neem geluid op, en stuur het met één tik naar je eigen inbox.">
     <meta name="oc:groep" content="zakmes">
     <meta name="oc:labels" content="vastleggen">
@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MemoMities">
+<meta name="apple-mobile-web-app-title" content="MemoMiles">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=&quot;0 0 40 40&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Ccircle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;18&quot; fill=&quot;%23f8fafc&quot; stroke=&quot;%23e2e8f0&quot; stroke-width=&quot;1.5&quot;/%3E%3Crect x=&quot;10&quot; y=&quot;13&quot; width=&quot;19&quot; height=&quot;14&quot; rx=&quot;2.5&quot; fill=&quot;%2310b981&quot;/%3E%3Cpath d=&quot;M11.5 14.8 L19.5 21 L27.5 14.8&quot; stroke=&quot;%23f8fafc&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/%3E%3Ccircle cx=&quot;29&quot; cy=&quot;13&quot; r=&quot;4.2&quot; fill=&quot;%23f8fafc&quot;/%3E%3Ccircle cx=&quot;29&quot; cy=&quot;13&quot; r=&quot;2.8&quot; fill=&quot;%23047857&quot;/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -287,7 +287,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 <div id="app">
   <header class="top">
     <a class="back back-link" href="../" aria-label="Terug naar Zakmes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Zakmes</span></a>
-    <h1 class="brand"><img src="icon.svg" alt=""><span>MemoMities</span></h1>
+    <h1 class="brand"><img src="icon.svg" alt=""><span>MemoMiles</span></h1>
     <span class="sp"></span>
     <button class="chip acc" id="installChip" aria-label="Installeer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg><span class="lbl">Installeer</span></button>
     <button class="chip icon" id="histBtn" aria-label="Geschiedenis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></button>
@@ -361,7 +361,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
   </div>
   <button class="btn primary" id="saveSet">Bewaren</button>
   <button class="btn ghost" id="wipeAll">Alles wissen op dit toestel</button>
-  <p class="fine">Dicteren gebeurt via de spraakherkenning van je browser of telefoon. Daarvoor gaat je stem meestal naar de maker van je browser of besturingssysteem. Dicteer dus geen vertrouwelijke werkinformatie. MemoMities zelf heeft geen server en bewaart niets van wat je inspreekt.</p>
+  <p class="fine">Dicteren gebeurt via de spraakherkenning van je browser of telefoon. Daarvoor gaat je stem meestal naar de maker van je browser of besturingssysteem. Dicteer dus geen vertrouwelijke werkinformatie. MemoMiles zelf heeft geen server en bewaart niets van wat je inspreekt.</p>
 </section>
 
 <section class="sheet" id="histSheet" role="dialog" aria-labelledby="histTitle">
@@ -374,12 +374,12 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 
 <section class="sheet" id="iosSheet" role="dialog" aria-labelledby="iosTitle">
   <div class="grab"></div>
-  <h2 id="iosTitle">Zet MemoMities op je beginscherm</h2>
+  <h2 id="iosTitle">Zet MemoMiles op je beginscherm</h2>
   <p class="lead">Dan opent het als een echte app, zonder adresbalk, in één tik.</p>
   <ol class="steps">
     <li><span>Tik in je browser op de deelknop <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg></span></li>
     <li>Kies <b>&nbsp;Zet op beginscherm</b></li>
-    <li>Open MemoMities via het nieuwe icoon en vul daar je adres in</li>
+    <li>Open MemoMiles via het nieuwe icoon en vul daar je adres in</li>
   </ol>
   <button class="btn ghost" id="iosOk">Begrepen</button>
 </section>
@@ -488,7 +488,7 @@ const Dict = {
       if (this.auto && e.error !== 'no-speech' && e.error !== 'aborted') return this.fail(null);
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
         if (e.error === 'service-not-allowed') { srBroken = true; store.set('srBroken', true); }
-        this.fail(e.error === 'not-allowed' ? 'Geef MemoMities toegang tot je microfoon in de instellingen van je telefoon.' : 'Dicteren werkt hier niet. Tik in het tekstvak en gebruik de microfoon van je toetsenbord.');
+        this.fail(e.error === 'not-allowed' ? 'Geef MemoMiles toegang tot je microfoon in de instellingen van je telefoon.' : 'Dicteren werkt hier niet. Tik in het tekstvak en gebruik de microfoon van je toetsenbord.');
       } else if (e.error === 'network') {
         this.fail('Dicteren vraagt een internetverbinding. Typen kan altijd.');
       } else if (e.error === 'audio-capture') {
@@ -616,7 +616,7 @@ const Rec = {
     if (!navigator.mediaDevices || !window.MediaRecorder) return toast('Opnemen kan niet in deze browser.');
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-    } catch (e) { return toast('Geef MemoMities toegang tot je microfoon om op te nemen.'); }
+    } catch (e) { return toast('Geef MemoMiles toegang tot je microfoon om op te nemen.'); }
     this.mime = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].find(m => MediaRecorder.isTypeSupported(m)) || '';
     // Sommige browsers kunnen mp4 opnemen maar met een codec die niet overal speelt: daar liever webm, dat zetten we straks om naar wav.
     if (!IS_IOS && MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) this.mime = 'audio/webm;codecs=opus';
@@ -825,7 +825,7 @@ function undoToast(prev) {
 $('#sendBtn').addEventListener('click', send);
 [photoCap, audioCap].forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); i.blur(); } }));
 
-function footer(when, how) { return `\n\n${how} met MemoMities · ${fmtWhen(when)}`; }
+function footer(when, how) { return `\n\n${how} met MemoMiles · ${fmtWhen(when)}`; }
 function subject(body, fallback) { const p = (cfg.prefix || '').trim(); const s = body.trim() ? snippet(body) : fallback; return p ? `${p} ${s}` : s; }
 
 async function send() {
@@ -843,14 +843,14 @@ async function send() {
     if (!S.photo) return;
     const cap = photoCap.value.trim();
     const subj = subject(cap, `foto van ${fmtWhen(S.photo.when)}`);
-    const file = new File([S.photo.blob], `memomities_${stamp(S.photo.when)}.jpg`, { type: S.photo.blob.type || 'image/jpeg' });
+    const file = new File([S.photo.blob], `memomiles_${stamp(S.photo.when)}.jpg`, { type: S.photo.blob.type || 'image/jpeg' });
     await shareFile(file, subj, (cap || 'Foto') + footer(now, 'Gefotografeerd'), { kind: 'foto', subj, text: cap });
   } else {
     if (!S.audio) return;
     const cap = audioCap.value.trim();
     const subj = subject(cap, `opname van ${fmtWhen(S.audio.when)} (${mmss(S.audio.dur)})`);
     const mime = { wav: 'audio/wav', m4a: 'audio/mp4', ogg: 'audio/ogg', weba: 'audio/webm' }[S.audio.ext];
-    const file = new File([S.audio.blob], `memomities_${stamp(S.audio.when)}.${S.audio.ext}`, { type: mime });
+    const file = new File([S.audio.blob], `memomiles_${stamp(S.audio.when)}.${S.audio.ext}`, { type: mime });
     await shareFile(file, subj, (cap || 'Geluidsopname') + ` (${mmss(S.audio.dur)})` + footer(now, 'Opgenomen'), { kind: 'geluid', subj, text: cap });
   }
 }
@@ -997,7 +997,7 @@ $('#saveSet').addEventListener('click', () => {
 let deferred = null;
 const chip = $('#installChip');
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; if (!STANDALONE) chip.style.display = 'flex'; });
-window.addEventListener('appinstalled', () => { chip.style.display = 'none'; toast('MemoMities staat op je beginscherm.'); });
+window.addEventListener('appinstalled', () => { chip.style.display = 'none'; toast('MemoMiles staat op je beginscherm.'); });
 if (IS_IOS && !STANDALONE) chip.style.display = 'flex';
 chip.addEventListener('click', async () => {
   if (deferred) { deferred.prompt(); const r = await deferred.userChoice; deferred = null; if (r.outcome === 'accepted') chip.style.display = 'none'; }
