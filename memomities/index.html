@@ -998,10 +998,18 @@ let deferred = null;
 const chip = $('#installChip');
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; if (!STANDALONE) chip.style.display = 'flex'; });
 window.addEventListener('appinstalled', () => { chip.style.display = 'none'; toast('MemoMiles staat op je beginscherm.'); });
-if (IS_IOS && !STANDALONE) chip.style.display = 'flex';
+if (!STANDALONE) chip.style.display = 'flex';
+if (!IS_IOS) {
+  // Android en computer: geen installatievenster van de browser? Dan tonen we zelf de stappen.
+  const st = $('#iosSheet .steps');
+  st.innerHTML = '<li><span>Tik in je browser rechtsboven op de drie puntjes <b>&nbsp;⋮</b></span></li>' +
+    '<li><span>Kies <b>App installeren</b> of <b>Toevoegen aan startscherm</b></span></li>' +
+    '<li>Open MemoMiles via het nieuwe icoon en vul daar je adres in</li>';
+  st.insertAdjacentHTML('afterend', '<p class="lead" style="margin-top:0.75rem">Zie je daar <b>Openen in app</b>? Dan staat de app al op je toestel, misschien nog onder de oude naam MemoMities. Open hem via dat icoon. Verwijder je dat icoon, dan kan je daarna opnieuw installeren.</p>');
+}
 chip.addEventListener('click', async () => {
   if (deferred) { deferred.prompt(); const r = await deferred.userChoice; deferred = null; if (r.outcome === 'accepted') chip.style.display = 'none'; }
-  else if (IS_IOS) openSheet('ios');
+  else openSheet('ios');
 });
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 
