@@ -1,4 +1,4 @@
-const CACHE = 'looplicht-v11';
+const CACHE = 'looplicht-v12';
 // Ruim alleen eigen, oudere caches op. Andere caches (de app: oc-app-*, andere tools) blijven staan.
 const PREFIX = 'looplicht-';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];

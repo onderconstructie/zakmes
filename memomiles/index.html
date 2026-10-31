@@ -931,7 +931,14 @@ function renderHist() {
     ul.appendChild(li);
   });
 }
-$('#histClear').addEventListener('click', () => { store.set('hist', []); renderHist(); });
+// Twee tikken: de eerste vraagt bevestiging, zo wis je niet per ongeluk je hele lijst.
+let histArmed = null;
+$('#histClear').addEventListener('click', () => {
+  const b = $('#histClear');
+  if (!histArmed) { b.textContent = 'Zeker? Tik nog eens om te wissen'; histArmed = setTimeout(() => { histArmed = null; b.textContent = 'Geschiedenis wissen'; }, 4000); return; }
+  clearTimeout(histArmed); histArmed = null; b.textContent = 'Geschiedenis wissen';
+  store.set('hist', []); renderHist(); toast('Geschiedenis gewist.');
+});
 
 /* ---------- Bladen ---------- */
 const sheets = { set: $('#setSheet'), hist: $('#histSheet'), ios: $('#iosSheet') };
