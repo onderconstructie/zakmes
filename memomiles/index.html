@@ -270,10 +270,10 @@
   .copied.on{display:inline-flex}
   .copied svg{width:16px;height:16px}
 
-  .toast{position:fixed;left:50%;top:calc(64px + env(safe-area-inset-top));z-index:40;transform:translate(-50%,-14px);
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));z-index:40;transform:translate(-50%,14px);
     max-width:calc(100% - 40px);padding:12px 18px;border-radius:12px;background:#1e293b;color:#fff;box-shadow:0 10px 30px rgba(15,23,42,.25);
     font-size:.875rem;line-height:1.4;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s, transform .4s var(--ease)}
-  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .toast.on{opacity:1;transform:translate(-50%,0)} /* Eenheid: melding onderaan in het midden, zoals in de andere tools */
   .toast button{color:#6ee7b7}
 
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
