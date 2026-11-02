@@ -379,7 +379,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
   </div>
   <button class="btn primary" id="saveSet">Bewaren</button>
   <button class="btn ghost" id="wipeAll">Alles wissen op dit toestel</button>
-  <p class="fine">Dicteren gebeurt via de spraakherkenning van je browser of telefoon. Daarvoor gaat je stem meestal naar de maker van je browser of besturingssysteem. Dicteer dus geen vertrouwelijke werkinformatie. MemoMiles zelf heeft geen server en bewaart niets van wat je inspreekt.</p>
+  <p class="fine">Dicteren gebeurt via de spraakherkenning van je browser of telefoon. Daarvoor gaat je stem meestal naar de maker van je browser of besturingssysteem. Dicteer dus geen vertrouwelijke werkinformatie. MemoMiles zelf heeft geen server. Je adres en de tekst van je laatste memo's (Geschiedenis) blijven enkel op dit toestel.</p>
 </section>
 
 <section class="sheet" id="histSheet" role="dialog" aria-labelledby="histTitle">
@@ -681,7 +681,8 @@ const Rec = {
     const type = (this.mr.mimeType || this.mime || 'audio/webm').split(';')[0];
     let blob = new Blob(this.chunks, { type }), ext = type.includes('mp4') ? 'm4a' : type.includes('ogg') ? 'ogg' : 'weba';
     // webm speelt niet overal af; wav wel, op elke telefoon en computer.
-    if (ext !== 'm4a' && dur < 8 * 60) { const w = await toWav(blob); if (w) { blob = w; ext = 'wav'; } }
+    // Maar wav is groot (ongeveer 2,6 MB per minuut): boven 4 minuten past het niet meer in elke mailbox, dan blijft het kleine formaat.
+    if (ext !== 'm4a' && dur < 4 * 60) { const w = await toWav(blob); if (w) { blob = w; ext = 'wav'; } }
     S.audio = { blob, url: URL.createObjectURL(blob), ext, dur, when: new Date() };
     player.src = S.audio.url;
     clock.textContent = mmss(dur); drawWave(this.levels, false);
