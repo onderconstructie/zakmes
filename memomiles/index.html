@@ -299,6 +299,21 @@ button:not(:disabled):active, summary:active, [role="button"]:active { filter: b
 dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscroll-behavior: contain; }
   /* Wissen valt op als iets anders dan Bewaren (rood als signaal) */
   #wipeAll{color:#b91c1c;margin-top:.5rem}
+
+  /* Gebruikerstest november 2026 */
+  /* Wat niet op het scherm staat, krijgt ook geen toetsenbordfocus en wordt niet voorgelezen */
+  .pane{visibility:hidden;transition:opacity .35s var(--ease), transform .45s var(--ease), visibility 0s linear .45s}
+  .pane.on{visibility:visible;transition:opacity .35s var(--ease), transform .45s var(--ease), visibility 0s}
+  .sheet{visibility:hidden;transition:transform .5s cubic-bezier(.32,.72,0,1), visibility 0s linear .5s}
+  .sheet.on{visibility:visible;transition:transform .5s cubic-bezier(.32,.72,0,1), visibility 0s}
+  .done{visibility:hidden;transition:opacity .4s var(--ease), visibility 0s linear .4s}
+  .done.on{visibility:visible;transition:opacity .4s var(--ease), visibility 0s}
+  /* Bewaren blijft in beeld onderaan het blad, ook als het toetsenbord openstaat */
+  #saveSet{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:2;box-shadow:0 -12px 16px 4px var(--surface)}
+  .field small.fout{color:#b45309;font-weight:600}
+  .field input[aria-invalid="true"]{border-color:#d97706}
+  /* Lage schermen (liggende gsm, ingezoomd): de memo blijft groot genoeg om te lezen; de pagina scrollt */
+  @media (max-height:560px){ #app{height:auto;min-height:100dvh} .card{flex:none;height:220px} }
 </style>
 </head>
 <body>
@@ -367,7 +382,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
   <h2 id="setTitle">Waar moet het heen?</h2>
   <p class="lead" id="setLead">Eén adres, en je memo's landen daar. Zet het één keer goed.</p>
   <div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Dit adres blijft op dit toestel. Het staat nergens online en gaat enkel naar je eigen mailapp.</span></div>
-  <label class="field"><span>E-mailadres</span><input type="email" id="fAddr" inputmode="email" autocomplete="email" placeholder="jij@voorbeeld.be"><small>Meerdere adressen kan, gescheiden door een komma.</small></label>
+  <label class="field"><span>E-mailadres</span><input type="email" id="fAddr" inputmode="email" autocomplete="email" placeholder="jij@voorbeeld.be" aria-describedby="fAddrHelp"><small id="fAddrHelp">Meerdere adressen kan, gescheiden door een komma.</small></label>
   <label class="field"><span>Onderwerp begint met</span><input id="fPrefix" placeholder="Memo:"><small>Handig om in je mailbox een filter of label op te zetten.</small></label>
   <label class="field"><span>Taal van het dictee</span><select id="fLang">
     <option value="nl-BE">Nederlands (België)</option><option value="nl-NL">Nederlands (Nederland)</option>
@@ -969,7 +984,7 @@ function openSheet(k) {
     $('#fAuto').closest('.toggle').style.display = srBroken ? 'none' : '';
     $('#setTitle').textContent = cfg.addr ? 'Instellingen' : 'Waar moet het heen?';
     $('#setLead').textContent = cfg.addr ? 'Je memo\'s gaan naar dit adres.' : 'Eén adres, en je memo\'s landen daar. Zet het één keer goed.';
-    validate();
+    $('#fAddrHelp').classList.remove('fout'); validate(false);
   }
   if (k === 'hist') renderHist();
   Object.values(sheets).forEach(s => s.classList.remove('on'));
@@ -1004,9 +1019,19 @@ Object.values(sheets).forEach(sh => {
 });
 
 const validAddr = v => v.split(',').map(s => s.trim()).filter(Boolean).length > 0 && v.split(',').map(s => s.trim()).filter(Boolean).every(s => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s));
-function validate() { $('#saveSet').disabled = !validAddr($('#fAddr').value); }
-$('#fAddr').addEventListener('input', validate);
-$('#fAddr').addEventListener('keydown', e => { if (e.key === 'Enter' && validAddr(e.target.value)) $('#saveSet').click(); });
+// Bewaren kan pas met een volledig adres; zeg dan ook waarom (niet enkel een grijze knop)
+const ADDR_HELP = 'Meerdere adressen kan, gescheiden door een komma.';
+function validate(toon) {
+  const v = $('#fAddr').value, ok = validAddr(v), help = $('#fAddrHelp');
+  $('#saveSet').disabled = !ok;
+  const fout = !ok && v.trim() !== '' && (toon || help.classList.contains('fout'));
+  help.textContent = fout ? 'Dit is nog geen volledig e-mailadres. Bijvoorbeeld: naam@voorbeeld.be' : ADDR_HELP;
+  help.classList.toggle('fout', fout);
+  $('#fAddr').setAttribute('aria-invalid', fout ? 'true' : 'false');
+}
+$('#fAddr').addEventListener('input', () => validate(false));
+$('#fAddr').addEventListener('blur', () => validate(true));
+$('#fAddr').addEventListener('keydown', e => { if (e.key !== 'Enter') return; e.preventDefault(); if (validAddr(e.target.value)) $('#saveSet').click(); else validate(true); });
 $('#saveSet').addEventListener('click', () => {
   const first = !cfg.addr;
   cfg.addr = $('#fAddr').value.split(',').map(s => s.trim()).filter(Boolean).join(', ');
