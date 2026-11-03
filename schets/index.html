@@ -63,14 +63,32 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .ib:disabled{opacity:.35;cursor:default}
 .ib.on{background:var(--mint);color:var(--acc-d)}
 .ib.icon{padding:0;width:44px}
-#bladen-btn{border:1px solid var(--line);background:var(--wit);height:40px;padding:0 12px 0 10px;font-variant-numeric:tabular-nums}
+#bladen-btn{border:1px solid var(--line);background:var(--wit);height:44px;padding:0 12px 0 10px;font-variant-numeric:tabular-nums}
+/* De naam van het blad: een echt veld, met plaatshouder */
+.naamveld{flex:0 1 240px;min-width:0;height:44px;padding:0 12px;border:1px solid var(--line-2);border-radius:12px;background:var(--wit);font-size:16px;font-weight:600;color:var(--text);
+  text-overflow:ellipsis;transition:border-color .15s, box-shadow .15s}
+.naamveld::placeholder{color:var(--slate-500);font-weight:500;opacity:1}
+.naamveld:hover{border-color:var(--slate-400)}
+.naamveld:focus{outline:none;border-color:var(--acc-d);box-shadow:0 0 0 3px rgba(16,185,129,.2)}
+.naamveld:focus-visible{outline:none !important}
 #bladen-btn.on{border-color:var(--mint-3)}
 #bladen-btn .n{color:var(--faint);font-weight:500}
-#present-btn{background:var(--acc-d);color:#fff;height:40px;padding:0 14px 0 12px;border-radius:11px}
+#present-btn{background:var(--acc-d);color:#fff;height:44px;padding:0 14px 0 12px;border-radius:12px}
 #present-btn:hover{background:#065f46;color:#fff}
-@media (max-width:599px){ #present-btn .lbl, #bladen-btn .lbl{display:none} #present-btn{width:44px;padding:0} .top{gap:2px} }
-@media (max-width:374px){ .back span{display:none} }
-@media (max-width:359px){ #redo-btn{display:none} }
+@media (max-width:599px){ #present-btn .lbl, #bladen-btn .lbl{display:none} #present-btn{width:44px;padding:0} .top{gap:4px} .back span{display:none} .back{padding:0;justify-content:center}
+  .top .sp{display:none} .naamveld{flex:1 1 auto;padding:0 8px;margin-right:auto} .naamveld::placeholder{font-size:15px}
+  /* de teller als klein label op de knop, zo krijgt de naam de ruimte */
+  #bladen-btn{width:44px;padding:0;position:relative}
+  #bladen-btn .n{position:absolute;right:-4px;top:-4px;min-width:22px;height:18px;padding:0 4px;border-radius:9px;background:var(--wit);border:1px solid var(--line-2);font-size:12px;line-height:16px;font-weight:600;color:var(--slate-600)}
+  body:not(.kan-redo) #redo-btn{display:none} }
+/* Kop te krap (smal scherm of grote tekst): stap voor stap wat weg */
+.top.k1 .brand small, .top.k1 .back span{display:none}
+.top.k1 .back{padding:0;justify-content:center}
+.top.k2 .brand, .top.k2 #present-btn .lbl, .top.k2 #bladen-btn .lbl{display:none}
+.top.k2 #present-btn{width:44px;padding:0}
+.top.k3 #bladen-btn .n{display:none}
+.top.k3 #bladen-btn{width:44px;padding:0}
+.top.k3 #redo-btn:disabled{display:none}
 
 /* Menu (zelfde patroon als de andere tools) */
 .menu-wrap{position:relative}
@@ -88,8 +106,13 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 
 /* ---------- Werkvlak ---------- */
 .werk{position:relative;flex:1;min-height:0;display:flex}
-#stage{position:relative;flex:1;min-width:0;overflow:hidden;background:var(--wit);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;outline:none}
+/* Alleen het bovenste canvas vangt pen en vinger (touch-action:none). De knoppen en vensters op het vlak
+   erven dat niet, zodat lijsten en opties gewoon scrollen met vinger, pen, wiel en toetsenbord. */
+#stage{position:relative;flex:1;min-width:0;overflow:hidden;background:var(--wit);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;outline:none}
 #stage > canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block;pointer-events:none}
+#stage > #c-live{pointer-events:auto;touch-action:none}
+#c-ink{transform-origin:0 0;will-change:transform}
+.tray, .zoom, .selbar, .vb-bar{touch-action:none}
 #stage.c-pen{cursor:crosshair}
 #stage.c-move{cursor:move}
 #stage.c-grab{cursor:grab}
@@ -123,16 +146,18 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 @media (max-width:420px){ .tray{gap:0;padding:4px} .tray .div{margin:8px 2px} }
 
 /* Opties boven het gereedschap */
-.pop{position:absolute;left:50%;bottom:calc(84px + var(--bottom));transform:translateX(-50%);z-index:25;width:min(340px, calc(100% - 16px));
+.pop{position:absolute;left:50%;bottom:calc(84px + var(--bottom));transform:translateX(-50%);z-index:25;width:min(404px, calc(100% - 16px));
+  max-height:calc(100% - 92px - var(--bottom));overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;
   background:var(--wit);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 40px -12px rgba(15,23,42,.28);padding:12px 12px 10px;
   opacity:0;visibility:hidden;translate:0 6px;transition:opacity .16s,translate .2s var(--ease),visibility 0s .2s}
 .pop.open{opacity:1;visibility:visible;translate:0 0;transition:opacity .16s,translate .2s var(--ease)}
-@media (min-width:760px){ .pop{bottom:calc(92px + var(--bottom))} }
+@media (min-width:760px){ .pop{bottom:calc(92px + var(--bottom));max-height:calc(100% - 100px - var(--bottom))} }
 .pop h3{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--slate-500);margin:2px 4px 6px}
 .pop .row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
 .pop .row:last-child{margin-bottom:0}
 .kleur{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.kleur i{display:block;width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(15,23,42,.12)}
+.kleur i{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(15,23,42,.16)}
+.kleur i svg{width:16px;height:16px}
 .kleur[aria-pressed="true"] i{box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--acc-d)}
 .kleur[aria-pressed="true"]::after{content:"";position:absolute}
 .dikte,.keuze{min-width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px;color:var(--slate-600);font-size:.875rem;font-weight:600;border:1px solid transparent}
@@ -141,6 +166,8 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .dikte[aria-pressed="true"],.keuze[aria-pressed="true"]{background:var(--mint);color:var(--acc-d);border-color:var(--mint-3)}
 .keuze svg{width:20px;height:20px}
 .pop .hint{font-size:.8125rem;line-height:1.4;color:var(--slate-500);margin:2px 4px 2px}
+.pop .row.kl8{display:grid;grid-template-columns:repeat(8, 44px);gap:4px}
+@media (max-width:430px){ .pop .row.kl8{grid-template-columns:repeat(4, 44px);column-gap:12px} }
 .pop .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}
 
 /* Pas in beeld en zoom */
@@ -154,11 +181,12 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 /* Selectie: kleine knoppenbalk */
 .selbar{position:absolute;z-index:18;display:none;align-items:center;gap:2px;padding:4px;background:var(--wit);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-2)}
 .selbar.on{display:flex}
-.selbar button{display:flex;align-items:center;gap:6px;height:40px;min-width:44px;padding:0 10px;border-radius:10px;font-size:.875rem;font-weight:600;color:var(--slate-600)}
+.selbar button{display:flex;align-items:center;gap:6px;height:44px;min-width:44px;padding:0 10px;border-radius:10px;font-size:.875rem;font-weight:600;color:var(--slate-600)}
 .selbar button:hover{background:var(--soft);color:var(--text)}
 .selbar button svg{width:18px;height:18px}
 .selbar button[hidden]{display:none}
 .selbar .danger{color:var(--rood)}
+.selbar .sw{width:20px;height:20px;border-radius:50%;background:conic-gradient(#fdf0a6 0 25%, #fde2ec 0 50%, #d8e8fd 0 75%, #cdf3e0 0);box-shadow:inset 0 0 0 1px rgba(15,23,42,.18)}
 @media (max-width:599px){ .selbar .lbl{display:none} }
 
 /* Tekst schrijven op het blad */
@@ -168,8 +196,8 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .edit-ring{position:absolute;z-index:16;pointer-events:none;border:1.5px dashed #10b981;border-radius:6px}
 
 /* Startkaart */
-.start{position:absolute;inset:0;z-index:15;display:flex;align-items:center;justify-content:center;padding:16px 16px calc(96px + var(--bottom));pointer-events:none}
-.start-card{pointer-events:auto;width:min(440px, 100%);background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:22px;box-shadow:var(--sh-2);padding:22px 22px 14px;text-align:center;
+.start{position:absolute;inset:0;z-index:15;display:flex;padding:16px 16px calc(96px + var(--bottom));pointer-events:none;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+.start-card{pointer-events:auto;margin:auto;width:min(440px, 100%);background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:22px;box-shadow:var(--sh-2);padding:22px 22px 14px;text-align:center;
   transition:opacity .3s,transform .35s var(--ease)}
 .start[hidden]{display:none}
 .start.weg{pointer-events:none}
@@ -188,6 +216,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .oc-open-link{display:inline-flex;align-items:center;gap:0.5rem;min-height:44px;padding:0.5rem 0.75rem;border-radius:10px;font-size:0.875rem;font-weight:600;color:var(--acc-d)}
 .oc-open-link:hover{background:var(--mint)}
 .oc-open-link svg{width:18px;height:18px}
+@media (max-height:560px){ .start{padding:8px 16px;z-index:21} .start-card{padding:14px 18px 8px} .start-card canvas{display:none} .start-card p{margin-bottom:10px} }
 .start-card .tip{font-size:.8125rem;color:var(--slate-500);margin:6px auto 4px;max-width:36ch;line-height:1.45}
 
 /* Voorbeeld-balk */
@@ -196,7 +225,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .vb-bar[hidden]{display:none}
 .vb-bar .vb-text{display:flex;align-items:center;gap:0.5rem}
 .vb-bar svg{width:18px;height:18px;flex-shrink:0;color:#b45309}
-.vb-bar button{min-height:40px;padding:0 0.75rem;border-radius:9px;font-weight:600;font-size:.875rem;background:#fff;border:1px solid #fde68a}
+.vb-bar button{min-height:44px;padding:0 0.75rem;border-radius:9px;font-weight:600;font-size:.875rem;background:#fff;border:1px solid #fde68a}
 .vb-bar button.wis{color:var(--rood)}
 .vb-bar button.houd{color:var(--acc-d);border-color:var(--mint-3)}
 
@@ -213,9 +242,12 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .thumb .tb:hover{border-color:var(--line-2)}
 .thumb canvas{display:block;width:100%;aspect-ratio:16/10;height:auto}
 .thumb.cur .tb{border-color:var(--acc);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
-.thumb .cap{display:flex;align-items:center;gap:6px;margin-top:4px;padding:0 2px 0 4px;min-height:32px}
+.thumb .cap{display:flex;align-items:center;gap:6px;margin-top:2px;padding:0 2px 0 4px;min-height:44px}
+.thumb .cap span{line-height:24px}
 .thumb .cap b{font-size:.75rem;font-weight:700;color:var(--slate-500);font-variant-numeric:tabular-nums;min-width:1.2em}
-.thumb .cap span{flex:1;min-width:0;font-size:.8125rem;color:var(--slate-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thumb .cap span{flex:1;min-width:0;font-size:.8125rem;color:var(--slate-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:text;padding:6px 4px;border-radius:7px}
+.thumb .cap span:hover{background:#fff;box-shadow:inset 0 0 0 1px var(--line-2)}
+.thumb .cap span.geen{color:var(--slate-500)}
 .thumb.cur .cap span{color:var(--acc-d);font-weight:600}
 .thumb .more{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--slate-500);flex:none}
 .thumb .more:hover{background:var(--soft);color:var(--slate-700)}
@@ -239,7 +271,8 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .tmenu button:disabled{opacity:.4}
 .tmenu .danger,.tmenu .danger svg{color:var(--rood)}
 .tmenu .sep{height:1px;background:var(--slate-100);margin:.25rem .375rem}
-.rename{width:100%;height:32px;border:1.5px solid var(--acc);border-radius:7px;padding:0 6px;font-size:16px;background:#fff}
+.rename{flex:1;min-width:0;height:44px;border:1.5px solid var(--acc);border-radius:9px;padding:0 8px;font-size:16px;background:#fff}
+.rename::placeholder{color:var(--slate-500)}
 @media (max-width:999px){
   .strip{position:absolute;left:0;top:0;bottom:0;width:min(260px, 82vw);box-shadow:16px 0 40px -16px rgba(15,23,42,.3);transform:translateX(-102%);transition:transform .28s var(--ease);visibility:hidden}
   .strip[hidden]{display:flex}
@@ -252,17 +285,20 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 
 /* ---------- Vensters (sjablonen, uitleg) ---------- */
 html:has(.ocw-back, .gal-back) { overflow:hidden; }
-.ocw-back *, .gal-back * { overscroll-behavior:contain; }
+.gal-sheet, .menu, .thumbs, .pop, .start { overscroll-behavior:contain; }
 .gal-back{position:fixed;inset:0;z-index:60;background:rgba(15,23,42,0.45);display:flex;align-items:flex-end;justify-content:center;padding:0}
 .gal-back[hidden]{display:none}
 @media (min-width:700px){ .gal-back{align-items:center;padding:1.5rem} }
-.gal-sheet{width:100%;max-width:880px;max-height:92vh;max-height:92dvh;overflow:auto;background:var(--bg);border-radius:20px 20px 0 0;padding:1rem 1rem calc(1.25rem + var(--bottom));box-shadow:0 -10px 40px rgba(15,23,42,0.2);overscroll-behavior:contain}
-@media (min-width:700px){ .gal-sheet{border-radius:20px;padding:1.25rem 1.25rem 1.5rem} }
-.gal-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:.875rem}
+.gal-sheet{width:100%;max-width:880px;max-height:92vh;max-height:92dvh;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;background:var(--bg);border-radius:20px 20px 0 0;padding:0 1rem calc(1.25rem + var(--bottom));box-shadow:0 -10px 40px rgba(15,23,42,0.2)}
+@media (min-width:700px){ .gal-sheet{border-radius:20px;padding:0 1.25rem 1.5rem} }
+/* de kop blijft staan tijdens het scrollen, zo is Sluit altijd bij de hand */
+.gal-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 -0.25rem .5rem;padding:.75rem .25rem .5rem;background:var(--bg)}
+.tcard{touch-action:pan-y}
 .gal-h{font-size:1.125rem;font-weight:700;color:var(--slate-800);letter-spacing:-0.01em;margin:0}
 .tgal{display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 230px), 1fr));gap:0.75rem}
 .tcard{display:flex;flex-direction:column;text-align:left;background:var(--wit);border:1px solid var(--slate-200);border-radius:18px;overflow:hidden;transition:border-color .15s, box-shadow .15s, transform .15s}
-.tcard:hover{border-color:#a7f3d0;box-shadow:0 8px 24px rgba(16,185,129,0.12);transform:translateY(-1px)}
+@media (hover:hover){ .tcard:hover{border-color:#a7f3d0;box-shadow:0 8px 24px rgba(16,185,129,0.12);transform:translateY(-1px)} }
+.tcard:focus-visible{border-color:var(--acc)}
 .tc-prev{display:flex;align-items:center;justify-content:center;height:136px;padding:0.5rem;background:linear-gradient(180deg, #f6fefb, #ecfdf5);border-bottom:1px solid #d1fae5}
 .tc-prev canvas{display:block;width:100%;height:100%;border-radius:8px}
 .tc-body{display:flex;flex-direction:column;gap:0.25rem;padding:0.75rem 1rem 0.875rem}
@@ -437,7 +473,8 @@ details.explain.oc-u .oc-u-noot a:hover { text-decoration-color:var(--u-donker);
   <header class="top">
     <a class="back back-link" href="../" aria-label="Terug naar Zakmes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Zakmes</span></a>
     <h1 class="brand"><span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="18" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/><path d="M20 21.5c-3-2-7-2.2-10.5-1.2V31c3.5-1 7.5-.8 10.5 1 3-1.8 7-2 10.5-1V20.3c-3.5-1-7.5-.8-10.5 1.2Zm0 0V31.5" stroke="#64748b"/><path d="M12.5 15.5L16.6 15.7L27.9 10L26.1 6.4L14.8 12.1Z" fill="#10b981" stroke="#10b981"/><path d="M16.6 15.7L14.8 12.1" stroke="#f8fafc" stroke-width="1.2"/></svg></span><span>Schetsboek</span><small>Teken snel een idee</small></h1>
-    <button class="ib" id="bladen-btn" type="button" aria-expanded="false" aria-controls="strip" aria-label="Bladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="3" y="14" width="7" height="6" rx="1.5"/><path d="M14 6h7M14 9h4M14 16h7M14 19h4"/></svg><span class="lbl">Blad</span> <span class="n" id="blad-n">1/1</span></button>
+    <button class="ib" id="bladen-btn" type="button" aria-expanded="false" aria-controls="strip" aria-label="Alle bladen" title="Alle bladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="3" y="14" width="7" height="6" rx="1.5"/><path d="M14 6h7M14 9h4M14 16h7M14 19h4"/></svg><span class="lbl">Blad</span> <span class="n" id="blad-n">1/1</span></button>
+    <input class="naamveld" id="blad-naam" type="text" maxlength="60" placeholder="Naam van dit blad" aria-label="Naam van dit blad" autocomplete="off" enterkeyhint="done" spellcheck="false">
     <span class="sp"></span>
     <button class="ib icon" id="undo-btn" type="button" aria-label="Ongedaan maken" title="Ongedaan maken (Ctrl+Z)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
     <button class="ib icon" id="redo-btn" type="button" aria-label="Opnieuw" title="Opnieuw (Shift+Ctrl+Z)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
@@ -505,6 +542,7 @@ details.explain.oc-u .oc-u-noot a:hover { text-decoration-color:var(--u-donker);
 
       <div class="selbar" id="selbar" role="toolbar" aria-label="Selectie">
         <button type="button" data-sel="bewerk" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg><span class="lbl">Bewerk</span></button>
+        <button type="button" data-sel="kleur" aria-haspopup="dialog" aria-controls="pop"><span class="sw" aria-hidden="true"></span><span class="lbl">Kleur</span></button>
         <button type="button" data-sel="dupliceer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="lbl">Dupliceer</span></button>
         <button type="button" data-sel="voor" title="Naar voren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="currentColor" fill-opacity=".18"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/></svg><span class="lbl">Naar voren</span></button>
         <button type="button" data-sel="wis" class="danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg><span class="lbl">Verwijder</span></button>
@@ -550,13 +588,13 @@ details.explain.oc-u .oc-u-noot a:hover { text-decoration-color:var(--u-donker);
         <p>Het Schetsboek is een klein boekje om snel iets te tekenen: een idee in een vergadering, een plannetje van een ruimte of een scherm voor een collega. Alles blijft op dit toestel.</p>
         <ul>
           <li><b>Teken.</b> Kies de pen, de markeerstift of de gum. Met een pen op een tablet teken je met de pen en schuif je met je vinger. Je hand op het scherm stoort dan niet.</li>
-          <li><b>Maak het netjes.</b> Houd aan het einde van een lijn even stil. Een lijn, pijl, rechthoek, driehoek of cirkel wordt dan vanzelf recht. Of kies een vorm onder Vorm.</li>
-          <li><b>Schrijf erbij.</b> Met Tekst schrijf je een woord op het blad. Een plakbriefje is een gekleurd blokje dat je kan verschuiven.</li>
-          <li><b>Schik en verbeter.</b> Met Kies tik je iets aan of trek je er een lus rond. Daarna verschuif, vergroot, dupliceer of verwijder je het.</li>
-          <li><b>Werk met bladen.</b> Onder Blad zie je alle bladen. Kies een sjabloon voor een nieuw blad, versleep een blad om de volgorde te wijzigen.</li>
+          <li><b>Maak het netjes.</b> Houd aan het einde van een lijn even stil. Een lijn, pijl, rechthoek, driehoek of cirkel wordt dan vanzelf recht. Of kies een vorm onder Vorm: een vrije pijl volgt je hand, een rechte pijl blijft strak.</li>
+          <li><b>Schrijf erbij.</b> Met Tekst schrijf je een woord op het blad. Een plakbriefje is een gekleurd blokje dat je kan verschuiven. Je kiest uit acht zachte kleuren.</li>
+          <li><b>Schik en verbeter.</b> Met Kies tik je iets aan of trek je er een lus rond. Daarna verschuif, vergroot, kleur, dupliceer of verwijder je het.</li>
+          <li><b>Werk met bladen.</b> Geef elk blad een naam in het veld bovenaan. Onder Blad zie je alle bladen. Kies een sjabloon voor een nieuw blad, versleep een blad om de volgorde te wijzigen.</li>
           <li><b>Toon het.</b> Presenteer toont het blad op het hele scherm. Je vinger of muis wordt een groene laserpen die vanzelf verdwijnt.</li>
         </ul>
-        <p>Tip: P is de pen, M de markeerstift, E de gum, V selecteren, T tekst en N een briefje. Ctrl+Z maakt ongedaan, Shift+Ctrl+Z doet het opnieuw. Houd de spatiebalk ingedrukt om te schuiven, F past het blad in beeld. Delete verwijdert wat je koos.</p>
+        <p>Tip: P is de pen, M de markeerstift, E de gum, V selecteren, T tekst en N een briefje. Ctrl+Z maakt ongedaan, Shift+Ctrl+Z doet het opnieuw. Houd de spatiebalk ingedrukt om te schuiven, F past het blad in beeld. Delete verwijdert wat je koos. Met Tekst of Briefje gekozen zet Enter een tekst of briefje in het midden.</p>
         <p>Wil je verder werken op een ander toestel? Kies Bewaar als bestand in het menu en open dat bestand daar. Een reservekopie van de app neemt de tekeningen niet mee.</p>
       </div>
     </details>
@@ -808,7 +846,11 @@ const r2 = v => Math.round(v * 100) / 100;
 /* ---------- Kleuren en diktes ---------- */
 const INKT = [['#1e293b', 'Zwart'], ['#64748b', 'Grijs'], ['#047857', 'Groen'], ['#2563eb', 'Blauw'], ['#dc2626', 'Rood'], ['#ea580c', 'Oranje']];
 const STIFT = [['#fde047', 'Geel'], ['#6ee7b7', 'Groen'], ['#93c5fd', 'Blauw'], ['#fdba74', 'Oranje']];
-const BRIEF = [['#fdf0a6', '#f3dc6b', 'Geel'], ['#cdf3e0', '#9fe3c3', 'Groen'], ['#d8e8fd', '#a9cbf7', 'Blauw'], ['#eef1f5', '#d5dce5', 'Grijs']];
+// Plakbriefjes: [papier, kleefstrook, naam]. De volgorde van de nummers blijft vast (oude tekeningen);
+// BRIEF_ORDE is de volgorde in de kleurkeuze. Tekst #334155 haalt op elke kleur minstens 6,9:1.
+const BRIEF = [['#fdf0a6', '#f3dc6b', 'Geel'], ['#cdf3e0', '#9fe3c3', 'Groen'], ['#d8e8fd', '#a9cbf7', 'Blauw'], ['#eef1f5', '#d5dce5', 'Grijs'],
+  ['#fde2ec', '#f6b8cf', 'Roze'], ['#fee2c5', '#fbbf85', 'Oranje'], ['#e9e0fc', '#c9b6f5', 'Lila'], ['#ffffff', '#e2e8f0', 'Wit']];
+const BRIEF_ORDE = [0, 5, 4, 6, 2, 1, 3, 7];
 const PEN_W = [[2, 'Fijn'], [3.5, 'Normaal'], [6.5, 'Dik']];
 const STIFT_W = [[12, 'Smal'], [20, 'Normaal'], [32, 'Breed']];
 const TEKST_FS = [[18, 'Klein'], [26, 'Normaal'], [40, 'Groot']];
@@ -949,7 +991,25 @@ function bboxPts(p, st, pad) {
   for (let i = 0; i < p.length; i += st) { const x = p[i], y = p[i + 1]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
   return [x0 - pad, y0 - pad, x1 + pad, y1 + pad];
 }
-const PIJL = w => Math.max(14, w * 4.2);
+// Lengte van een pijlpunt: dunne lijnen krijgen naar verhouding een grotere punt, dikke een kleinere.
+const PIJL = w => w * (3.6 + 7 / (1 + w / 1.6));
+// Punt van een vrije pijl: richting uit de laatste stukjes lijn (niet uit het allerlaatste punt, dat beeft).
+function inktKop(p, w) {
+  const n = p.length / 3 | 0; if (n < 2) return null;
+  const ex = p[(n - 1) * 3], ey = p[(n - 1) * 3 + 1], L = PIJL(w), d0 = Math.max(L * 0.75, w * 2.5);
+  let ax = p[0], ay = p[1];
+  for (let i = n - 2; i >= 0; i--) { const x = p[i * 3], y = p[i * 3 + 1]; if (Math.hypot(ex - x, ey - y) >= d0) { ax = x; ay = y; break; } }
+  if (Math.hypot(ex - ax, ey - ay) < 1e-6) return null;
+  const a = Math.atan2(ey - ay, ex - ax), f = clamp(p[(n - 1) * 3 + 2] || 1, 0.75, 1.2);
+  const path = new Path2D(); pijlKop(path, ex - Math.cos(a), ey - Math.sin(a), ex, ey, w);
+  return { path, lw: w * f * 0.92, x: ex, y: ey, a, L };
+}
+// Geometrie van een inktlijn (ook voor wat nu getekend wordt)
+function inktGeo(p, w, opt, pijl) {
+  const g = { path: inktPad(p, w, opt) };
+  if (pijl) { const k = inktKop(p, w); if (k) { g.kop = k.path; g.kopW = k.lw; g.kopL = k; } }
+  return g;
+}
 function pijlKop(path, x1, y1, x2, y2, w) {
   const a = Math.atan2(y2 - y1, x2 - x1), L = PIJL(w), s = 0.48;
   path.moveTo(x2 - L * Math.cos(a - s), y2 - L * Math.sin(a - s)); path.lineTo(x2, y2); path.lineTo(x2 - L * Math.cos(a + s), y2 - L * Math.sin(a + s));
@@ -989,7 +1049,7 @@ function geo(it) {
   let g = GEO.get(it);
   if (g && g.v === geoVer) return g;
   g = { v: geoVer };
-  if (it.k === 'ink') { g.path = inktPad(it.p, it.w, { a: it.a, b: it.b, vlak: !!it.hl }); g.bb = bboxPts(it.p, 3, it.w * 0.85 + 1); }
+  if (it.k === 'ink') { Object.assign(g, inktGeo(it.p, it.w, { a: it.a, b: it.pijl ? 0 : it.b, vlak: !!it.hl }, it.pijl && !it.hl)); g.bb = bboxPts(it.p, 3, it.w * 0.85 + 1 + (g.kop ? PIJL(it.w) : 0)); }
   else if (it.k === 'lijn') {
     const [x1, y1, x2, y2] = it.p; g.path = new Path2D(); g.path.moveTo(x1, y1); g.path.lineTo(x2, y2);
     if (it.pijl) pijlKop(g.path, x1, y1, x2, y2, it.w);
@@ -1039,6 +1099,7 @@ function afstand(it, x, y) {
     const p = it.p, n = p.length / 3;
     if (n === 1) return Math.max(0, Math.hypot(x - p[0], y - p[1]) - it.w / 2);
     for (let i = 3; i < p.length; i += 3) d = Math.min(d, segAfst(x, y, p[i - 3], p[i - 2], p[i], p[i + 1]));
+    const k = g.kopL; if (k) for (const s of [-0.48, 0.48]) d = Math.min(d, segAfst(x, y, k.x, k.y, k.x - k.L * Math.cos(k.a + s), k.y - k.L * Math.sin(k.a + s)));
     return Math.max(0, d - it.w * 0.55);
   }
   if (it.k === 'lijn' || it.k === 'poly') {
@@ -1090,6 +1151,7 @@ function tekenItem(ctx, it, g, sc, opt) {
   if (it.k === 'ink') {
     if (it.hl) { ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = 0.85; }
     ctx.fillStyle = it.c; ctx.fill(g.path);
+    if (g.kop) { ctx.strokeStyle = it.c; ctx.lineWidth = g.kopW; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke(g.kop); }
     if (it.hl) { ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; }
   } else if (it.k === 'lijn' || it.k === 'poly' || it.k === 'ell') {
     ctx.strokeStyle = it.c; ctx.lineWidth = it.w; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke(g.path);
@@ -1108,6 +1170,7 @@ function tekenItem(ctx, it, g, sc, opt) {
     ctx.shadowColor = 'rgba(15,23,42,0.17)'; ctx.shadowBlur = it.w * 0.07 * sc; ctx.shadowOffsetY = it.w * 0.028 * sc; ctx.shadowOffsetX = it.w * 0.006 * sc;
     rondeRect(ctx, x, y, it.w, it.h, it.w * 0.025); ctx.fillStyle = k[0]; ctx.fill();
     ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetX = ctx.shadowOffsetY = 0;
+    if (it.kl === 7 || it.kl === 3) { ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = Math.max(1 / sc, it.w * 0.005); ctx.stroke(); }
     // de kleefstrook bovenaan, iets donkerder; en een zacht licht onderaan (papier krult)
     ctx.save(); ctx.clip();
     ctx.fillStyle = k[1]; ctx.globalAlpha = 0.45; ctx.fillRect(x, y, it.w, g.band); ctx.globalAlpha = 1;
@@ -1367,7 +1430,7 @@ function voorbeeldBladen() {
   a.push(B('Rustige hoek voor moeilijke gesprekken', 1380, 250, 200, 150, 0, -2.6));
   a.push(...H.pijl(1376, 330, 1300, 360, { w: 3, c: GR, buig: 0.1, seed: 170, kop: 16 }));
   a.push(T('Nieuw onthaal, gelijkvloers', 160, 28, 40, { vet: 1 }));
-  a.push(T('schets voor het overleg van dinsdag', 160, 84, 22, { c: GR }));
+  a.push(T('schets voor het teamoverleg', 160, 84, 22, { c: GR }));
   // 2. Een idee met takken
   const b = [];
   b.push(H.stift(130, 830, 420, 830, { c: '#fde047', w: 30, seed: 402 }));
@@ -1385,7 +1448,7 @@ function voorbeeldBladen() {
   b.push(H.ster(110, 776, 20, { w: 3, c: '#ea580c', seed: 221 }));
   kop('Risico\'s', 1196, 186); sub('gegevens delen tussen diensten', 1196, 232); sub('oude systemen', 1196, 264);
   b.push(H.ellips(1276, 278, 92, 24, { w: 3, c: RD, seed: 222 }));
-  kop('Wat we nodig hebben', 1226, 466); sub('afspraken met 4 afdelingen', 1226, 512); sub('budget voor 2027', 1226, 544);
+  kop('Wat we nodig hebben', 1226, 466); sub('afspraken met 4 afdelingen', 1226, 512); sub('budget voor de proef', 1226, 544);
   kop('Wie doet mee', 1196, 760); sub('loketmedewerkers', 1196, 806); sub('2 burgers per gemeente', 1196, 838);
   b.push(B('Vraag: wie beheert het loket later?', 690, 700, 220, 160, 0, -2.2));
   b.push(...H.pijl(800, 690, 800, 630, { w: 3, c: GR, seed: 230, kop: 16 }));
@@ -1394,9 +1457,9 @@ function voorbeeldBladen() {
   const c = [];
   c.push(H.stift(1040, 545, 1160, 545, { c: '#6ee7b7', w: 34, seed: 403 }));
   c.push(T('Van idee tot lancering', 120, 70, 40, { vet: 1 }));
-  c.push(T('nieuw digitaal loket, planning 2027', 120, 118, 22, { c: GR }));
+  c.push(T('nieuw digitaal loket, planning in vijf stappen', 120, 118, 22, { c: GR }));
   c.push(...H.pijl(110, 480, 1500, 476, { w: 6, c: D, buig: 0.004, seed: 301, kop: 30 }));
-  const mijl = [[220, 'Jan', 'Start project'], [500, 'Mrt', 'Eerste versie'], [780, 'Mei', 'Test met 20 burgers'], [1100, 'Sept', 'Lancering'], [1380, 'Dec', 'Evaluatie']];
+  const mijl = [[220, 'Stap 1', 'Start project'], [500, 'Stap 2', 'Eerste versie'], [780, 'Stap 3', 'Test met 20 burgers'], [1100, 'Stap 4', 'Lancering'], [1380, 'Stap 5', 'Evaluatie']];
   mijl.forEach(([x, m, s], i) => {
     c.push(H.ellips(x, 479, 15, 15, { w: 4.5, c: G, seed: 310 + i }));
     if (i < 2) c.push(hand([x - 7, 479, x + 7, 479], { w: 14, c: G, seed: 320 + i, a: 0, b: 0, beef: 0 }));
@@ -1410,7 +1473,7 @@ function voorbeeldBladen() {
   c.push(H.vink(196, 590, 26, { w: 4, c: G, seed: 342 }), H.vink(476, 590, 26, { w: 4, c: G, seed: 343 }));
   c.push(B('Communicatie start 6 weken voor de lancering', 760, 690, 230, 160, 2, 2.4));
   c.push(...H.pijl(996, 740, 1080, 580, { w: 3, c: GR, buig: 0.2, seed: 350, kop: 16 }));
-  c.push(T('vandaag', 360, 438, 20, { c: RD, al: 'c' }));
+  c.push(T('we zijn hier', 360, 438, 20, { c: RD, al: 'c' }));
   c.push(hand([360, 456, 360, 498], { w: 3, c: RD, seed: 360, beef: 0 }));
   c.push(B('Feedback van de proef verwerken voor de lancering', 300, 660, 220, 160, 3, -1.8));
   return [
@@ -1480,7 +1543,9 @@ function geldigItem(it) {
   const kleur = c => typeof c === 'string' && /^#[0-9a-f]{3,8}$/i.test(c);
   const nums = (p, m) => Array.isArray(p) && p.length >= m && p.every(isNum);
   switch (it.k) {
-    case 'ink': return nums(it.p, 3) && it.p.length % 3 === 0 && kleur(it.c) && isNum(it.w) && it.w > 0 ? it : null;
+    case 'ink': if (!(nums(it.p, 3) && it.p.length % 3 === 0 && kleur(it.c) && isNum(it.w) && it.w > 0)) return null;
+      if (it.pijl && !it.hl) it.pijl = 1; else delete it.pijl;
+      return it;
     case 'lijn': return nums(it.p, 4) && it.p.length === 4 && kleur(it.c) && isNum(it.w) ? it : null;
     case 'poly': return nums(it.p, 4) && it.p.length % 2 === 0 && kleur(it.c) && isNum(it.w) ? it : null;
     case 'ell': return [it.cx, it.cy, it.rx, it.ry, it.w].every(isNum) && kleur(it.c) ? it : null;
@@ -1492,7 +1557,8 @@ function geldigItem(it) {
 function geldigBlad(s) {
   if (!s || typeof s !== 'object' || typeof s.id !== 'string' || !Array.isArray(s.items)) return null;
   return {
-    id: s.id, naam: typeof s.naam === 'string' ? s.naam.slice(0, 60) : 'Blad',
+    // zonder eigen naam heet een blad naar zijn plaats ("Blad 2"); oude automatische namen tellen niet als naam
+    id: s.id, naam: typeof s.naam === 'string' && !/^\s*Blad( \d+)?\s*$/.test(s.naam) ? s.naam.trim().slice(0, 60) : '',
     bg: BGS.includes(s.bg) ? s.bg : 'blanco', tpl: SJ[s.tpl] ? s.tpl : 'leeg',
     items: s.items.map(geldigItem).filter(Boolean), vb: s.vb ? 1 : undefined, t: isNum(s.t) ? s.t : 0
   };
@@ -1501,7 +1567,7 @@ function geldigeUi(u) {
   if (!u || typeof u !== 'object') return {};
   const o = {};
   if (['kies', 'pen', 'stift', 'gum', 'vorm', 'tekst', 'briefje'].includes(u.tool)) o.tool = u.tool;
-  if (['lijn', 'pijl', 'rect', 'ellips'].includes(u.vorm)) o.vorm = u.vorm;
+  if (['lijn', 'vpijl', 'pijl', 'rect', 'ellips'].includes(u.vorm)) o.vorm = u.vorm;
   const paar = (v, a, b) => Array.isArray(v) && v.length === 2 && v[0] >= 0 && v[0] < a && v[1] >= 0 && v[1] < b ? [v[0] | 0, v[1] | 0] : null;
   const p = paar(u.pen, INKT.length, PEN_W.length); if (p) o.pen = p;
   const s = paar(u.stift, STIFT.length, STIFT_W.length); if (s) o.stift = s;
@@ -1516,8 +1582,10 @@ function geldigeUi(u) {
   return o;
 }
 const blad = () => boek.bladen.find(b => b.id === boek.cur) || boek.bladen[0];
-const leegBlad = (tpl, bg) => ({ id: uid(), naam: tpl && tpl !== 'leeg' ? SJ[tpl].naam : 'Blad', bg: bg || (tpl && SJ[tpl].bg) || 'blanco', tpl: tpl || 'leeg', items: tpl ? sjabloonLabels(tpl) : [], t: Date.now() });
-function heeftWerk() { return boek.bladen.length > 1 || boek.bladen.some(b => b.items.length || b.tpl !== 'leeg' || b.bg !== 'blanco'); }
+const leegBlad = (tpl, bg) => ({ id: uid(), naam: '', bg: bg || (tpl && SJ[tpl].bg) || 'blanco', tpl: tpl || 'leeg', items: tpl ? sjabloonLabels(tpl) : [], t: Date.now() });
+// De naam die je ziet: de eigen naam, of anders "Blad 2"
+function bladNaam(b) { return (b && b.naam) || 'Blad ' + (boek.bladen.indexOf(b) + 1 || 1); }
+function heeftWerk() { return boek.bladen.length > 1 || boek.bladen.some(b => b.items.length || b.tpl !== 'leeg' || b.bg !== 'blanco' || b.naam); }
 
 const vuil = new Set(), weggegooid = new Set();
 let bewaarT = null, ankerT = null, opslagFout = false;
@@ -1586,6 +1654,9 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && (vu
    Een stap = wat verdween en wat erbij kwam, elk met zijn plaats. Onderdelen veranderen nooit ter plekke. */
 const hist = new Map();
 const H_ = id => { let h = hist.get(id); if (!h) hist.set(id, h = { u: [], r: [] }); return h; };
+// Stappen op het boekje (een blad verwijderen) staan apart; Ongedaan neemt telkens de jongste stap.
+let volg = 0;
+const boekH = { u: [], r: [] };
 function wijzig(sh, weg, erbij) {
   const op = { rem: weg.map(it => [sh.items.indexOf(it), it]).filter(x => x[0] >= 0).sort((a, b) => a[0] - b[0]), add: [] };
   const ids = new Set(op.rem.map(x => x[1].id));
@@ -1593,7 +1664,8 @@ function wijzig(sh, weg, erbij) {
   erbij.slice().sort((a, b) => (a.at == null ? 1e9 : a.at) - (b.at == null ? 1e9 : b.at)).forEach(a => { const i = a.at == null ? sh.items.length : Math.min(a.at, sh.items.length); sh.items.splice(i, 0, a.item); });
   op.add = erbij.map(a => [sh.items.indexOf(a.item), a.item]).sort((a, b) => a[0] - b[0]);
   if (!op.rem.length && !op.add.length) return;
-  const h = H_(sh.id); h.u.push(op); if (h.u.length > 300) h.u.shift(); h.r.length = 0;
+  op.n = ++volg;
+  const h = H_(sh.id); h.u.push(op); if (h.u.length > 300) h.u.shift(); h.r.length = 0; boekH.r.length = 0;
   naWijziging(sh);
 }
 function pasToe(sh, op, terug) {
@@ -1602,14 +1674,19 @@ function pasToe(sh, op, terug) {
   sh.items = sh.items.filter(it => !ids.has(it.id));
   erbij.forEach(([i, it]) => sh.items.splice(Math.min(i, sh.items.length), 0, it));
 }
+const topN = a => a.length ? a[a.length - 1].n || 0 : -1;
 function ongedaan() {
-  const sh = blad(), h = H_(sh.id); if (!h.u.length) return;
-  klaarMetBewerken(); const op = h.u.pop(); pasToe(sh, op, true); h.r.push(op);
+  const sh = blad(), h = H_(sh.id);
+  if (boekH.u.length && topN(boekH.u) > topN(h.u)) { const st = boekH.u.pop(); st.n = ++volg; boekH.r.push(st); st.terug(); return; }
+  if (!h.u.length) return;
+  klaarMetBewerken(); const op = h.u.pop(); pasToe(sh, op, true); op.n = ++volg; h.r.push(op);
   sel.clear(); naWijziging(sh);
 }
 function opnieuw() {
-  const sh = blad(), h = H_(sh.id); if (!h.r.length) return;
-  klaarMetBewerken(); const op = h.r.pop(); pasToe(sh, op, false); h.u.push(op);
+  const sh = blad(), h = H_(sh.id);
+  if (boekH.r.length && topN(boekH.r) > topN(h.r)) { const st = boekH.r.pop(); st.n = ++volg; boekH.u.push(st); st.doe(); return; }
+  if (!h.r.length) return;
+  klaarMetBewerken(); const op = h.r.pop(); pasToe(sh, op, false); op.n = ++volg; h.u.push(op);
   sel.clear(); naWijziging(sh);
 }
 function naWijziging(sh) {
@@ -1698,7 +1775,7 @@ function zoomRond(sx, sy, factor) {
 /* ---------- Tekenen op het scherm: drie lagen ----------
    onder: achtergrond en sjabloon; midden: alles wat getekend is; boven: wat nu beweegt (pen, selectie, gum). */
 const nood = { bg: false, ink: false, live: false };
-let raf = 0, inkMs = 0, momentopname = null, gewicht = 0;
+let raf = 0, inkMs = 0, momentopname = null, gewicht = 0, getekend = null;
 const verborgen = new Set();
 let bewerkId = null;
 function vraag(w) {
@@ -1726,16 +1803,18 @@ function tekenOnder() {
 }
 function tekenMidden() {
   const sh = blad(), c = xInk;
-  c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, cInk.width, cInk.height);
+  if (!momentopname) { c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, cInk.width, cInk.height); }
   if (!sh) return;
-  // Zwaar blad tijdens schuiven of knijpen: een momentopname verschuiven, scherp tekenen na het gebaar.
+  // Zwaar blad tijdens schuiven of knijpen: het canvas zelf verschuiven en schalen (dat doet de grafische
+  // kaart, bijna gratis) en pas na het gebaar weer scherp tekenen.
   if (momentopname) {
     const m = momentopname, k = view.z / m.z;
-    c.setTransform(k, 0, 0, k, dpr * (view.tx - m.tx * k), dpr * (view.ty - m.ty * k));
-    c.drawImage(m.c, 0, 0);
+    cInk.style.transform = `matrix(${k},0,0,${k},${view.tx - m.tx * k},${view.ty - m.ty * k})`;
     return;
   }
+  if (cInk.style.transform) cInk.style.transform = '';
   const t0 = performance.now(), s = view.z * dpr, vr = zichtRect();
+  getekend = { z: view.z, tx: view.tx, ty: view.ty };
   c.setTransform(s, 0, 0, s, view.tx * dpr, view.ty * dpr);
   const opt = { zonderTekst: bewerkId };
   let gw = 0;
@@ -1751,10 +1830,8 @@ function tekenMidden() {
 }
 function maakMomentopname() {
   // het rasteren gebeurt later dan onze code: tel daarom ook de getekende punten
-  if ((inkMs < 8 && gewicht < 9000) || momentopname) return;
-  const m = document.createElement('canvas'); m.width = cInk.width; m.height = cInk.height;
-  m.getContext('2d').drawImage(cInk, 0, 0);
-  momentopname = { c: m, z: view.z, tx: view.tx, ty: view.ty };
+  if ((inkMs < 4 && gewicht < 4000) || momentopname || !getekend) return;
+  momentopname = getekend;   // het zicht waarmee het canvas laatst getekend werd
 }
 function stopMomentopname() { if (momentopname) { momentopname = null; vraag('ink'); } }
 
@@ -1929,9 +2006,26 @@ function huidigeKleur() {
 }
 function vingerSchuift(e) { return e.pointerType === 'touch' && ui.penGezien && ui.vinger === 'schuif'; }
 
+// Een vinger die op de werkbalk of een knop aan de rand landt, telt mee voor knijpen en schuiven:
+// zo zijn de randen van het scherm geen dode hoeken.
+const randV = new Map();
+let klikWeg = 0;
+function voegRandToe() { randV.forEach((p, id) => ptrs.set(id, p)); randV.clear(); klikWeg = performance.now() + 1e9; }
+stage.addEventListener('click', e => { if (performance.now() < klikWeg && e.target.closest('.tray, .zoom, .vb-bar, .selbar')) { e.stopPropagation(); e.preventDefault(); } }, true);
 stage.addEventListener('pointerdown', e => {
   if (presenteert) return;
-  if (e.target.closest && e.target.closest('.selbar, .start-card, .vb-bar, .zoom, .tray, .pop, .editor')) return;
+  if (e.target.closest && e.target.closest('.selbar, .start-card, .vb-bar, .zoom, .tray, .pop, .editor')) {
+    if (e.pointerType === 'touch' && e.target.closest('.tray, .zoom, .vb-bar, .selbar')) {
+      srect = stage.getBoundingClientRect(); const [sx, sy] = tik(e);
+      randV.set(e.pointerId, { x: sx, y: sy, type: 'touch', t: e.timeStamp });
+      if ([...ptrs.values()].some(p => p.type === 'touch') && !penNeer) {
+        voegRandToe();
+        if (actie && actie.soort !== 'gebaar') { if (e.timeStamp - actie.t0 < 300 || (actie.weg || 0) < 24) annuleer(); else einde(actie.id, false); }
+        if (!actie) startGebaar(); else herbasis();
+      }
+    }
+    return;
+  }
   sluitPop(); sluitMenu();
   if (bewerkt) { klaarMetBewerken(); if (ui.tool === 'tekst' || ui.tool === 'briefje') { e.preventDefault(); return; } }
   srect = stage.getBoundingClientRect();
@@ -1949,6 +2043,8 @@ stage.addEventListener('pointerdown', e => {
   stopTraag(); cancelAnimationFrame(anim);
   toonStart(false);
   if (e.pointerType === 'touch') {
+    randV.forEach((p, id) => { if (e.timeStamp - p.t > 600) randV.delete(id); });
+    if (randV.size && !penNeer) voegRandToe();
     const n = [...ptrs.values()].filter(p => p.type === 'touch').length;
     if (n >= 2) {
       if (actie && actie.soort !== 'gebaar') {
@@ -1968,6 +2064,7 @@ stage.addEventListener('pointerdown', e => {
 });
 stage.addEventListener('pointermove', e => {
   if (presenteert) return;
+  const rv = randV.get(e.pointerId); if (rv) { [rv.x, rv.y] = tik(e); }
   const pt = ptrs.get(e.pointerId);
   if (!pt) { hover(e); return; }
   const [sx, sy] = tik(e);
@@ -1979,6 +2076,7 @@ stage.addEventListener('pointermove', e => {
 });
 const los = e => {
   if (presenteert) return;
+  randV.delete(e.pointerId);
   if (e.pointerType === 'pen') penNeer = false;
   if (!ptrs.has(e.pointerId)) return;
   ptrs.delete(e.pointerId);
@@ -2036,6 +2134,7 @@ function beweegGebaar() {
   naZicht();
 }
 function eindeGebaar(stil) {
+  if (klikWeg > performance.now() + 1e8) klikWeg = performance.now() + 400;
   const sp = actie && actie.spoor || [];
   actie = null; stage.classList.remove('c-grabbing');
   const klaar = () => { stopMomentopname(); vraag('alles'); };
@@ -2054,6 +2153,8 @@ function eindeGebaar(stil) {
 let wielT = 0;
 stage.addEventListener('wheel', e => {
   if (presenteert) return;
+  const sc = e.target.closest && e.target.closest('.pop, .start');
+  if (sc) { if (sc.scrollHeight > sc.clientHeight + 1) return; e.preventDefault(); return; }
   e.preventDefault();
   srect = stage.getBoundingClientRect();
   if (!actie) { maakMomentopname(); clearTimeout(wielT); wielT = setTimeout(stopMomentopname, 180); }
@@ -2082,6 +2183,12 @@ function startGereedschap(e, sx, sy) {
   } else if (t === 'gum') {
     actie = Object.assign(basis, { soort: 'gum', weg: 0, raak: new Map(), vorige: [x, y] });
     gumOp(x, y, x, y);
+  } else if (t === 'vorm' && ui.vorm === 'vpijl') {
+    // vrije pijl: dezelfde inkt als de pen, met een punt aan het einde
+    const w = PEN_W[ui.vormStijl[1]][0] / view.z;
+    actie = Object.assign(basis, { soort: 'lijn', pijl: true, c: huidigeKleur(), w, pts: [], vast: [sx, sy] });
+    for (const ev of samples(e)) nieuwePunt(actie, ev);
+    vraag('live');
   } else if (t === 'vorm') {
     const w = PEN_W[ui.vormStijl[1]][0] / view.z;
     actie = Object.assign(basis, { soort: 'vorm', a: [x, y], b: [x, y], c: huidigeKleur(), w });
@@ -2131,7 +2238,7 @@ function beweeg(e, sx, sy) {
     for (const ev of samples(e)) nieuwePunt(a, ev);
     const vp = e.getPredictedEvents ? e.getPredictedEvents() : [];
     a.voorspeld = vp.slice(0, 2).map(ev => naarWereld(ev.clientX - srect.left, ev.clientY - srect.top));
-    if (Math.hypot(sx - a.vast[0], sy - a.vast[1]) > 5) { a.vast = [sx, sy]; houdVast(); }
+    if (!a.pijl && Math.hypot(sx - a.vast[0], sy - a.vast[1]) > 5) { a.vast = [sx, sy]; houdVast(); }
     vraag('live');
   } else if (a.soort === 'gum') {
     for (const ev of samples(e)) { const [gx, gy] = naarWereld(ev.clientX - srect.left, ev.clientY - srect.top); gumOp(a.vorige[0], a.vorige[1], gx, gy); a.vorige = [gx, gy]; }
@@ -2170,7 +2277,11 @@ function einde(id, geannuleerd) {
   if (geannuleerd && a.soort === 'lijn' && !a.vorm) { vraag('live'); return; }
   if (a.soort === 'lijn') {
     if (a.vorm) wijzig(sh, [], [{ item: vormItem(a.vorm, a.c, a.stift ? a.w : a.w * 0.92) }]);
-    else {
+    else if (a.pijl) {
+      const p = vereenvoudig(lijnPunten(a), 0.22 / view.z, a.w);
+      let L = 0; for (let i = 3; i < p.length; i += 3) L += Math.hypot(p[i] - p[i - 3], p[i + 1] - p[i - 2]);
+      if (L * view.z >= 12) wijzig(sh, [], [{ item: { k: 'ink', id: uid(), c: a.c, w: r2(a.w), p, b: 0, pijl: 1 } }]);
+    } else {
       const p = vereenvoudig(lijnPunten(a), 0.22 / view.z, a.w);
       const it = { k: 'ink', id: uid(), c: a.c, w: r2(a.w), p };
       if (a.stift) it.hl = 1;
@@ -2225,7 +2336,7 @@ function gumOp(ax, ay, bx, by) {
     if (!raakt(g.bb, bb)) continue;
     if (ui.gumStuk && it.k === 'ink') {
       let stukken = a.raak.get(it.id);
-      const bron = stukken ? stukken.stukken : [{ p: verfijn(it.p, Math.max(R * 0.4, it.w * 0.5)), a: it.a, b: it.b }];
+      const bron = stukken ? stukken.stukken : [{ p: verfijn(it.p, Math.max(R * 0.4, it.w * 0.5)), a: it.a, b: it.pijl ? 0 : it.b, pijl: it.pijl }];
       const nieuw = [];
       let veranderd = false;
       for (const st of bron) {
@@ -2238,7 +2349,7 @@ function gumOp(ax, ay, bx, by) {
           if (raak) { veranderd = true; if (run.length) { keep.push({ p: run, a: begin ? st.a : 0, b: 0 }); run = []; } begin = false; }
           else run.push(st.p[i * 3], st.p[i * 3 + 1], st.p[i * 3 + 2]);
         }
-        if (run.length) keep.push({ p: run, a: begin ? st.a : 0, b: st.b });
+        if (run.length) keep.push({ p: run, a: begin ? st.a : 0, b: st.b, pijl: st.pijl });
         nieuw.push(...keep.filter(k => k.p.length >= 6 || (k.p.length === 3 && n === 1)));
       }
       if (veranderd || stukken) { a.raak.set(it.id, { it, stukken: nieuw }); verborgen.add(it.id); }
@@ -2258,7 +2369,7 @@ function eindeGum(a, sh) {
     verborgen.delete(it.id);
     const at = sh.items.indexOf(it);
     weg.push(it);
-    stukken.forEach(st => { const n = { k: 'ink', id: uid(), c: it.c, w: it.w, p: vereenvoudig(st.p, 0.15 / view.z, it.w) }; if (it.hl) n.hl = 1; if (st.a === 0) n.a = 0; if (st.b === 0) n.b = 0; erbij.push({ item: n, at }); });
+    stukken.forEach(st => { const n = { k: 'ink', id: uid(), c: it.c, w: it.w, p: vereenvoudig(st.p, 0.15 / view.z, it.w) }; if (it.hl) n.hl = 1; if (st.a === 0) n.a = 0; if (st.b === 0) n.b = 0; if (st.pijl) n.pijl = 1; erbij.push({ item: n, at }); });
   });
   sel.clear();
   if (weg.length) wijzig(sh, weg, erbij); else vraag('ink');
@@ -2323,30 +2434,34 @@ function inLus(it, pad) {
 }
 
 /* ---------- Bovenste laag tekenen ---------- */
-let liveVlek = null;
+let liveVlek = null, liveVuil = true;
 function tekenBoven() {
   const c = xLive;
   const s = view.z * dpr;
   // Snelle weg tijdens een gewone pennenstreek: alleen het stukje rond de lijn wissen en hertekenen.
   const a0 = actie;
   if (a0 && a0.soort === 'lijn' && !a0.vorm && !sel.size && !vervaag.length && !bewerkt) {
-    const p = lijnPunten(a0, true), bb = bboxPts(p, 3, a0.w + 2);
+    const p = lijnPunten(a0, true), bb = bboxPts(p, 3, a0.w + 2 + (a0.pijl ? PIJL(a0.w) : 0));
     const r = [Math.floor(bb[0] * s + view.tx * dpr) - 2, Math.floor(bb[1] * s + view.ty * dpr) - 2, Math.ceil(bb[2] * s + view.tx * dpr) + 2, Math.ceil(bb[3] * s + view.ty * dpr) + 2];
     const u = liveVlek ? [Math.min(r[0], liveVlek[0]), Math.min(r[1], liveVlek[1]), Math.max(r[2], liveVlek[2]), Math.max(r[3], liveVlek[3])] : [0, 0, cLive.width, cLive.height];
     c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(u[0], u[1], u[2] - u[0], u[3] - u[1]);
-    liveVlek = r;
+    liveVlek = r; liveVuil = true;
     c.setTransform(s, 0, 0, s, view.tx * dpr, view.ty * dpr);
-    tekenItem(c, { k: 'ink', c: a0.c, w: a0.w, hl: a0.stift ? 1 : 0, p }, { path: inktPad(p, a0.w, { vlak: a0.stift, b: 0 }) }, s);
+    tekenItem(c, { k: 'ink', c: a0.c, w: a0.w, hl: a0.stift ? 1 : 0, p }, inktGeo(p, a0.w, { vlak: a0.stift, b: 0 }, a0.pijl), s);
     return;
   }
   liveVlek = null;
+  // niets te tonen en al leeg: niet opnieuw wissen (scheelt veel tijdens schuiven)
+  const iets = !!((bewerkt && bewerkt.it.k === 'brief') || vervaag.length || (actie && actie.soort !== 'gebaar') || sel.size || (ui.tool === 'gum' && gumMuis));
+  if (!iets && !liveVuil) return;
+  liveVuil = iets;
   c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, cLive.width, cLive.height);
   c.setTransform(s, 0, 0, s, view.tx * dpr, view.ty * dpr);
   const a = actie;
   if (bewerkt && bewerkt.it.k === 'brief') tekenItem(c, bewerkt.it, geo(bewerkt.it), s, { zonderTekst: bewerkt.it.id });
   // wat de gum net wegnam, vervaagt kort
   if (vervaag.length) { const nu = performance.now(); vervaag.forEach(v => { c.globalAlpha = Math.max(0, 1 - (nu - v.t) / 220) * 0.6; tekenItem(c, v.it, geo(v.it), s); }); c.globalAlpha = 1; }
-  if (a && a.soort === 'gum') a.raak.forEach(({ it, stukken }) => stukken.forEach(st => tekenItem(c, { k: 'ink', c: it.c, w: it.w, hl: it.hl, p: st.p }, { path: inktPad(st.p, it.w, { a: st.a, b: st.b, vlak: !!it.hl }) }, s)));
+  if (a && a.soort === 'gum') a.raak.forEach(({ it, stukken }) => stukken.forEach(st => tekenItem(c, { k: 'ink', c: it.c, w: it.w, hl: it.hl, p: st.p }, inktGeo(st.p, it.w, { a: st.a, b: st.b, vlak: !!it.hl }, st.pijl), s)));
   if (a && a.soort === 'lijn') {
     if (a.vorm) {
       const m = a.morph, t = m ? clamp((performance.now() - m.t0) / 240, 0, 1) : 1;
@@ -2362,7 +2477,7 @@ function tekenBoven() {
     } else {
       const p = lijnPunten(a, true);
       const it = { k: 'ink', c: a.c, w: a.w, hl: a.stift ? 1 : 0, p };
-      tekenItem(c, it, { path: inktPad(p, a.w, { vlak: a.stift, b: 0 }) }, s);
+      tekenItem(c, it, inktGeo(p, a.w, { vlak: a.stift, b: 0 }, a.pijl), s);
     }
   }
   if (a && a.soort === 'vorm') {
@@ -2483,6 +2598,8 @@ function plaatsSelbar() {
   if (!k) { bar.classList.remove('on'); return; }
   const l = gekozen();
   bar.querySelector('[data-sel="bewerk"]').hidden = !(l.length === 1 && (l[0].k === 'tekst' || l[0].k === 'brief'));
+  const br = l.filter(i => i.k === 'brief');
+  bar.setAttribute('aria-label', l.length === 1 && br.length ? `Gekozen: ${BRIEF[br[0].kl][2].toLowerCase()} briefje${br[0].s ? ', ' + br[0].s.slice(0, 40) : ''}` : `Gekozen: ${l.length === 1 ? '1 ding' : l.length + ' dingen'}`);
   bar.classList.add('on');
   const bw = bar.offsetWidth, bh = bar.offsetHeight;
   const X0 = k[0] * view.z + view.tx, X1 = k[2] * view.z + view.tx, Y0 = k[1] * view.z + view.ty - 6, Y1 = k[3] * view.z + view.ty + 6;
@@ -2521,6 +2638,7 @@ $('selbar').addEventListener('click', e => {
   else if (w === 'wis') wisSel();
   else if (w === 'voor') naarVoren();
   else if (w === 'bewerk') { const l = gekozen(); if (l.length === 1) bewerk(l[0], false); }
+  else if (w === 'kleur') { if (ui.tool !== 'kies') zetTool('kies'); $('pop').classList.contains('open') ? sluitPop() : openPop(); }
 });
 
 /* ==========================================================================
@@ -2528,11 +2646,12 @@ $('selbar').addEventListener('click', e => {
    ========================================================================== */
 const VORM_ICO = {
   lijn: '<path d="M5 19L19 5"/>',
+  vpijl: '<path d="M4 19C6 13 9 16 11.5 11.5S15 5 19.5 5.5"/><path d="M15.5 2.5l4 3-3.5 3.5"/>',
   pijl: '<path d="M5 19L19 5M10 5h9v9"/>',
   rect: '<rect x="4" y="6" width="16" height="12" rx="1.5"/>',
   ellips: '<ellipse cx="12" cy="12" rx="8.5" ry="6.5"/>'
 };
-const VORM_NAAM = { lijn: 'Lijn', pijl: 'Pijl', rect: 'Rechthoek', ellips: 'Ellips' };
+const VORM_NAAM = { lijn: 'Lijn', vpijl: 'Vrije pijl', pijl: 'Rechte pijl', rect: 'Rechthoek', ellips: 'Ellips' };
 let ankerT2 = 0;
 function ankerLater() { clearTimeout(ankerT2); ankerT2 = setTimeout(schrijfAnker, 300); }
 function zetTool(t) {
@@ -2549,10 +2668,10 @@ function zetStaal() {
   const sw = $('opt-sw'), dot = $('opt-dot'), t = ui.tool;
   let kleur = huidigeKleur(), d = 0, naam = '';
   if (t === 'stift') { d = [6, 9, 12][ui.stift[1]]; naam = STIFT[ui.stift[0]][1]; }
-  else if (t === 'briefje') { kleur = BRIEF[ui.brief][0]; naam = 'briefje ' + BRIEF[ui.brief][2].toLowerCase(); }
+  else if (t === 'briefje') { kleur = BRIEF[ui.brief][0]; naam = BRIEF[ui.brief][2].toLowerCase() + ' briefje'; }
   else if (t === 'gum') { kleur = '#e2e8f0'; d = ui.gumStuk ? [6, 11][ui.gum] : 0; naam = ui.gumStuk ? 'gum een stukje' : 'gum hele lijn'; }
   else if (t === 'tekst') { d = [5, 8, 12][ui.tekst[1]]; naam = INKT[ui.tekst[0]][1]; }
-  else if (t === 'vorm') { d = [4, 7, 11][ui.vormStijl[1]]; naam = INKT[ui.vormStijl[0]][1]; }
+  else if (t === 'vorm') { d = [4, 7, 11][ui.vormStijl[1]]; naam = VORM_NAAM[ui.vorm].toLowerCase() + ', ' + INKT[ui.vormStijl[0]][1].toLowerCase(); }
   else if (t === 'kies') { kleur = '#f1f5f9'; naam = 'selectie'; }
   else { d = [4, 7, 11][ui.pen[1]]; naam = INKT[ui.pen[0]][1]; }
   sw.style.background = kleur;
@@ -2560,9 +2679,14 @@ function zetStaal() {
   dot.style.background = t === 'gum' ? '#64748b' : '#fff';
   $('opt-btn').setAttribute('aria-label', 'Kleur en dikte: ' + naam);
 }
-function kleurKnoppen(lijst, actief, groep) {
-  return `<div class="row" role="group" aria-label="Kleur">${lijst.map((k, i) => `<button type="button" class="kleur" data-k="${groep}" data-i="${i}" aria-pressed="${i === actief}" aria-label="${k[k.length - 1]}" title="${k[k.length - 1]}"><i style="background:${k[0]}"></i></button>`).join('')}</div>`;
+// Kleurbolletjes: elk met een naam; de gekozen kleur krijgt een ring en een vinkje (kleur is nooit het enige teken).
+const VINK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
+function licht(hex) { const v = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)); return v[0] * 0.299 + v[1] * 0.587 + v[2] * 0.114 > 150; }
+function kleurKnoppen(lijst, actief, groep, orde, label) {
+  const idx = orde || lijst.map((_, i) => i);
+  return `<div class="row${idx.length > 6 ? ' kl8' : ''}" role="group" aria-label="${label || 'Kleur'}">${idx.map(i => { const k = lijst[i], naam = k[k.length - 1]; return `<button type="button" class="kleur" data-k="${groep}" data-i="${i}" aria-pressed="${i === actief}" aria-label="${naam}" title="${naam}"><i style="background:${k[0]};color:${licht(k[0]) ? '#334155' : '#fff'}">${i === actief ? VINK : ''}</i></button>`; }).join('')}</div>`;
 }
+const briefLijst = () => BRIEF.map(b => [b[0], b[2]]);
 function dikteKnoppen(lijst, actief, groep, kleur, schaal) {
   return `<div class="row" role="group" aria-label="Dikte">${lijst.map((k, i) => `<button type="button" class="dikte" data-k="${groep}" data-i="${i}" aria-pressed="${i === actief}"><i style="width:${schaal[i]}px;height:${schaal[i]}px;${kleur ? 'color:' + kleur : ''}"></i>${k[1]}</button>`).join('')}</div>`;
 }
@@ -2580,18 +2704,21 @@ function bouwPop() {
     if (ui.gumStuk) h += dikteKnoppen(GUM_R, ui.gum, 'gum-w', '', [8, 14]);
     else h += `<p class="hint">Veeg over een lijn, tekst of briefje: het verdwijnt in zijn geheel.</p>`;
   } else if (t === 'vorm') {
-    h = `<h3>Vorm</h3><div class="row" role="group" aria-label="Vorm">${Object.keys(VORM_ICO).map(v => `<button type="button" class="keuze" data-k="vorm" data-v="${v}" aria-pressed="${ui.vorm === v}" aria-label="${VORM_NAAM[v]}" title="${VORM_NAAM[v]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${VORM_ICO[v]}</svg></button>`).join('')}</div>`
-      + `<h3>Kleur</h3>${kleurKnoppen(INKT, ui.vormStijl[0], 'vorm-k')}<h3>Dikte</h3>${dikteKnoppen(PEN_W, ui.vormStijl[1], 'vorm-w', '', [4, 7, 11])}<p class="hint">Houd Shift ingedrukt voor een vierkant, cirkel of rechte hoek.</p>`;
+    h = `<h3>Vorm: ${VORM_NAAM[ui.vorm].toLowerCase()}</h3><div class="row" role="group" aria-label="Vorm">${Object.keys(VORM_ICO).map(v => `<button type="button" class="keuze" data-k="vorm" data-v="${v}" aria-pressed="${ui.vorm === v}" aria-label="${VORM_NAAM[v]}" title="${VORM_NAAM[v]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${VORM_ICO[v]}</svg></button>`).join('')}</div>`
+      + `<h3>Kleur</h3>${kleurKnoppen(INKT, ui.vormStijl[0], 'vorm-k')}<h3>Dikte</h3>${dikteKnoppen(PEN_W, ui.vormStijl[1], 'vorm-w', '', [4, 7, 11])}`
+      + (ui.vorm === 'vpijl' ? `<p class="hint">De pijl volgt je hand. De punt komt vanzelf aan het einde.</p>` : `<p class="hint">Houd Shift ingedrukt voor een vierkant, cirkel of rechte hoek.</p>`);
   } else if (t === 'tekst') {
     h = `<h3>Kleur</h3>${kleurKnoppen(INKT, ui.tekst[0], 'tekst-k')}<h3>Grootte</h3><div class="row">${TEKST_FS.map((k, i) => `<button type="button" class="keuze" data-k="tekst-w" data-i="${i}" aria-pressed="${ui.tekst[1] === i}" style="font-size:${[13, 15, 18][i]}px">${k[1]}</button>`).join('')}</div>`;
   } else if (t === 'briefje') {
-    h = `<h3>Kleur van het briefje</h3>${kleurKnoppen(BRIEF.map(b => [b[0], b[2]]), ui.brief, 'brief-k')}<p class="hint">Tik op het blad voor een nieuw briefje. Sleep een briefje om het te verplaatsen.</p>`;
+    h = `<h3>Kleur van het briefje: ${BRIEF[ui.brief][2].toLowerCase()}</h3>${kleurKnoppen(briefLijst(), ui.brief, 'brief-k', BRIEF_ORDE, 'Kleur van het briefje')}<p class="hint">Tik op het blad voor een nieuw briefje. Een briefje dat er al staat, geef je een andere kleur met Kies.</p>`;
   } else if (t === 'kies') {
     const l = gekozen();
     if (!l.length) h = `<p class="hint">Tik iets aan, of trek een lus rond wat je wil kiezen. Daarna kan je het verschuiven, groter maken of een andere kleur geven.</p>`;
     else {
-      if (l.some(i => i.k !== 'brief')) h += `<h3>Kleur</h3>${kleurKnoppen(INKT, -1, 'sel-k')}`;
-      if (l.some(i => i.k === 'brief')) h += `<h3>Kleur van het briefje</h3>${kleurKnoppen(BRIEF.map(b => [b[0], b[2]]), -1, 'sel-b')}`;
+      const een = (lst, f) => { const v = [...new Set(lst.map(f))]; return v.length === 1 ? v[0] : -1; };
+      const ink = l.filter(i => i.k !== 'brief'), br = l.filter(i => i.k === 'brief');
+      if (ink.length) h += `<h3>Kleur</h3>${kleurKnoppen(INKT, een(ink, i => INKT.findIndex(k => k[0] === i.c)), 'sel-k')}`;
+      if (br.length) { const kb = een(br, i => i.kl); h += `<h3>Kleur van het briefje${kb >= 0 ? ': ' + BRIEF[kb][2].toLowerCase() : ''}</h3>${kleurKnoppen(briefLijst(), kb, 'sel-b', BRIEF_ORDE, 'Kleur van het briefje')}`; }
     }
   }
   p.innerHTML = h;
@@ -2636,14 +2763,40 @@ document.addEventListener('pointerdown', e => {
 
 function knoppen() {
   const sh = blad(), h = H_(sh.id), i = boek.bladen.indexOf(sh);
-  $('undo-btn').disabled = !h.u.length; $('redo-btn').disabled = !h.r.length;
+  $('undo-btn').disabled = !h.u.length && !boekH.u.length; $('redo-btn').disabled = !h.r.length && !boekH.r.length;
+  document.body.classList.toggle('kan-redo', !$('redo-btn').disabled);
   $('blad-n').textContent = `${i + 1}/${boek.bladen.length}`;
-  $('bladen-btn').setAttribute('aria-label', `Bladen: blad ${i + 1} van ${boek.bladen.length}`);
+  $('bladen-btn').setAttribute('aria-label', `Alle bladen: je bent op blad ${i + 1} van ${boek.bladen.length}`);
+  const nv = $('blad-naam'); if (document.activeElement !== nv) nv.value = sh.naam || '';
+  nv.setAttribute('aria-label', `Naam van blad ${i + 1}`);
   const vb = !!sh.vb; if ($('vb-bar').hidden === vb) $('vb-bar').hidden = !vb;
-  stage.setAttribute('aria-label', `Tekenvlak, ${sh.naam}, blad ${i + 1} van ${boek.bladen.length}`);
+  stage.setAttribute('aria-label', `Tekenvlak, ${bladNaam(sh)}, blad ${i + 1} van ${boek.bladen.length}`);
+  pasKop();
   document.querySelectorAll('#bg-keuze button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.bg === sh.bg)));
 }
 $('undo-btn').addEventListener('click', ongedaan);
+// De naam van het blad, rechtstreeks in de kop
+$('blad-naam').addEventListener('input', () => {
+  const sh = blad(), v = $('blad-naam').value.replace(/\s+/g, ' ').slice(0, 60);
+  sh.naam = v.trim(); bewaar(sh.id);
+  const li = document.querySelector(`#thumbs .thumb[data-id="${sh.id}"]`);
+  if (li) { const sp = li.querySelector('.cap span'); if (sp) sp.textContent = bladNaam(sh); li.querySelector('.tb').setAttribute('aria-label', `Blad ${boek.bladen.indexOf(sh) + 1}: ${bladNaam(sh)}`); }
+});
+$('blad-naam').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); $('blad-naam').blur(); stage.focus({ preventScroll: true }); } });
+$('blad-naam').addEventListener('change', () => knoppen());
+// Een smalle kop (gsm, of tekst groot gezet): eerst de teksten weg, dan pas knoppen
+function pasKop() {
+  const top = document.querySelector('.top'); if (!top) return;
+  const stappen = ['k1', 'k2', 'k3'];
+  top.classList.remove(...stappen);
+  for (const st of stappen) { if (top.scrollWidth <= top.clientWidth + 1) break; top.classList.add(st); }
+  // de plaatshouder moet helemaal leesbaar zijn
+  const nv = $('blad-naam'), cs = getComputedStyle(nv);
+  mx.font = `500 ${getComputedStyle(nv, '::placeholder').fontSize || cs.fontSize} ${FONT}`;
+  const ruimte = nv.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  nv.placeholder = ['Naam van dit blad', 'Geef een naam'].find(t => mx.measureText(t).width <= ruimte) || 'Naam';
+}
+addEventListener('resize', pasKop);
 $('redo-btn').addEventListener('click', opnieuw);
 $('fit-btn').addEventListener('click', () => pasInBeeld(true));
 
@@ -2686,9 +2839,9 @@ function bouwStrip() {
   boek.bladen.forEach((b, i) => {
     const li = document.createElement('li');
     li.className = 'thumb' + (b.id === boek.cur ? ' cur' : ''); li.dataset.id = b.id;
-    li.innerHTML = `<button type="button" class="tb" aria-current="${b.id === boek.cur}"><canvas width="368" height="230" aria-hidden="true"></canvas></button><div class="cap"><b>${i + 1}</b><span></span>${b.vb ? '<i class="vb">voorbeeld</i>' : ''}<button type="button" class="more" aria-haspopup="menu" aria-label="Meer voor blad ${i + 1}">${MEER_ICO}</button></div>`;
-    li.querySelector('span').textContent = b.naam;
-    li.querySelector('.tb').setAttribute('aria-label', `Blad ${i + 1}: ${b.naam}`);
+    li.innerHTML = `<button type="button" class="tb" aria-current="${b.id === boek.cur}"><canvas width="368" height="230" aria-hidden="true"></canvas></button><div class="cap"><b>${i + 1}</b><span class="${b.naam ? '' : 'geen'}" title="Tik om een naam te geven"></span>${b.vb ? '<i class="vb">voorbeeld</i>' : ''}<button type="button" class="more" aria-haspopup="menu" aria-label="Meer voor blad ${i + 1}">${MEER_ICO}</button></div>`;
+    li.querySelector('.cap span').textContent = bladNaam(b);
+    li.querySelector('.tb').setAttribute('aria-label', `Blad ${i + 1}: ${bladNaam(b)}`);
     ol.appendChild(li);
   });
   duimenBijwerken(true);
@@ -2744,29 +2897,36 @@ function nieuwBlad(tpl, bg) {
   if (!heeftWerk()) { boek.bladen.forEach(b => weggegooid.add(b.id)); boek.bladen = [nb]; }
   else {
     const i = boek.bladen.indexOf(blad());
-    nb.naam = tpl === 'leeg' ? 'Blad ' + (boek.bladen.length + 1) : SJ[tpl].naam;
     boek.bladen.splice(i + 1, 0, nb);
   }
   bewaar(nb.id); bouwStrip(); gaNaar(nb.id, true); toonStart(false);
   if (tpl === 'leeg') zetTool(ui.tool === 'kies' ? 'pen' : ui.tool);
 }
-function verwijderBlad(id) {
+// Een blad verwijderen kan ongedaan: met de melding, met de knop Ongedaan maken en met Ctrl+Z.
+function verwijderBlad(id, stil) {
   const i = boek.bladen.findIndex(b => b.id === id); if (i < 0) return;
-  const oud = boek.bladen[i], wasCur = boek.cur === id;
+  const oud = boek.bladen[i], wasCur = boek.cur === id, naam = bladNaam(oud);
   boek.bladen.splice(i, 1); weggegooid.add(id);
   if (!boek.bladen.length) { const nb = leegBlad(); boek.bladen.push(nb); }
-  if (wasCur) { zichten.delete(id); boek.cur = null; }
+  if (wasCur) { boek.cur = null; }
   bewaar(); bouwStrip(); gaNaar(wasCur ? boek.bladen[Math.min(i, boek.bladen.length - 1)].id : boek.cur);
   if (!heeftWerk()) toonStart(true);
-  toast('Blad verwijderd', () => {
-    if (boek.bladen.length === 1 && !heeftWerk()) { weggegooid.add(boek.bladen[0].id); boek.bladen = []; }
-    weggegooid.delete(id); boek.bladen.splice(Math.min(i, boek.bladen.length), 0, oud);
-    bewaar(oud.id); bouwStrip(); gaNaar(oud.id); toonStart(false);
-  });
+  const stap = {
+    terug: () => {
+      if (boek.bladen.some(b => b.id === id)) return;
+      if (boek.bladen.length === 1 && !heeftWerk()) { weggegooid.add(boek.bladen[0].id); boek.bladen = []; }
+      weggegooid.delete(id); boek.bladen.splice(Math.min(i, boek.bladen.length), 0, oud);
+      bewaar(oud.id); bouwStrip(); gaNaar(oud.id); toonStart(false); toast(naam + ' is terug');
+    },
+    doe: () => verwijderBlad(id, true)
+  };
+  if (!stil) { stap.n = ++volg; boekH.u.push(stap); boekH.r.length = 0; }
+  knoppen();
+  toast(naam + ' verwijderd', () => { const k = boekH.u.indexOf(stap); if (k >= 0) boekH.u.splice(k, 1); stap.terug(); knoppen(); });
 }
 function kopieBlad(id) {
   const b = boek.bladen.find(x => x.id === id); if (!b) return;
-  const n = { ...JSON.parse(JSON.stringify(b)), id: uid(), naam: (b.naam + ' (kopie)').slice(0, 60), vb: undefined, t: Date.now() };
+  const n = { ...JSON.parse(JSON.stringify(b)), id: uid(), naam: b.naam ? (b.naam + ' (kopie)').slice(0, 60) : '', vb: undefined, t: Date.now() };
   n.items.forEach(it => it.id = uid());
   boek.bladen.splice(boek.bladen.indexOf(b) + 1, 0, n);
   bewaar(n.id); bouwStrip(); gaNaar(n.id, true); toast('Blad gedupliceerd');
@@ -2781,6 +2941,7 @@ $('nieuw-btn').addEventListener('click', () => openGalerij());
 $('thumbs').addEventListener('click', e => {
   if (sleepKlik) { sleepKlik = false; return; }
   const li = e.target.closest('.thumb'); if (!li) return;
+  if (e.target.closest('.cap span')) { hernoem(li.dataset.id); return; }
   if (e.target.closest('.more')) { thumbMenu(li, e.target.closest('.more')); return; }
   if (e.target.closest('.tb')) { gaNaar(li.dataset.id, true); if (!breed()) setTimeout(() => zetStrip(false), 120); }
 });
@@ -2824,10 +2985,10 @@ function hernoem(id) {
   const li = document.querySelector(`#thumbs .thumb[data-id="${id}"]`), b = boek.bladen.find(x => x.id === id);
   if (!li || !b) return;
   const span = li.querySelector('.cap span'), inp = document.createElement('input');
-  inp.className = 'rename'; inp.value = b.naam; inp.maxLength = 60; inp.setAttribute('aria-label', 'Naam van het blad'); inp.enterKeyHint = 'done';
+  inp.className = 'rename'; inp.value = b.naam || ''; inp.maxLength = 60; inp.placeholder = 'Naam van dit blad'; inp.setAttribute('aria-label', `Naam van blad ${boek.bladen.indexOf(b) + 1}`); inp.enterKeyHint = 'done';
   span.replaceWith(inp); inp.focus(); inp.select();
   let klaar = false;
-  const ok = bewaren => { if (klaar) return; klaar = true; if (bewaren) { const v = inp.value.replace(/\s+/g, ' ').trim(); if (v && v !== b.naam) { b.naam = v; bewaar(b.id); } } bouwStrip(); knoppen(); focusDuim(id); };
+  const ok = bewaren => { if (klaar) return; klaar = true; if (bewaren) { const v = inp.value.replace(/\s+/g, ' ').trim(); if (v !== (b.naam || '')) { b.naam = v; bewaar(b.id); } } bouwStrip(); knoppen(); focusDuim(id); };
   inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); ok(true); } else if (e.key === 'Escape') { e.preventDefault(); ok(false); } });
   inp.addEventListener('blur', () => ok(true));
 }
@@ -3024,7 +3185,7 @@ function pTeken() {
   const m = Math.min(pSheet.width, pSheet.height) * 0.05;
   tekenBlad(pX, sh, { x: m, y: m * 1.2, w: pSheet.width - 2 * m, h: pSheet.height - 2.4 * m }, { wr: kader(sh, true), dichtheid: pDpr });
   $('p-tel').textContent = `${pI + 1} / ${boek.bladen.length}`;
-  $('p-titel').textContent = sh.naam;
+  $('p-titel').textContent = bladNaam(sh);
   $('p-prev').disabled = pI === 0; $('p-next').disabled = pI >= boek.bladen.length - 1;
 }
 function pToon(richting) {
@@ -3114,7 +3275,7 @@ function presToets(e) {
 }
 
 /* ==========================================================================
-   Downloaden: afbeelding (gedeelde ocExport) en PDF van het hele boekje
+   Downloaden: afbeelding van het blad en PDF van het hele boekje, zonder datum op het blad
    ========================================================================== */
 function vandaag() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
 function slug(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40); }
@@ -3125,24 +3286,15 @@ async function downloadAfbeelding() {
   klaarMetBewerken();
   const sh = blad(), i = boek.bladen.indexOf(sh);
   if (leegBladNu(sh)) { toast('Dit blad is nog leeg.'); return; }
-  toast('Bezig…');
   await lettersKlaar();
-  const k = kader(sh, true);
-  let w = 2080, h = Math.round(w * k.h / k.w);
-  if (h > 2400) { h = 2400; w = Math.round(h * k.w / k.h); }
-  const c = document.createElement('canvas'); c.width = w; c.height = h;
-  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);
-  tekenBlad(ctx, sh, { x: 0, y: 0, w, h }, { wr: k, dichtheid: 2 });
-  const url = c.toDataURL('image/png');
-  try {
-    await ocExport.png(() => {
-      const box = document.createElement('div'); box.style.cssText = 'border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#fff';
-      const img = document.createElement('img'); img.src = url; img.alt = ''; img.style.cssText = `display:block;width:100%;height:auto;max-width:${w / 2}px;margin:0 auto`;
-      box.appendChild(img);
-      return { node: box, title: sh.naam, subtitle: `Schetsboek, blad ${i + 1} van ${boek.bladen.length}` };
-    }, ['schetsboek', slug(sh.naam), vandaag()].filter(Boolean).join('-'), { landscape: true });
+  // even breed als een A4-pagina, de hoogte volgt de tekening
+  const k = kader(sh, true), PW = 1123, bh = clamp((PW - 80) * k.h / k.w, 240, 1500);
+  const c = paginaCanvas(sh, i, boek.bladen.length, PW, Math.round(114 + bh + 16 + 46), 2);
+  c.toBlob(b => {
+    if (!b) { toast('Downloaden lukt nu niet'); return; }
+    bewaarBlob(b, ['schetsboek', slug(bladNaam(sh)), vandaag()].filter(Boolean).join('-') + '.png');
     toast('Afbeelding gedownload');
-  } catch (e) { toast('Downloaden lukt nu niet: geen verbinding?'); }
+  }, 'image/png');
 }
 const PDF_LIB = '/lib/jspdf-2.5.1.umd.min.js';
 let pdfLaden = null;
@@ -3152,17 +3304,16 @@ function laadPdf() {
   return pdfLaden;
 }
 // Eén A4 liggend per blad, met dezelfde kop en voet als de downloads van de andere tools.
-function paginaCanvas(sh, i, n) {
-  const PW = 1123, PH = 794, K = 2.2, c = document.createElement('canvas');
+function paginaCanvas(sh, i, n, PW, PH, K) {
+  PW = PW || 1123; PH = PH || 794; K = K || 2.2;
+  const c = document.createElement('canvas');
   c.width = Math.round(PW * K); c.height = Math.round(PH * K);
   const x = c.getContext('2d');
   x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
   x.setTransform(K, 0, 0, K, 0, 0);
   x.textBaseline = 'alphabetic';
-  x.fillStyle = '#1e293b'; x.font = `700 22px ${FONT}`; x.fillText(sh.naam, 40, 62);
+  x.fillStyle = '#1e293b'; x.font = `700 22px ${FONT}`; x.fillText(bladNaam(sh), 40, 62);
   x.fillStyle = '#64748b'; x.font = `400 14px ${FONT}`; x.fillText(`Schetsboek, blad ${i + 1} van ${n}`, 40, 84);
-  x.fillStyle = '#94a3b8'; x.font = `400 12px ${FONT}`; x.textAlign = 'right';
-  x.fillText(new Date().toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }), PW - 40, 84); x.textAlign = 'left';
   x.fillStyle = '#10b981'; x.fillRect(40, 96, PW - 80, 2);
   x.fillStyle = '#e2e8f0'; x.fillRect(40, PH - 46, PW - 80, 1);
   x.fillStyle = '#94a3b8'; x.font = `400 11px ${FONT}`; x.fillText('Onder Constructie', 40, PH - 26);
@@ -3185,7 +3336,7 @@ async function downloadPdf() {
       doc.addImage(paginaCanvas(boek.bladen[i], i, n).toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, 297, 210, undefined, 'FAST');
       await new Promise(r => setTimeout(r, 0));
     }
-    doc.setProperties({ title: 'Schetsboek', subject: boek.bladen.map(b => b.naam).join(', '), creator: 'Onder Constructie' });
+    doc.setProperties({ title: 'Schetsboek', subject: boek.bladen.map(bladNaam).join(', '), creator: 'Onder Constructie' });
     bewaarBlob(doc.output('blob'), `schetsboek-${vandaag()}.pdf`);
     toast(n === 1 ? 'PDF gedownload' : `PDF gedownload, ${n} bladen`);
   } catch (e) { toast('Downloaden lukt nu niet'); }
@@ -3310,6 +3461,7 @@ document.addEventListener('keydown', e => {
   if (typt) return;
   if (document.querySelector('.ocw-back') || !$('gal').hidden || !$('info').hidden || $('tmenu')) return;
   const mod = e.ctrlKey || e.metaKey, k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+  if (mod && k === 'z' && !e.shiftKey && $('toast').classList.contains('show') && !$('toast-btn').hidden) { e.preventDefault(); $('toast-btn').click(); return; }
   if (mod && k === 'z') { e.preventDefault(); e.shiftKey ? opnieuw() : ongedaan(); return; }
   if (mod && k === 'y') { e.preventDefault(); opnieuw(); return; }
   if (mod && k === 'a') { e.preventDefault(); zetTool('kies'); blad().items.forEach(it => sel.add(it.id)); plaatsSelbar(); vraag('live'); return; }
@@ -3327,6 +3479,13 @@ document.addEventListener('keydown', e => {
     return;
   }
   if (opKnop && (k === 'Enter' || k === ' ')) return;
+  if (k === 'Enter' && tg === stage && (ui.tool === 'tekst' || ui.tool === 'briefje')) {
+    e.preventDefault(); toonStart(false);
+    const v = vrijVlak(), [x, y] = naarWereld(v.x + v.w / 2, v.y + v.h / 2);
+    if (ui.tool === 'tekst') { const fs = TEKST_FS[ui.tekst[1]][0] / view.z; bewerk({ k: 'tekst', id: uid(), x: r2(x - fs * 2), y: r2(y - fs * 0.62), s: '', fs: r2(fs), c: huidigeKleur() }, true); }
+    else { const w = 210 / view.z, h = 160 / view.z; bewerk({ k: 'brief', id: uid(), x: r2(x - w / 2), y: r2(y - h / 2), w: r2(w), h: r2(h), s: '', kl: ui.brief, rot: r2((Math.random() * 2 - 1) * 2.6) }, true); }
+    return;
+  }
   if (TOETS_TOOL[k]) { e.preventDefault(); zetTool(TOETS_TOOL[k]); return; }
   if (k === 'f' || (k === '1' && e.shiftKey) || k === '!') { e.preventDefault(); pasInBeeld(true); return; }
   if (k === '+' || k === '=') { e.preventDefault(); zoomRond(W / 2, Hh / 2, 1.25); return; }
@@ -3361,7 +3520,7 @@ addEventListener('storage', e => {
   zetStrip(breed() ? ui.strip !== false : false);
   bouwStrip(); zetTool(ui.tool); gaNaar(boek.cur);
   toonStart(!heeftWerk());
-  lettersKlaar().then(() => { geoVer++; vraag('alles'); duimenBijwerken(true); plaatsSelbar(); });
+  lettersKlaar().then(() => { geoVer++; vraag('alles'); duimenBijwerken(true); plaatsSelbar(); pasKop(); });
   if (location.hash === '#hoe-werkt-dit') openInfo();
   addEventListener('hashchange', () => { if (location.hash === '#hoe-werkt-dit') openInfo(); });
 })();
@@ -3583,6 +3742,98 @@ addEventListener('storage', e => {
   }
   try { var bc = new BroadcastChannel('oc-sync'); bc.onmessage = function (e) { if (e.data && e.data.type === 'wis') wis(); }; } catch (e) {}
   addEventListener('storage', function (e) { if (e.key === 'oc.wis' || e.key === null) wis(); });
+  /* Gebruikerstest november 2026, voor alle tools:
+     Ctrl/Cmd+Z doet "Ongedaan" zolang die melding zichtbaar is (in een tekstveld doet de browser zijn eigen ongedaan);
+     een rij keuzeknoppen (role="radiogroup") is één Tab-stop, de pijltjes gaan naar een andere keuze, Spatie of Enter kiest;
+     een naamveld met data-oc-titel ziet eruit als een veld (potloodje, onderlijn bij aanwijzen of typen);
+     een naam getypt in een veld met data-oc-projectnaam wordt de projectnaam van de app, als die nog leeg is. */
+  var STANDAARD = /^((mijn|nieuwe?) )?(project|analyse|lijst|keuze|kaart|ideeënkaart|doelgroep|matrix|plan|groep|team|tabel|informatietabel|log|retro|sprint|scan|proces)( \d+)?$|^naamloos$|^hele organisatie$/i;
+  window.ocStandaardNaam = function (v) { v = String(v || '').trim(); return !v || STANDAARD.test(v); };
+  function typt(a) { return a && (a.isContentEditable || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || (a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|reset|range|color|file)$/i.test(a.type))); }
+  function zichtbaar(x) {
+    if (x.disabled || x.hidden || !x.getClientRects().length) return false;
+    for (var el = x; el && el.nodeType === 1; el = el.parentElement) { var cs = getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < 0.1) return false; }
+    var r = x.getBoundingClientRect(); return r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth;
+  }
+  addEventListener('keydown', function (e) {
+    if (e.defaultPrevented || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey || String(e.key).toLowerCase() !== 'z' || typt(document.activeElement)) return;
+    var b = [].filter.call(document.querySelectorAll('[role="status"] button, [aria-live] button'), function (x) { return /^\s*ongedaan/i.test(x.textContent) && zichtbaar(x); }).pop();
+    if (b) { e.preventDefault(); b.click(); }
+  });
+  function radios(g) { return [].filter.call(g.querySelectorAll('[role="radio"]'), function (x) { return x.closest('[role="radiogroup"]') === g; }); }
+  function bruikbaar(x) { return !x.disabled && x.getAttribute('aria-disabled') !== 'true' && x.getClientRects().length; }
+  // Kiezen met Spatie of Enter laat de tool vaak opnieuw tekenen: de focus blijft dan op de gekozen keuze.
+  var terug = null;
+  document.addEventListener('click', function (e) {
+    var x = e.detail === 0 && e.target && e.target.closest && e.target.closest('[role="radio"]'); if (!x || x.tagName === 'INPUT') return;
+    var s = [].map.call(x.attributes, function (a) { return a.name === 'id' || /^data-/.test(a.name) ? '[' + a.name + '="' + (window.CSS && CSS.escape ? CSS.escape(a.value) : a.value) + '"]' : ''; }).join('');
+    terug = s ? { s: '[role="radio"]' + s, t: Date.now() } : null;
+  }, true);
+  function roving() {
+    var a0 = document.activeElement;
+    if (terug && Date.now() - terug.t < 2000 && (!a0 || a0 === document.body)) { var y = document.querySelector(terug.s); if (y) try { y.focus({ preventScroll: true }); } catch (e) {} terug = null; }
+    [].forEach.call(document.querySelectorAll('[role="radiogroup"]'), function (g) {
+      var r = radios(g); if (!r.length || r.some(function (x) { return x.tagName === 'INPUT'; })) return;
+      var a = document.activeElement, keep = r.indexOf(a) >= 0 ? a : r.filter(function (x) { return x.getAttribute('aria-checked') === 'true' && bruikbaar(x); })[0] || r.filter(bruikbaar)[0] || r[0];
+      r.forEach(function (x) { var t = x === keep ? '0' : '-1'; if (x.getAttribute('tabindex') !== t) x.setAttribute('tabindex', t); });
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    var x = e.target, d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1, Home: -2, End: 2 }[e.key];
+    if (!d || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || !x.getAttribute || x.getAttribute('role') !== 'radio' || x.tagName === 'INPUT') return;
+    var g = x.closest('[role="radiogroup"]'); if (!g) return;
+    var r = radios(g).filter(bruikbaar), i = r.indexOf(x); if (i < 0) return;
+    var n = r[d === -2 ? 0 : d === 2 ? r.length - 1 : (i + d + r.length) % r.length];
+    e.preventDefault(); r.forEach(function (y) { y.setAttribute('tabindex', y === n ? '0' : '-1'); }); n.focus();
+  });
+  var meet = null;
+  function titels() {
+    [].forEach.call(document.querySelectorAll('input[data-oc-titel]'), function (el) {
+      if (!el.offsetParent) return;
+      var cs = getComputedStyle(el), t = el.value || el.placeholder || '';
+      if (!meet) { meet = document.createElement('span'); meet.setAttribute('aria-hidden', 'true'); meet.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;white-space:pre'; document.body.appendChild(meet); }
+      meet.style.font = cs.font; meet.style.letterSpacing = cs.letterSpacing; meet.textContent = t;
+      var w = meet.getBoundingClientRect().width;
+      var px = Math.ceil(w + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth) + 8) + 'px';
+      if (el.style.width !== px) el.style.width = px;
+    });
+  }
+  function opmaak() {
+    if (!document.getElementById('oc-sync-stijl') && document.querySelector('[data-oc-titel]')) {
+      var s = document.createElement('style'); s.id = 'oc-sync-stijl';
+      s.textContent = 'input[data-oc-titel]{flex:0 1 auto!important;max-width:100%;min-width:5.5em;box-sizing:border-box;text-overflow:ellipsis;cursor:text;border-radius:6px 6px 0 0;padding-right:26px!important;'
+        + 'border-bottom:1.5px dashed transparent!important;background-repeat:no-repeat!important;background-position:right 4px center!important;background-size:15px 15px!important;'
+        + 'background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2394a3b8%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M12 20h9%27/%3E%3Cpath d=%27M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z%27/%3E%3C/svg%3E")!important}'
+        + 'input[data-oc-titel]:hover{border-bottom-color:#cbd5e1!important}'
+        + 'input[data-oc-titel]:focus{border-bottom:1.5px solid #047857!important;background-image:none!important}'
+        + 'input[data-oc-titel]::placeholder{color:#94a3b8;opacity:1}'
+        + 'input[data-oc-titel]+*{margin-left:auto}';
+      document.head.appendChild(s);
+    }
+    titels();
+  }
+  var gepland = false;
+  function later() { if (gepland) return; gepland = true; requestAnimationFrame(function () { gepland = false; roving(); opmaak(); }); }
+  function start() {
+    later();
+    try { new MutationObserver(later).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-checked', 'hidden', 'class'] }); } catch (e) {}
+    document.addEventListener('input', function (e) { if (e.target.hasAttribute && e.target.hasAttribute('data-oc-titel')) titels(); }, true);
+    addEventListener('resize', later);
+    try { document.fonts.ready.then(titels); document.fonts.addEventListener('loadingdone', titels); } catch (e) {}   // de letters komen soms pas later binnen
+    setInterval(function () { if (!document.hidden) titels(); }, 700);   // een tool kan de waarde zetten zonder de pagina te wijzigen
+  }
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
+  var eigenNaam = null, naamT = null;
+  function projectNu() { try { var p = JSON.parse(localStorage.getItem('oc.project')); return p && typeof p.name === 'string' ? p.name.trim() : ''; } catch (e) { return ''; } }
+  function deelNaam(el) {
+    var v = String(el.value || '').trim().slice(0, 80), nu = projectNu();
+    if (ocStandaardNaam(v) || (nu && nu !== eigenNaam)) return;
+    if ([].some.call(document.querySelectorAll('.vb-bar'), function (b) { return b.getClientRects().length; })) return;   // in het voorbeeld niet
+    if (v === nu) return;
+    try { localStorage.setItem('oc.project', JSON.stringify({ name: v, since: Date.now() })); eigenNaam = v; } catch (e) {}
+  }
+  document.addEventListener('input', function (e) { var el = e.target; if (!el.hasAttribute || !el.hasAttribute('data-oc-projectnaam')) return; clearTimeout(naamT); naamT = setTimeout(function () { deelNaam(el); }, 900); }, true);
+  ['change', 'focusout'].forEach(function (ev) { document.addEventListener(ev, function (e) { var el = e.target; if (el.hasAttribute && el.hasAttribute('data-oc-projectnaam')) { clearTimeout(naamT); deelNaam(el); } }, true); });
   if (window.parent === window) return;
   addEventListener('keydown', function (e) {
     if (e.key !== 'Escape' || e.defaultPrevented) return;
