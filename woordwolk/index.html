@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Woordwolk – Onder Constructie</title>
+<meta name="description" content="Plak open antwoorden of open een tekst- of CSV-bestand. Zie welke woorden vaak terugkomen, met woordparen zoals niet duidelijk, en lees meteen wat mensen erover schreven. Alles blijft op je toestel.">
+<meta name="oc:groep" content="zakmes">
+<meta name="oc:labels" content="tekst">
+<meta name="oc:kort" content="Welke woorden komen het vaakst terug in een tekst?">
+<meta name="oc:volgorde" content="160">
+<meta name="oc:opslag" content="woordwolk.v1">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='20' cy='20' r='18' fill='%23f8fafc' stroke='%23e2e8f0' stroke-width='1.5'/%3E%3Cpath d='M13 28h14a5 5 0 0 0 .6-9.96A7.5 7.5 0 0 0 13.3 16.9 5.6 5.6 0 0 0 13 28Z' stroke='%2364748b'/%3E%3Crect x='13.5' y='21.6' width='11.5' height='3.6' rx='1.8' fill='%2310b981'/%3E%3Cpath d='M16.5 18h3.5M22.5 18h2' stroke='%23cbd5e1'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/dm-sans-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/dm-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+:root {
+  --slate-900:#0f172a; --slate-800:#1e293b; --slate-700:#334155; --slate-600:#475569;
+  --slate-500:#64748b; --slate-400:#94a3b8; --slate-300:#cbd5e1; --slate-200:#e2e8f0;
+  --slate-100:#f1f5f9; --slate-50:#f8fafc; --wit:#ffffff;
+  --accent:#10b981; --accent-dark:#047857; --accent-hover:#065f46; --accent-light:#d1fae5; --accent-50:#ecfdf5; --accent-mid:#a7f3d0;
+  --rood:#b91c1c;
+  --bottom: env(safe-area-inset-bottom, 0px);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family:'DM Sans', system-ui, sans-serif; background:var(--slate-50); color:var(--slate-700);
+  line-height:1.5; min-height:100vh; min-height:100dvh; -webkit-font-smoothing:antialiased;
+  display:flex; flex-direction:column;
+}
+button, input, select, textarea { font:inherit; color:inherit; }
+button { background:none; border:0; cursor:pointer; }
+[hidden] { display:none !important; }
+.sr-only { position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+/* Kop (zoals de Werkdagenteller: terug naar het Zakmes) */
+.header { background:var(--wit); border-bottom:1px solid var(--slate-200); padding:1.5rem 1.25rem 1.75rem; position:relative; text-align:center; }
+.back-link { position:absolute; top:1.25rem; left:1.25rem; display:inline-flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--slate-500); text-decoration:none; transition:color 0.2s; }
+.back-link:hover { color:var(--accent-dark); }
+.back-link svg { width:16px; height:16px; }
+.logo svg { width:56px; height:56px; }
+.title { font-size:1.625rem; font-weight:700; color:var(--slate-800); letter-spacing:-0.03em; line-height:1.2; margin-top:0.5rem; }
+.subtitle { font-size:0.9375rem; color:var(--slate-500); }
+/* Eenheid: één kop zoals in de andere tools (november 2026) */
+header.header, .oc-head { display:block; background:#fff; border-bottom:1px solid #e2e8f0; padding:1.5rem 1.25rem 1.75rem; position:relative; text-align:center; }
+header.header .back-link, .oc-head .back-link { position:absolute; top:1.25rem; left:1.25rem; display:inline-flex; align-items:center; gap:0.5rem; min-height:44px; min-width:44px; padding:0; margin:0; font-size:0.875rem; font-weight:400; color:#64748b; text-decoration:none; background:none; border-radius:8px; transition:color 0.2s; }
+header.header .back-link:hover, .oc-head .back-link:hover { color:#047857; }
+header.header .back-link svg, .oc-head .back-link svg { width:16px; height:16px; flex:none; }
+header.header .logo, .oc-head .logo { display:block; width:56px; height:63px; margin:0 auto; }
+header.header .logo svg, .oc-head .logo svg { display:block; width:56px; height:56px; }
+header.header h1, header.header h1.title, .oc-head h1, .oc-head h1.title { font-size:1.625rem; font-weight:700; color:#1e293b; letter-spacing:-0.03em; line-height:1.2; margin:0.5rem 0 0; }
+header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h1 + p.subtitle { font-size:0.9375rem; color:#64748b; max-width:34rem; margin:0.125rem auto 0; line-height:1.5; }
+@media (max-width:640px) {
+  header.header .back-link, .oc-head .back-link { position:static; display:flex; justify-content:center; margin:0 auto 0.75rem; width:max-content; }
+  header.header .back-link span, .oc-head .back-link span { display:inline; }
+}
+
+.main { flex:1 0 auto; width:100%; max-width:1240px; margin:0 auto; padding:1.25rem clamp(1rem, 2.5vw, 2.5rem) 3rem; }
+.card { background:var(--wit); border:1px solid var(--slate-200); border-radius:16px; box-shadow:0 1px 2px rgba(15,23,42,0.04); min-width:0; }
+.label { font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--slate-500); }
+.fijn { font-size:0.8125rem; color:var(--slate-500); line-height:1.45; }
+
+/* Indeling: links tekst en resultaat, rechts (op een breed scherm) wat er staat en de weggelaten woorden */
+.werk { display:grid; grid-template-columns:minmax(0, 1fr); gap:1.25rem; align-items:start; }
+.links, .zij { display:flex; flex-direction:column; gap:1.25rem; min-width:0; }
+@media (min-width:1024px) {
+  .werk.vol { grid-template-columns:minmax(0, 1fr) clamp(320px, 30vw, 380px); }
+  .werk.vol .zij { position:sticky; top:1rem; max-height:calc(100dvh - 2rem); }
+  .werk.vol .zij .ctx { flex:1 1 auto; min-height:0; overflow:auto; overscroll-behavior:contain; }
+  .werk.vol .zij .weg-card { flex:none; }
+}
+.werk:not(.vol) .zij { display:none; }
+
+.kaart-kop { display:flex; align-items:center; gap:0.5rem; padding:0.75rem 0.75rem 0.5rem 1.25rem; min-width:0; }
+.kaart-kop h2, .kop-lbl { font-size:1.0625rem; font-weight:700; color:var(--slate-800); letter-spacing:-0.01em; }
+.kaart-kop .sub { font-size:0.875rem; color:var(--slate-500); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kaart-kop .menu-wrap { margin-left:auto; }
+.kaart-in { padding:0 1.25rem 1.25rem; }
+
+/* Invoer */
+.tekst { display:block; width:100%; min-height:9.5rem; height:11rem; max-height:70vh; resize:vertical; padding:0.75rem 0.875rem; border:1.5px solid var(--slate-200); border-radius:12px; background:var(--slate-50); outline:none; font-size:0.9375rem; line-height:1.5; color:var(--slate-800); transition:border-color 0.15s, background 0.15s; }
+.tekst:focus { border-color:var(--accent); background:var(--wit); }
+.tekst::placeholder { color:var(--slate-500); }
+.tekst.sleep { border-color:var(--accent); border-style:dashed; background:var(--accent-50); }
+.werk.vol .tekst { height:8.25rem; }
+.prive { display:flex; align-items:center; gap:0.375rem; margin-top:0.5rem; }
+.prive svg { width:14px; height:14px; flex:none; color:var(--accent-dark); }
+.tekst-acties { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem; }
+.groot-noot { margin-top:0.5rem; padding:0.5rem 0.75rem; border-radius:10px; background:var(--slate-100); color:var(--slate-600); font-size:0.875rem; }
+
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:44px; padding:0.5rem 1rem; border-radius:10px; border:1px solid var(--slate-200); background:var(--wit); font-size:0.9375rem; font-weight:600; color:var(--slate-700); text-decoration:none; line-height:1.25; text-align:center; }
+.btn:hover { border-color:var(--accent-mid); background:var(--accent-50); }
+.btn svg { width:18px; height:18px; flex:none; }
+.btn.primary { background:#047857; border-color:#047857; color:#fff; }
+.btn.primary:hover { background:#065f46; border-color:#065f46; }
+.btn.stil { border-color:transparent; background:none; color:var(--slate-600); }
+.btn.stil:hover { background:var(--slate-100); }
+
+/* Tabel: welke kolom? */
+.tabel { margin-top:1rem; padding-top:1rem; border-top:1px solid var(--slate-100); }
+.tabel-info { font-size:0.9375rem; color:var(--slate-700); margin-bottom:0.25rem; }
+.tabel-info b { font-weight:700; color:var(--slate-800); }
+.kolommen { border:0; margin-top:0.5rem; min-width:0; }
+.kolommen legend { font-size:0.875rem; font-weight:600; color:var(--slate-700); margin-bottom:0.375rem; }
+.kol-lijst { display:grid; grid-template-columns:repeat(auto-fill, minmax(15rem, 1fr)); gap:0.5rem; max-height:20rem; overflow:auto; padding:2px; }
+.kol { display:flex; gap:0.625rem; align-items:flex-start; min-height:44px; padding:0.5rem 0.75rem; border:1.5px solid var(--slate-200); border-radius:10px; cursor:pointer; background:var(--wit); min-width:0; }
+.kol:hover { border-color:var(--accent-mid); }
+.kol:has(input:checked) { border-color:#047857; background:var(--accent-50); }
+.kol input { flex:none; width:20px; height:20px; margin-top:0.125rem; accent-color:#047857; cursor:pointer; }
+.kol span { display:flex; flex-direction:column; min-width:0; line-height:1.35; }
+.kol b { font-size:0.9375rem; font-weight:600; color:var(--slate-800); overflow-wrap:anywhere; }
+.kol small { font-size:0.8125rem; color:var(--slate-600); overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow-wrap:anywhere; }
+.kol em { font-style:normal; font-size:0.8125rem; color:var(--slate-500); }
+.kol .tip { display:inline-block; margin-left:0.375rem; padding:0 0.375rem; border-radius:999px; background:var(--accent-light); color:#065f46; font-size:0.75rem; font-weight:600; vertical-align:1px; }
+
+/* Keuzes */
+.keuzes { display:grid; grid-template-columns:repeat(auto-fit, minmax(15rem, 1fr)); gap:0 1rem; padding:0 1.25rem 1rem; }
+.instellingen > summary { display:flex; flex-wrap:wrap; align-items:baseline; gap:0.125rem 0.75rem; min-height:52px; padding:0.75rem 1.25rem; cursor:pointer; list-style:none; border-radius:16px; }
+.instellingen > summary::-webkit-details-marker { display:none; }
+.instellingen > summary::before { content:''; align-self:center; width:8px; height:8px; border-right:2px solid var(--slate-500); border-bottom:2px solid var(--slate-500); transform:rotate(-45deg); transition:transform 0.15s; margin-right:0.25rem; flex:none; }
+.instellingen[open] > summary::before { transform:rotate(45deg); }
+.instellingen > summary:hover { background:var(--slate-50); }
+.inst-t { font-size:1rem; font-weight:700; color:var(--slate-800); }
+.inst-sam { font-size:0.875rem; color:var(--slate-600); min-width:0; }
+.vink { display:flex; gap:0.75rem; align-items:flex-start; min-height:44px; padding:0.5rem 0.5rem 0.5rem 0.25rem; margin:0 -0.25rem; border-radius:10px; cursor:pointer; }
+.vink:hover { background:var(--slate-50); }
+.vink input { flex:none; width:20px; height:20px; margin-top:0.125rem; accent-color:#047857; cursor:pointer; }
+.vink span { display:flex; flex-direction:column; min-width:0; font-size:0.9375rem; color:var(--slate-700); line-height:1.4; }
+.vink small { font-size:0.8125rem; color:var(--slate-500); margin-top:0.125rem; }
+.vink small.auto { color:#047857; }
+
+/* Resultaat */
+.res-kop { display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem 1rem; padding:0.75rem 0.75rem 0 1rem; }
+.keuze { flex:1 1 20rem; min-width:0; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:4px; padding:4px; background:var(--slate-100); border-radius:12px; max-width:30rem; }
+.keuze [role="radio"] { min-height:44px; padding:0.375rem 0.5rem; border-radius:9px; font-size:0.9375rem; font-weight:600; color:var(--slate-600); line-height:1.2; text-align:center; transition:background 0.15s, color 0.15s, box-shadow 0.15s; }
+.keuze [role="radio"]:hover { color:var(--slate-800); }
+.keuze [role="radio"][aria-checked="true"] { background:var(--wit); color:var(--accent-dark); box-shadow:0 1px 3px rgba(15,23,42,0.12), 0 0 0 1px var(--slate-200); }
+.overzicht { padding:0.75rem 1.25rem 0; font-size:0.9375rem; color:var(--slate-600); font-variant-numeric:tabular-nums; }
+.overzicht b { font-weight:600; color:var(--slate-800); }
+.instel { display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem 1.25rem; padding:0.75rem 1.25rem 0; }
+.instel-groep { display:flex; align-items:center; gap:0.5rem; min-width:0; }
+.instel-groep .lbl { font-size:0.875rem; font-weight:600; color:var(--slate-600); }
+.soort { display:inline-grid; grid-auto-flow:column; gap:4px; padding:4px; background:var(--slate-100); border-radius:12px; }
+.soort [role="radio"] { min-height:40px; min-width:44px; padding:0.25rem 0.625rem; border-radius:9px; font-size:0.875rem; font-weight:600; color:var(--slate-600); font-variant-numeric:tabular-nums; }
+.soort [role="radio"]:hover { color:var(--slate-800); }
+.soort [role="radio"][aria-checked="true"] { background:var(--wit); color:var(--accent-dark); box-shadow:0 1px 3px rgba(15,23,42,0.12), 0 0 0 1px var(--slate-200); }
+.maat-uitleg { flex:1 1 15rem; min-width:0; }
+.view { padding:0.75rem 1.25rem 0.5rem; min-width:0; }
+
+/* Wolk */
+.titel-rij { display:flex; min-width:0; margin-bottom:0.25rem; }
+.titel-in { min-width:5.5em; max-width:100%; border:0; background:transparent; padding:0.375rem 0.25rem; font-size:1.0625rem; font-weight:700; color:var(--slate-800); outline:none; min-height:44px; }
+.wolk { position:relative; width:100%; margin:0.25rem 0 0.5rem; user-select:none; -webkit-user-select:none; touch-action:manipulation; }
+.ww { position:absolute; display:flex; align-items:center; justify-content:center; padding:0; border-radius:6px; line-height:1; white-space:nowrap; font-weight:600; letter-spacing:0; cursor:pointer; transition:background 0.12s; }
+.ww:hover, .ww.gekozen { background:var(--accent-50); }
+.ww.gekozen { box-shadow:inset 0 -2px 0 currentColor; }
+.ww.t3 { color:#047857; } .ww.t2 { color:#334155; } .ww.t1 { color:#64748b; }
+.wolk-leeg { padding:2rem 0; text-align:center; color:var(--slate-600); font-size:0.9375rem; }
+.legende { list-style:none; display:flex; flex-wrap:wrap; gap:0.25rem 1rem; font-size:0.8125rem; color:var(--slate-600); font-variant-numeric:tabular-nums; }
+.legende li { display:flex; align-items:center; gap:0.375rem; }
+.legende i { width:12px; height:12px; border-radius:3px; flex:none; }
+.ook-vaak { display:flex; flex-wrap:wrap; align-items:center; gap:0.375rem; margin-top:0.625rem; font-size:0.875rem; color:var(--slate-600); }
+.ook-vaak > span { margin-right:0.125rem; }
+.ook-vaak button { display:inline-flex; align-items:center; gap:0.375rem; min-height:44px; padding:0.25rem 0.75rem; border:1px solid var(--accent-mid); border-radius:999px; background:var(--accent-50); color:#065f46; font-size:0.875rem; font-weight:600; font-variant-numeric:tabular-nums; }
+.ook-vaak button:hover { background:var(--accent-light); }
+.ook-vaak button small { font-size:0.8125rem; font-weight:500; color:#047857; }
+.ook-vaak button.gekozen { border-color:#047857; }
+.legende .t3 { background:#047857; } .legende .t2 { background:#334155; } .legende .t1 { background:#64748b; }
+
+/* Lijst en woordparen */
+.zoek { position:relative; margin-bottom:0.5rem; }
+.zoek svg { position:absolute; left:0.75rem; top:50%; width:18px; height:18px; transform:translateY(-50%); color:var(--slate-500); pointer-events:none; }
+.input { display:block; width:100%; min-width:0; max-width:100%; min-height:44px; padding:0.5rem 0.875rem; border:1.5px solid var(--slate-200); border-radius:10px; background:var(--slate-50); outline:none; font-size:1rem; color:var(--slate-800); transition:border-color 0.15s, background 0.15s; }
+.input:focus { border-color:var(--accent); background:var(--wit); }
+.input::placeholder { color:var(--slate-500); }
+.zoek .input { padding-left:2.5rem; }
+.rang-kop { display:flex; justify-content:space-between; gap:1rem; padding:0.25rem 0.5rem 0.375rem; font-size:0.8125rem; color:var(--slate-500); border-bottom:1px solid var(--slate-100); }
+.rang { list-style:none; }
+.rij { width:100%; display:grid; grid-template-columns:2rem minmax(0, 1fr) minmax(3rem, 30%) 3.25rem; align-items:center; gap:0.5rem; min-height:48px; padding:0.375rem 0.5rem; border-radius:10px; text-align:left; border-bottom:1px solid var(--slate-100); }
+.rij:hover, .rij.gekozen { background:var(--accent-50); }
+.rij .nr { font-size:0.8125rem; color:var(--slate-500); font-variant-numeric:tabular-nums; text-align:right; }
+.rij .wrd { display:flex; flex-direction:column; min-width:0; line-height:1.3; }
+.rij .wrd b { font-size:0.9375rem; font-weight:600; color:var(--slate-800); overflow-wrap:anywhere; }
+.rij .wrd small { font-size:0.8125rem; color:var(--slate-600); overflow-wrap:anywhere; }
+.rij .bar { height:10px; border-radius:5px; background:var(--slate-100); overflow:hidden; }
+.rij .bar i { display:block; height:100%; border-radius:5px; background:#10b981; }
+.rij .tal { font-size:0.9375rem; font-weight:700; color:var(--slate-800); text-align:right; font-variant-numeric:tabular-nums; }
+.lijst-noot { padding:1rem 0.5rem; color:var(--slate-600); font-size:0.9375rem; }
+.meer-rij { display:flex; justify-content:center; padding:0.75rem 0 0.25rem; }
+.paren-intro { margin-bottom:0.5rem; font-size:0.875rem; color:var(--slate-600); }
+
+/* Delen en eerlijkheid */
+.exp-row { display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem; padding:0.75rem 1.25rem 0; border-top:1px solid var(--slate-100); margin-top:0.5rem; }
+.exp-row .btn { font-size:0.875rem; padding:0.5rem 0.875rem; }
+.eerlijk { padding:0.75rem 1.25rem 1.25rem; font-size:0.875rem; color:var(--slate-600); line-height:1.45; }
+
+/* Wat zeiden mensen? (paneel ernaast, of een blad van onderaan op een smal scherm) */
+.ctx { display:flex; flex-direction:column; min-height:0; }
+.ctx-leeg { padding:1.5rem 1.25rem; text-align:center; color:var(--slate-600); font-size:0.9375rem; line-height:1.5; }
+.ctx-leeg svg { width:40px; height:40px; color:var(--slate-400); margin:0 auto 0.5rem; display:block; }
+.ctx-leeg b { display:block; color:var(--slate-800); font-weight:700; margin-bottom:0.125rem; }
+.ctx-kop { display:flex; align-items:flex-start; gap:0.5rem; padding:0.875rem 0.5rem 0 1.25rem; }
+.ctx-kop > div { flex:1; min-width:0; }
+.ctx-kop h2 { font-size:1.375rem; font-weight:700; color:var(--slate-800); letter-spacing:-0.02em; line-height:1.2; overflow-wrap:anywhere; outline:none; }
+.ctx-tel { padding:0.25rem 1.25rem 0; font-size:0.9375rem; color:var(--slate-600); font-variant-numeric:tabular-nums; }
+.ctx-tel b { color:var(--slate-800); font-weight:700; }
+.ctx-ook { padding:0.125rem 1.25rem 0; font-size:0.875rem; color:var(--slate-600); }
+.ctx-acties { display:flex; flex-wrap:wrap; gap:0.5rem; padding:0.75rem 1.25rem 0.25rem; }
+.ctx-acties .btn { font-size:0.875rem; padding:0.5rem 0.75rem; }
+.ctx-lijst { list-style:none; padding:0.5rem 1.25rem 0; }
+.ctx-lijst li { padding:0.625rem 0; border-top:1px solid var(--slate-100); }
+.ctx-lijst .wie { display:block; font-size:0.75rem; color:var(--slate-500); margin-bottom:0.125rem; font-variant-numeric:tabular-nums; }
+.ctx-lijst p { font-size:0.9375rem; color:var(--slate-700); line-height:1.5; overflow-wrap:anywhere; white-space:pre-line; }
+.ctx-lijst mark { background:var(--accent-light); color:#065f46; font-weight:600; border-radius:3px; padding:0 2px; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+.ctx-voet { padding:0.5rem 1.25rem 1.25rem; }
+.ctx-voet .fijn { text-align:center; padding-top:0.5rem; }
+.greep { display:none; }
+.ctx-back { position:fixed; inset:0; z-index:44; background:rgba(15,23,42,0.4); }
+@media (max-width:1023px) {
+  .zij .ctx { display:none; }
+  .zij .ctx.open { display:flex; position:fixed; left:0; right:0; bottom:0; z-index:45; max-height:86dvh; overflow:auto; overscroll-behavior:contain; border-radius:18px 18px 0 0; border-bottom:0; box-shadow:0 -12px 40px rgba(15,23,42,0.22); padding-bottom:var(--bottom); max-width:760px; margin:0 auto; }
+  .zij .ctx.open .greep { display:block; width:40px; height:4px; border-radius:2px; background:var(--slate-300); margin:0.5rem auto 0; flex:none; }
+  .zij .ctx.open .ctx-kop { position:sticky; top:0; background:var(--wit); z-index:1; padding-top:0.5rem; }
+}
+html:has(.ctx-back:not([hidden])) { overflow:hidden; }
+
+/* Weggelaten woorden */
+.weg-intro { font-size:0.875rem; color:var(--slate-600); line-height:1.5; }
+.chips { list-style:none; display:flex; flex-wrap:wrap; gap:0.375rem; margin-top:0.625rem; }
+.chip { display:inline-flex; align-items:center; gap:0.25rem; min-height:44px; padding:0.25rem 0.375rem 0.25rem 0.75rem; border:1px solid var(--slate-200); border-radius:999px; background:var(--wit); font-size:0.875rem; color:var(--slate-700); }
+.chip:hover { border-color:var(--accent-mid); background:var(--accent-50); }
+.chip svg { width:16px; height:16px; color:var(--slate-500); }
+.chip .terug { font-size:0.8125rem; color:var(--accent-dark); font-weight:600; margin-left:0.25rem; }
+.vul { margin-top:0.75rem; border-top:1px solid var(--slate-100); }
+.vul summary { min-height:44px; display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.875rem; font-weight:600; color:var(--slate-600); list-style:none; border-radius:8px; }
+.vul summary::-webkit-details-marker { display:none; }
+.vul summary::before { content:''; width:7px; height:7px; border-right:2px solid var(--slate-500); border-bottom:2px solid var(--slate-500); transform:rotate(-45deg); transition:transform 0.15s; margin:0 0.25rem 0 0.125rem; flex:none; }
+.vul[open] summary::before { transform:rotate(45deg); }
+.vul p { font-size:0.8125rem; color:var(--slate-600); line-height:1.6; padding-bottom:0.25rem; }
+
+/* Menu */
+.icon-btn { width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:10px; color:var(--slate-500); flex-shrink:0; }
+.icon-btn:hover { background:var(--slate-100); color:var(--slate-700); }
+.icon-btn svg { width:20px; height:20px; }
+.menu-wrap { position:relative; }
+.menu {
+  position:absolute; right:0; top:48px; z-index:40; min-width:270px; max-width:calc(100vw - 16px); background:var(--wit); border:1px solid var(--slate-200);
+  border-radius:12px; box-shadow:0 12px 32px rgba(15,23,42,0.14); padding:0.375rem; display:none;
+}
+.menu.open { display:block; }
+.menu button { width:100%; display:flex; align-items:center; gap:0.625rem; padding:0.5625rem 0.625rem; min-height:44px; border-radius:8px; font-size:0.9375rem; text-align:left; color:var(--slate-700); }
+.menu button:hover { background:var(--slate-100); }
+.menu button svg { width:18px; height:18px; color:var(--slate-500); flex-shrink:0; }
+.menu .sep { height:1px; background:var(--slate-100); margin:0.25rem 0.375rem; }
+.menu .danger, .menu .danger svg { color:#dc2626; }
+.menu [data-bestand] { min-height:44px; }
+.menu .ocb-t { display:flex; flex-direction:column; min-width:0; white-space:normal; line-height:1.3; }
+.menu .ocb-t small { font-size:0.8125rem; color:var(--slate-500, #64748b); margin-top:0.125rem; }
+.menu .ocb-note { margin:0; padding:0.25rem 0.625rem 0.375rem; font-size:0.8125rem; line-height:1.35; color:var(--slate-500, #64748b); white-space:normal; }
+.menu button:disabled { opacity:0.45; cursor:default; }
+
+/* Melding */
+.toast {
+  position:fixed; left:50%; bottom:calc(var(--bottom) + 1.25rem); transform:translate(-50%, calc(100% + 3rem)); visibility:hidden; z-index:50;
+  background:var(--slate-800); color:var(--wit); border-radius:12px; padding:0.625rem 0.625rem 0.625rem 1rem;
+  display:flex; align-items:center; gap:0.875rem; font-size:0.9375rem; box-shadow:0 10px 30px rgba(15,23,42,0.25);
+  transition:transform 0.25s ease, visibility 0s 0.25s; max-width:calc(100% - 2rem); min-height:44px;
+}
+.toast.show { transform:translate(-50%, 0); visibility:visible; transition:transform 0.25s ease; }
+.toast button { color:#6ee7b7; font-weight:600; padding:0.25rem 0.5rem; border-radius:6px; min-height:44px; flex-shrink:0; white-space:nowrap; }
+#toast-text { min-width:0; overflow-wrap:normal; word-break:normal; padding-right:0.375rem; }
+.toast button:hover { background:rgba(255,255,255,0.08); }
+
+/* Voet */
+.footer { text-align:center; padding:2rem 2rem calc(var(--bottom) + 2rem); border-top:1px solid var(--slate-200); background:var(--wit); }
+.quote { font-size:0.8125rem; color:var(--accent-dark); }
+footer.oc-footer, footer.oc-footer .oc-quote, .footer .quote { color:#047857; }
+
+/* Voorbeeld (zoals in de andere tools) */
+.vb-bar { display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem 0.75rem; margin:0 0 1rem; padding:0.5rem 0.5rem 0.5rem 0.75rem; background:#fffbeb; border:1px solid #fde68a; border-radius:12px; font-size:0.875rem; line-height:1.4; color:#78350f; }
+.vb-bar[hidden] { display:none !important; }
+.vb-bar svg { width:18px; height:18px; flex-shrink:0; color:#b45309; }
+.vb-bar .vb-text { flex:1 1 14rem; min-width:0; display:flex; gap:0.5rem; align-items:flex-start; }
+.vb-bar .vb-btns { display:flex; flex-wrap:wrap; gap:0.375rem; }
+.vb-btn { min-height:44px; padding:0.375rem 0.75rem; border-radius:10px; font-size:0.875rem; font-weight:600; background:var(--wit); border:1px solid var(--slate-200); }
+.vb-eigen { color:var(--accent-dark); border-color:#a7f3d0; }
+.vb-eigen:hover { background:var(--accent-50); }
+
+/* Eenheid: startscherm zonder gegevens (Begin als hoofdknop, Voorbeeld bekijken rustig, Open bestand als link) */
+.oc-start-btns { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-top:0.875rem; }
+.oc-start-btns .oc-begin, .oc-start-btns .oc-vb { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0.5rem 1rem; border:0; border-radius:10px; font:inherit; font-weight:600; font-size:0.9375rem; line-height:1.3; cursor:pointer; text-align:center; }
+.oc-start-btns .oc-begin { background:#047857; color:#fff; }
+.oc-start-btns .oc-begin:hover { background:#065f46; }
+.oc-start-btns .oc-vb { background:#f1f5f9; color:#334155; }
+.oc-start-btns .oc-vb:hover { background:#e2e8f0; }
+.oc-start-btns [hidden] { display:none !important; }
+.oc-open-row { display:flex; justify-content:center; margin:0.5rem 0 0; }
+.oc-open-row .oc-open-link { display:inline-flex; align-items:center; gap:0.5rem; min-height:44px; padding:0.5rem 1rem; border:0; background:none; border-radius:10px; font:inherit; font-size:0.875rem; font-weight:600; color:#047857; cursor:pointer; text-decoration:none; }
+.oc-open-row .oc-open-link:hover { background:var(--accent-50); }
+.oc-open-row .oc-open-link svg { width:18px; height:18px; flex:none; }
+.start-uitleg { text-align:center; font-size:0.875rem; color:var(--slate-600); margin-top:1rem; }
+
+/* Opnieuw beginnen (zelfde knop in elke tool) */
+.oc-restart-row { display:flex; justify-content:center; padding:1rem 0 0; }
+.oc-restart-row[hidden] { display:none !important; }
+.oc-restart { min-height:44px; padding:0.5rem 1rem; font:inherit; font-size:0.875rem; font-weight:500; color:#64748b; background:none; border:0; border-radius:10px; cursor:pointer; text-decoration:underline; text-decoration-color:#cbd5e1; text-underline-offset:3px; }
+.oc-restart:hover { color:#b91c1c; background:#fef2f2; text-decoration-color:currentColor; }
+.ocw-row .ocw-yes { background:#dc2626; } .ocw-row .ocw-yes:hover { background:#b91c1c; }
+.ocw-row button { min-height:44px; }
+details.explain { margin-top:1.25rem; }
+
+/* Toegankelijkheid en soepel op gsm */
+:focus-visible { outline:2px solid #047857 !important; outline-offset:2px; }
+.ww:focus-visible { outline-offset:1px; }
+.back-link { min-height:44px; min-width:44px; }
+html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+button, a, summary, label, select, [role="button"], [role="radio"], input[type="checkbox"], input[type="radio"] { touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+@media (hover:none) { button:not(:disabled):active, a:active, summary:active, [role="button"]:active, [role="radio"]:active { filter:brightness(0.93); } .ww:hover { background:none; } .ww.gekozen { background:var(--accent-50); } }
+@media (pointer:coarse) { .input, .tekst, .titel-in { font-size:16px !important; } }
+html:has(.ocs-back, .ocw-back) { overflow:hidden; }
+@media (forced-colors:active) {
+  .keuze [role="radio"][aria-checked="true"], .soort [role="radio"][aria-checked="true"] { outline:3px solid Highlight; }
+  .ctx-lijst mark { outline:1px solid Highlight; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
+
+/* Breedtes */
+@media (max-width:560px) {
+  .main { padding-left:0.75rem; padding-right:0.75rem; }
+  .kaart-kop { padding:0.625rem 0.375rem 0.375rem 1rem; }
+  .kaart-in { padding:0 1rem 1rem; }
+  .res-kop { padding:0.625rem 0.625rem 0 0.625rem; }
+  .keuze { flex-basis:100%; max-width:none; }
+  .keuze [role="radio"] { font-size:0.875rem; padding:0.25rem; }
+  .overzicht, .instel, .exp-row, .eerlijk { padding-left:1rem; padding-right:1rem; }
+  .werk.vol .prive { display:none; }
+  .instel { gap:0.5rem 0.75rem; }
+  .soort [role="radio"] { padding:0.25rem 0.5rem; font-size:0.8125rem; }
+  .instellingen > summary { padding:0.75rem 1rem; }
+  .keuzes { padding:0 1rem 0.75rem; }
+  .view { padding:0.625rem 0.75rem 0.5rem; }
+  .rij { grid-template-columns:1.5rem minmax(0, 1fr) 22% 2.75rem; gap:0.375rem; padding:0.375rem 0.25rem; }
+  .ctx-kop { padding-left:1rem; } .ctx-tel, .ctx-ook, .ctx-acties, .ctx-lijst, .ctx-voet { padding-left:1rem; padding-right:1rem; }
+  .exp-row .btn { flex:1 1 auto; }
+}
+/* oc-uitleg v1 begin */
+/* "Hoe werkt dit?": één blok voor alle tools. Zonder JavaScript blijft de gewone uitklapper leesbaar.
+   Het script zet .oc-u op <details class="explain"> en bouwt de inhoud om tot inleiding, stappen, tip en verwijzingen. */
+details.explain { scroll-margin-top:1rem; }
+details.explain.oc-u { --u-groen:#10b981; --u-donker:#047857; --u-licht:#a7f3d0; --u-zacht:#ecfdf5;
+  background:#ffffff; border:1px solid #e2e8f0; border-radius:18px; box-shadow:0 1px 2px rgba(15,23,42,0.04); transition:border-color 0.2s, box-shadow 0.2s; }
+details.explain.oc-u:hover, details.explain.oc-u[open] { border-color:#cbd5e1; }
+details.explain.oc-u[open] { box-shadow:0 1px 2px rgba(15,23,42,0.04), 0 12px 32px -18px rgba(15,23,42,0.18); }
+
+/* ingeklapt: een uitnodigende kaart */
+details.explain.oc-u > summary { display:flex; align-items:center; gap:0.875rem; min-height:76px; padding:0.875rem 1rem 0.875rem 0.875rem; border-radius:17px; cursor:pointer; list-style:none; color:#1e293b; font-weight:400; outline:none; -webkit-tap-highlight-color:transparent; }
+details.explain.oc-u > summary::-webkit-details-marker { display:none; }
+details.explain.oc-u > summary::after, details.explain.oc-u > summary::before { content:none; }
+details.explain.oc-u > summary svg { transform:none; margin:0; }
+details.explain.oc-u > summary:focus-visible { box-shadow:0 0 0 2px #ffffff, 0 0 0 4px var(--u-groen); }
+details.explain.oc-u[open] > summary { border-bottom-left-radius:0; border-bottom-right-radius:0; }
+details.explain.oc-u .oc-u-ico { flex-shrink:0; width:48px; height:48px; border-radius:14px; background:var(--u-zacht); display:flex; align-items:center; justify-content:center; transition:background-color 0.2s; }
+details.explain.oc-u .oc-u-ico svg { width:28px; height:28px; display:block; }
+details.explain.oc-u .oc-u-kop { flex:1; min-width:0; display:flex; flex-direction:column; gap:0.125rem; }
+details.explain.oc-u .oc-u-titel { font-size:1.0625rem; font-weight:700; color:#1e293b; letter-spacing:-0.01em; line-height:1.3; }
+details.explain.oc-u .oc-u-meta { font-size:0.8125rem; color:#64748b; line-height:1.35; font-variant-numeric:tabular-nums; }
+details.explain.oc-u .oc-u-pijl { flex-shrink:0; width:40px; height:40px; border-radius:50%; background:#f1f5f9; color:#475569; display:flex; align-items:center; justify-content:center; transition:background-color 0.2s, color 0.2s, transform 0.35s cubic-bezier(0.2,0.7,0.2,1); }
+details.explain.oc-u .oc-u-pijl svg { width:20px; height:20px; }
+details.explain.oc-u > summary:hover .oc-u-pijl { background:var(--u-zacht); color:var(--u-donker); }
+details.explain.oc-u[open] .oc-u-pijl { transform:rotate(180deg); background:var(--u-zacht); color:var(--u-donker); }
+
+/* op brede schermen: de stappen als kleine route, die plaats maakt voor de echte stappen bij openen */
+details.explain.oc-u .oc-u-route { display:none; align-items:center; flex-shrink:0; margin-right:0.75rem; transition:opacity 0.25s, visibility 0.25s; }
+details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.75rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
+details.explain.oc-u .oc-u-route i:first-child { margin-left:0; }
+details.explain.oc-u .oc-u-route i + i::before { content:''; position:absolute; right:calc(100% + 1.5px); top:calc(50% - 0.75px); width:16px; height:1.5px; background:var(--u-licht); }
+details.explain.oc-u > summary:hover .oc-u-route i { border-color:var(--u-groen); }
+details.explain.oc-u[open] .oc-u-route { opacity:0; visibility:hidden; }
+@media (min-width:700px) { details.explain.oc-u .oc-u-route { display:flex; } }
+
+/* uitgeklapt */
+details.explain.oc-u > .inner { padding:0; margin:0; border:0; border-radius:0; background:none; font-size:0.9375rem; color:#475569; container-type:inline-size; }
+details.explain.oc-u > .inner p, details.explain.oc-u > .inner ul, details.explain.oc-u > .inner ol, details.explain.oc-u > .inner li { margin:0; }
+details.explain.oc-u .oc-u-raam { border-top:1px solid #f1f5f9; margin:0 1.25rem; padding:1.25rem 0 1.5rem; display:grid; gap:1.375rem; }
+details.explain.oc-u .oc-u-lees, details.explain.oc-u .oc-u-doe { display:flex; flex-direction:column; gap:1.125rem; min-width:0; }
+details.explain.oc-u .oc-u-intro { font-size:1.0625rem; line-height:1.55; color:#334155; letter-spacing:-0.005em; margin:0; max-width:40em; text-wrap:pretty; }
+details.explain.oc-u .oc-u-noot { margin:0; line-height:1.6; max-width:42em; text-wrap:pretty; }
+details.explain.oc-u .oc-u-noot b { color:#1e293b; }
+
+/* stappen: genummerde tijdlijn */
+details.explain.oc-u ol.oc-u-stappen { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+details.explain.oc-u .oc-u-stap { position:relative; display:grid; grid-template-columns:2.25rem minmax(0,1fr); column-gap:0.875rem; padding-bottom:1.125rem; }
+details.explain.oc-u .oc-u-stap:last-child { padding-bottom:0; }
+details.explain.oc-u .oc-u-stap::before { content:''; position:absolute; left:calc(1.125rem - 1px); top:2.5rem; bottom:0.25rem; width:2px; border-radius:2px; background:var(--u-licht); transform-origin:top; }
+details.explain.oc-u .oc-u-stap:last-child::before { content:none; }
+details.explain.oc-u .oc-u-nr { width:2.25rem; height:2.25rem; border-radius:50%; background:#ffffff; border:2px solid var(--u-groen); color:var(--u-donker); font-size:0.9375rem; font-weight:700; display:flex; align-items:center; justify-content:center; font-variant-numeric:tabular-nums; line-height:1; }
+details.explain.oc-u .oc-u-stap-tekst { padding-top:0.3125rem; min-width:0; }
+details.explain.oc-u .oc-u-stap-titel { display:block; font-size:1rem; font-weight:700; color:#1e293b; line-height:1.35; letter-spacing:-0.005em; }
+details.explain.oc-u .oc-u-stap-uitleg { display:block; margin-top:0.25rem; line-height:1.55; color:#475569; text-wrap:pretty; }
+details.explain.oc-u .oc-u-stap-uitleg b { color:#1e293b; }
+
+details.explain.oc-u .oc-u-stap-uitleg.oc-u-enkel { margin-top:0; color:#334155; }
+details.explain.oc-u .oc-u-doe > ul:not([class]), details.explain.oc-u .oc-u-doe > ol:not([class]) { padding-left:1.25rem; display:grid; gap:0.375rem; line-height:1.55; }
+details.explain.oc-u .oc-u-doe > ul:not([class]) > li::marker { color:var(--u-groen); }
+
+/* begrippen: dezelfde opbouw zonder nummers, voor lijsten die geen volgorde zijn */
+details.explain.oc-u ul.oc-u-begrippen { list-style:none; margin:0; padding:0; display:grid; gap:0.875rem; }
+details.explain.oc-u .oc-u-begrip { display:grid; grid-template-columns:0.5rem minmax(0,1fr); column-gap:0.875rem; }
+details.explain.oc-u .oc-u-begrip::before { content:''; width:0.5rem; height:0.5rem; border-radius:50%; background:var(--u-groen); margin-top:0.5rem; }
+
+/* tip */
+details.explain.oc-u .oc-u-tip { display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:0.75rem; align-items:start; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:0.875rem 1rem; }
+details.explain.oc-u .oc-u-tip svg { width:22px; height:22px; color:var(--u-donker); margin-top:0.0625rem; }
+details.explain.oc-u .oc-u-tip-titel { display:block; font-weight:700; color:#1e293b; font-size:0.9375rem; line-height:1.4; }
+details.explain.oc-u .oc-u-tip-tekst { display:block; line-height:1.55; color:#475569; margin-top:0.125rem; }
+details.explain.oc-u kbd { display:inline-block; font:inherit; font-size:0.8125rem; font-weight:600; line-height:1.35; color:#334155; background:#ffffff; border:1px solid #cbd5e1; border-bottom-width:2px; border-radius:6px; padding:0 0.4375rem; margin:0 0.0625rem; vertical-align:0.0625rem; white-space:nowrap; }
+
+/* stil: alles blijft op dit toestel */
+details.explain.oc-u .oc-u-stil { display:flex; gap:0.5rem; align-items:flex-start; font-size:0.875rem; color:#64748b; line-height:1.5; margin:0; }
+details.explain.oc-u .oc-u-stil svg { flex-shrink:0; width:18px; height:18px; margin-top:0.0625rem; color:#64748b; }
+
+/* verwijzingen naar andere tools */
+details.explain.oc-u .oc-u-samen { display:flex; flex-direction:column; gap:0.5rem; }
+details.explain.oc-u .oc-u-samen-titel { font-size:0.875rem; font-weight:600; color:#475569; }
+details.explain.oc-u .oc-u-chips { display:flex; flex-wrap:wrap; gap:0.5rem; }
+details.explain.oc-u a.oc-u-chip { display:inline-flex; align-items:center; gap:0.5rem; min-height:44px; margin:0; padding:0 0.875rem 0 0.5rem; border:1px solid var(--u-licht); border-radius:999px; background:#ffffff; color:var(--u-donker); font-size:0.9375rem; font-weight:600; text-decoration:none; line-height:1.2; transition:background-color 0.2s, border-color 0.2s; }
+details.explain.oc-u .oc-u-chip-ico { width:28px; height:28px; border-radius:50%; background:var(--u-zacht); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+details.explain.oc-u .oc-u-chip-ico svg { width:15px; height:15px; }
+details.explain.oc-u a.oc-u-chip:hover { background:var(--u-zacht); border-color:var(--u-groen); }
+details.explain.oc-u a.oc-u-chip:focus-visible { outline:2px solid var(--u-groen); outline-offset:2px; }
+details.explain.oc-u .oc-u-noot a, details.explain.oc-u .oc-u-stap-uitleg a, details.explain.oc-u .oc-u-tip-tekst a { color:var(--u-donker); font-weight:600; text-decoration:underline; text-decoration-color:var(--u-licht); text-decoration-thickness:2px; text-underline-offset:3px; }
+details.explain.oc-u .oc-u-noot a:hover { text-decoration-color:var(--u-donker); }
+
+/* breed: links lezen, rechts doen */
+@container (min-width:720px) and (max-width:999.98px) {
+  details.explain.oc-u .oc-u-raam.oc-u-lang { grid-template-columns:minmax(0,1fr); grid-template-rows:none; }
+  details.explain.oc-u .oc-u-lang .oc-u-lees, details.explain.oc-u .oc-u-lang .oc-u-doe, details.explain.oc-u .oc-u-lang .oc-u-samen { grid-column:1; grid-row:auto; }
+}
+@container (min-width:720px) {
+  details.explain.oc-u .oc-u-raam { grid-template-columns:minmax(0,5fr) minmax(0,7fr); grid-template-rows:auto 1fr; column-gap:3rem; row-gap:1.75rem; align-items:start; padding:1.75rem 0.5rem 2rem; }
+  details.explain.oc-u .oc-u-lees { grid-column:1; grid-row:1; }
+  details.explain.oc-u .oc-u-doe { grid-column:2; grid-row:1 / span 2; }
+  details.explain.oc-u .oc-u-samen { grid-column:1; grid-row:2; }
+  details.explain.oc-u .oc-u-zonder-intro { grid-template-columns:minmax(0,1fr); }
+  details.explain.oc-u .oc-u-zonder-intro .oc-u-doe, details.explain.oc-u .oc-u-zonder-intro .oc-u-samen { grid-column:1; grid-row:auto; }
+  details.explain.oc-u .oc-u-intro { font-size:1.25rem; line-height:1.5; }
+}
+@media (min-width:760px) { details.explain.oc-u .oc-u-raam { margin:0 1.5rem; } details.explain.oc-u > summary { padding:1rem 1.25rem 1rem 1rem; } }
+
+/* beweging enkel als antwoord op openen */
+@media (prefers-reduced-motion:reduce) {
+  details.explain.oc-u, details.explain.oc-u .oc-u-pijl, details.explain.oc-u .oc-u-ico, details.explain.oc-u .oc-u-route, details.explain.oc-u .oc-u-route i, details.explain.oc-u a.oc-u-chip { transition:none; }
+}
+@media print { details.explain { display:none; } }
+/* oc-uitleg v1 einde */
+</style>
+</head>
+<body>
+
+<header class="header oc-head">
+  <a href="../" class="back-link" aria-label="Terug naar Zakmes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Zakmes
+  </a>
+  <div class="logo" aria-hidden="true">
+    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="18" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/><path d="M13 28h14a5 5 0 0 0 .6-9.96A7.5 7.5 0 0 0 13.3 16.9 5.6 5.6 0 0 0 13 28Z" stroke="#64748b"/><rect x="13.5" y="21.6" width="11.5" height="3.6" rx="1.8" fill="#10b981"/><path d="M16.5 18h3.5M22.5 18h2" stroke="#cbd5e1"/></svg>
+  </div>
+  <h1 class="title">Woordwolk</h1>
+  <p class="subtitle">Welke woorden komen het vaakst terug in een tekst?</p>
+</header>
+
+<main class="main">
+  <div class="vb-bar" id="vb-bar" role="note" hidden>
+    <span class="vb-text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span>Dit is een voorbeeld: 40 verzonnen antwoorden op de vraag "Wat kan beter in onze manier van samenwerken?"</span></span>
+    <span class="vb-btns"><button type="button" class="vb-btn vb-eigen" id="vb-eigen">Zelf beginnen</button></span>
+  </div>
+
+  <div class="werk" id="werk">
+    <div class="links">
+      <section class="card invoer-card" aria-labelledby="tekst-lbl">
+        <div class="kaart-kop">
+          <label class="kop-lbl" for="tekst" id="tekst-lbl">Je tekst</label>
+          <span class="sub" id="bron-info"></span>
+          <div class="menu-wrap">
+            <button class="icon-btn" id="menu-btn" type="button" aria-label="Meer acties" aria-haspopup="true" aria-expanded="false" aria-controls="menu">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+            </button>
+            <div class="menu" id="menu" role="menu" aria-label="Meer acties">
+              <button type="button" data-bestand="bewaar" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 11v6M9 14l3 3 3-3"/></svg><span class="ocb-t">Bewaar als bestand<small>Je tekst, keuzes en weggelaten woorden, voor een ander toestel</small></span></button>
+              <button type="button" data-bestand="open" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10v6M9 13l3-3 3 3"/></svg><span class="ocb-t">Open bestand<small>Een .txt- of .csv-bestand, of een bewaarde Woordwolk</small></span></button>
+              <div class="sep" role="separator"></div>
+              <button type="button" data-act="png" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Download als afbeelding</button>
+              <button type="button" data-act="csv" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h8"/></svg>Download de telling (CSV)</button>
+              <button type="button" data-act="top" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Kopieer de top 20</button>
+              <p class="ocb-note">Een afbeelding of CSV kan je niet terug openen.</p>
+              <div class="sep" role="separator"></div>
+              <button type="button" data-act="wipe" class="danger" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>Alles wissen</button>
+            </div>
+          </div>
+        </div>
+        <div class="kaart-in">
+          <textarea class="tekst" id="tekst" placeholder="Plak hier open antwoorden, notities of cellen uit een rekenblad." spellcheck="false" autocomplete="off" aria-describedby="prive"></textarea>
+          <p class="fijn prive" id="prive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Je tekst blijft op dit toestel. Er gaat niets naar een server.</p>
+          <p class="groot-noot" id="groot-noot" hidden>Deze tekst is groter dan 1,5 MB. Hij wordt niet bewaard op dit toestel: na herladen is hij weg. Je keuzes en weggelaten woorden blijven wel.</p>
+
+          <div id="start">
+            <div class="oc-start-btns"><button type="button" class="oc-begin" data-oc-begin="#tekst">Begin met je tekst</button><button type="button" class="oc-vb" id="voorbeeld">Voorbeeld bekijken</button></div>
+            <p class="oc-open-row"><button type="button" class="oc-open-link" data-bestand="open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 16v-5M9.5 13.5 12 11l2.5 2.5"/></svg>Open bestand (.txt of .csv)</button></p>
+          </div>
+
+          <div class="tekst-acties" id="tekst-acties" hidden>
+            <button type="button" class="btn" id="nieuw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 12v6M9 15h6"/></svg>Nieuwe tekst</button>
+            <button type="button" class="btn stil" data-bestand="open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 16v-5M9.5 13.5 12 11l2.5 2.5"/></svg>Open bestand</button>
+          </div>
+
+          <div class="tabel" id="tabel" hidden>
+            <p class="tabel-info" id="tabel-info"></p>
+            <label class="vink"><input type="checkbox" id="o-kop"><span>De eerste rij is een kopregel<small>Dan telt die rij niet mee als antwoord.</small></span></label>
+            <fieldset class="kolommen">
+              <legend>Welke kolom bevat de open antwoorden?</legend>
+              <div class="kol-lijst" id="kolommen"></div>
+            </fieldset>
+          </div>
+        </div>
+      </section>
+
+      <section class="card res-card" id="res-card" aria-labelledby="res-h" hidden>
+        <h2 class="sr-only" id="res-h">Resultaat</h2>
+        <div class="res-kop">
+          <div class="keuze" id="weergave" role="radiogroup" aria-label="Weergave">
+            <button type="button" role="radio" aria-checked="true" data-w="wolk">Wolk</button>
+            <button type="button" role="radio" aria-checked="false" data-w="lijst">Lijst</button>
+            <button type="button" role="radio" aria-checked="false" data-w="paren">Woordparen</button>
+          </div>
+        </div>
+        <p class="overzicht" id="overzicht" aria-live="polite"></p>
+        <div class="instel">
+          <div class="instel-groep">
+            <span class="lbl" id="maat-lbl">Tel</span>
+            <div class="soort" id="maat" role="radiogroup" aria-labelledby="maat-lbl">
+              <button type="button" role="radio" aria-checked="true" data-m="antw">per antwoord</button>
+              <button type="button" role="radio" aria-checked="false" data-m="keer">alle keren</button>
+            </div>
+          </div>
+          <div class="instel-groep" id="n-groep">
+            <span class="lbl" id="n-lbl">Woorden</span>
+            <div class="soort" id="n-keuze" role="radiogroup" aria-labelledby="n-lbl">
+              <button type="button" role="radio" aria-checked="false" data-n="30">30</button>
+              <button type="button" role="radio" aria-checked="true" data-n="60">60</button>
+              <button type="button" role="radio" aria-checked="false" data-n="100">100</button>
+            </div>
+          </div>
+          <p class="fijn maat-uitleg" id="maat-uitleg">Per antwoord is eerlijker. Eén iemand die een woord tien keer schrijft, telt zo maar één keer.</p>
+        </div>
+
+        <div class="view" data-view="wolk">
+          <div class="titel-rij"><input class="titel-in" id="titel" type="text" data-oc-titel maxlength="90" placeholder="Titel (niet verplicht)" aria-label="Titel boven de wolk en de afbeelding (niet verplicht)" enterkeyhint="done" autocomplete="off"></div>
+          <div class="wolk" id="wolk" role="group" aria-label="Woordwolk"></div>
+          <ul class="legende" id="legende" aria-label="Wat de kleur betekent"></ul>
+          <div class="ook-vaak" id="ook-vaak" hidden></div>
+        </div>
+
+        <div class="view" data-view="lijst" hidden>
+          <div class="zoek"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input class="input" id="zoek" type="search" placeholder="Zoek een woord" aria-label="Zoek een woord" enterkeyhint="search" autocomplete="off" spellcheck="false"></div>
+          <p class="rang-kop" aria-hidden="true"><span>Woord</span><span id="lijst-maat"></span></p>
+          <ol class="rang" id="lijst"></ol>
+          <p class="lijst-noot" id="lijst-noot" hidden></p>
+          <div class="meer-rij" id="lijst-meer-rij" hidden><button type="button" class="btn" id="lijst-meer">Toon meer</button></div>
+        </div>
+
+        <div class="view" data-view="paren" hidden>
+          <p class="paren-intro">Twee woorden die na elkaar staan, in dezelfde zin. Zo lees je wat een wolk verbergt, zoals "niet duidelijk" of "te veel". Je ziet de paren die minstens 2 keer voorkomen.</p>
+          <p class="rang-kop" aria-hidden="true"><span>Woordpaar</span><span id="paren-maat"></span></p>
+          <ol class="rang" id="paren"></ol>
+          <p class="lijst-noot" id="paren-noot" hidden></p>
+          <div class="meer-rij" id="paren-meer-rij" hidden><button type="button" class="btn" id="paren-meer">Toon meer</button></div>
+        </div>
+
+        <div class="exp-row">
+          <button type="button" class="btn" id="dl-png"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Afbeelding</button>
+          <button type="button" class="btn" id="dl-csv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h8"/></svg>Telling (CSV)</button>
+          <button type="button" class="btn" id="kopie-top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Kopieer top 20</button>
+        </div>
+        <p class="eerlijk">Vaak genoemd is niet altijd belangrijk. Klik op een woord en lees wat er staat.</p>
+      </section>
+      <details class="card instellingen" id="instellingen" hidden>
+        <summary><span class="inst-t">Instellingen</span><span class="inst-sam" id="inst-sam"></span></summary>
+        <div class="keuzes">
+          <label class="vink" id="regel-rij"><input type="checkbox" id="o-regel"><span>Elke regel is een antwoord<small id="regel-noot">Staat dit uit, dan is elke alinea een antwoord.</small></span></label>
+          <label class="vink"><input type="checkbox" id="o-samen" checked><span>Vormen samennemen<small>Zoals project en projecten, alleen als ze allebei voorkomen.</small></span></label>
+          <label class="vink"><input type="checkbox" id="o-getal"><span>Getallen meetellen<small>Standaard tellen getallen niet mee.</small></span></label>
+          <label class="vink"><input type="checkbox" id="o-engels"><span>Ook Engelse vulwoorden weglaten<small id="engels-noot">Zoals the, and en of.</small></span></label>
+        </div>
+      </details>
+    </div>
+
+    <div class="zij" id="zij">
+      <section class="card ctx" id="ctx" aria-labelledby="ctx-h">
+        <span class="greep" aria-hidden="true"></span>
+        <div class="ctx-leeg" id="ctx-leeg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></svg>
+          <p><b>Lees wat er staat</b>Klik op een woord in de wolk of de lijst. Hier zie je dan de antwoorden waarin het voorkomt.</p>
+        </div>
+        <div class="ctx-vol" id="ctx-vol" hidden>
+          <div class="ctx-kop">
+            <div><p class="label" id="ctx-soort">Woord</p><h2 id="ctx-h" tabindex="-1"></h2></div>
+            <button type="button" class="icon-btn" id="ctx-sluit" aria-label="Sluit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <p class="ctx-tel" id="ctx-tel"></p>
+          <p class="ctx-ook" id="ctx-ook" hidden></p>
+          <div class="ctx-acties">
+            <button type="button" class="btn" id="ctx-weg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>Laat dit woord weg</button>
+            <button type="button" class="btn" id="ctx-kopie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Kopieer deze antwoorden</button>
+          </div>
+          <ol class="ctx-lijst" id="ctx-lijst"></ol>
+          <div class="ctx-voet">
+            <div class="meer-rij" id="ctx-meer-rij" hidden><button type="button" class="btn" id="ctx-meer">Toon meer</button></div>
+            <p class="fijn" id="ctx-stand"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card weg-card" id="weg-card" aria-labelledby="weg-h">
+        <div class="kaart-kop"><h2 id="weg-h">Weggelaten woorden</h2></div>
+        <div class="kaart-in">
+          <p class="weg-intro" id="weg-leeg">Klik op een woord en kies "Laat dit woord weg". Denk aan de naam van je organisatie, of aan woorden uit de vraag zelf.</p>
+          <ul class="chips" id="chips" aria-label="Weggelaten woorden"></ul>
+          <details class="vul">
+            <summary>Welke vulwoorden laat de tool altijd weg?</summary>
+            <p id="vul-lijst"></p>
+          </details>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div class="ctx-back" id="ctx-back" hidden></div>
+<div class="oc-restart-row" id="oc-restart-row" hidden><button type="button" class="oc-restart" id="oc-restart-btn">Opnieuw beginnen</button></div>
+
+  <details class="explain" id="hoe-werkt-dit">
+    <summary>Hoe werkt dit?</summary>
+    <div class="inner">
+      <p>Met Woordwolk zie je snel welke woorden vaak terugkomen in open antwoorden, notities of een verslag. Klik op een woord en je leest meteen wat mensen erover schreven.</p>
+      <ul>
+        <li><b>Plak je tekst of open een bestand.</b> Een .txt- of .csv-bestand werkt, net als cellen uit een rekenblad. Bij een tabel kies je de kolom met de antwoorden: elke rij is dan één antwoord. Bij gewone tekst is elke alinea een antwoord, of elke regel als je dat aanzet.</li>
+        <li><b>Vulwoorden vallen weg.</b> Woorden zoals de, het, en, maar en omdat tellen niet mee. Getallen en woorden van één letter ook niet. Zelf laat je woorden weg zoals de naam van je organisatie, of woorden uit de vraag.</li>
+        <li><b>Vormen worden samengenomen.</b> Project en projecten tellen samen, maar alleen als ze allebei in de tekst staan. Je ziet altijd welke vormen samen staan. Je kan dit uitzetten.</li>
+        <li><b>De tool telt per antwoord.</b> Eén iemand die een woord tien keer schrijft, telt zo maar één keer. Je kan ook alle keren tellen.</li>
+        <li><b>Lees de woordparen.</b> Een wolk toont losse woorden. Daar verdwijnt "niet" uit "niet duidelijk". Bij Woordparen zie je die combinaties wel.</li>
+        <li><b>Lees wat er staat.</b> Klik op een woord of een paar. Je ziet alle antwoorden waarin het voorkomt, met het woord gemarkeerd.</li>
+      </ul>
+      <p>Tip: in een wolk vallen lange woorden meer op dan korte. De Lijst toont de juiste volgorde, met het exacte aantal.</p>
+      <p>Je tekst verlaat dit toestel niet. Er gaat niets naar een server.</p>
+      <p>Na een retro of een vergadering? Verzamel de reacties eerst met de <a href="/retro/">Retro</a> en plak ze dan hier.</p>
+    </div>
+  </details>
+</main>
+
+<footer class="footer oc-footer">
+  <p class="quote oc-quote">Tel de woorden, maar lees de zinnen.</p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-text"></span><button id="toast-btn" type="button" hidden>Ongedaan</button></div>
+
+<script>
+/* Het actieve project uit de app (oc.project): nieuwe projecten, analyses en lijsten krijgen die naam. */
+function ocProject(fb) { try { const p = JSON.parse(localStorage.getItem('oc.project')); return p && typeof p.name === 'string' && p.name.trim() ? p.name.trim().slice(0, 80) : fb; } catch { return fb; } }
+function ocPickProject(st, arr, cur = 'current') { const p = ocProject(''); if (!p || !st || !Array.isArray(st[arr])) return; const u = st[arr].find(x => x && x.name === p); if (u) st[cur] = u.id; }   // open het actieve project uit de app
+
+/* ---------- Alles wissen, klaarleggen ---------- */
+const OC_ID = 'woordwolk', OC_TOOL = 'Woordwolk';
+let ocSaves = 0;
+// Bevestiging in de pagina (geen pop-up van de browser).
+// Stijl van de bevestiging en de knoppen 'Overnemen uit…': meteen laden.
+function ocStyle() {
+  if (!document.getElementById('ocw-style')) {
+    const s = document.createElement('style'); s.id = 'ocw-style';
+    s.textContent = `.ocw-back{position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);font-family:'DM Sans',system-ui,sans-serif}
+      .ocw{width:100%;max-width:400px;background:#fff;border-radius:16px;padding:1.375rem 1.375rem 1.125rem;box-shadow:0 20px 50px rgba(15,23,42,.25);color:#1e293b}
+      .ocw b{display:block;font-size:1.0625rem;letter-spacing:-.01em;margin-bottom:.375rem}
+      .ocw p{font-size:.9375rem;line-height:1.5;color:#475569}
+      .ocw-row{display:flex;justify-content:flex-end;gap:.5rem;margin-top:1.25rem}
+      .ocw-row button{font:inherit;font-size:.9375rem;font-weight:600;padding:.625rem 1rem;min-height:44px;border-radius:10px;border:0;cursor:pointer}
+      .ocw-no{background:#f1f5f9;color:#475569} .ocw-yes{background:#dc2626;color:#fff} .ocw-yes:hover{background:#b91c1c}
+      .oc-import{display:inline-flex;align-items:center;gap:.375rem;font:inherit;font-size:.8125rem;font-weight:600;color:#059669;background:#fff;border:1px dashed #a7f3d0;border-radius:999px;padding:.3125rem .75rem;cursor:pointer;white-space:nowrap}
+      .oc-import:hover{background:#ecfdf5;border-color:#10b981} .oc-import svg{width:15px;height:15px} .oc-import[hidden]{display:none}`;
+    document.head.appendChild(s);
+  }
+}
+ocStyle();
+function ocConfirm(title, text, okText) {
+  return new Promise(resolve => {
+    const back = document.createElement('div'); back.className = 'ocw-back';
+    back.innerHTML = '<div class="ocw" role="alertdialog" aria-modal="true"><b></b><p></p><div class="ocw-row"><button class="ocw-no" type="button">Annuleer</button><button class="ocw-yes" type="button"></button></div></div>';
+    back.querySelector('b').textContent = title; back.querySelector('p').textContent = text; back.querySelector('.ocw-yes').textContent = okText;
+    document.body.appendChild(back);
+    const done = v => { document.removeEventListener('keydown', key, true); back.remove(); resolve(v); };
+    const key = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false); } };
+    document.addEventListener('keydown', key, true);
+    back.querySelector('.ocw-no').onclick = () => done(false);
+    back.querySelector('.ocw-yes').onclick = () => done(true);
+    back.addEventListener('click', e => { if (e.target === back) done(false); });
+    back.querySelector('.ocw-no').focus();
+  });
+}
+// Ongedaan maken van een wisbeurt kan alleen zolang er sindsdien niets anders bewaard werd.
+function ocUndoable(restore) {
+  const mark = ocSaves;
+  return () => {
+    if (ocSaves !== mark) { setTimeout(() => toast('Ongedaan maken kan niet meer: er is intussen iets veranderd'), 60); return; }
+    restore();
+  };
+}
+/* ==========================================================================
+   Woordwolk: welke woorden komen terug in open tekst, en wat zeiden mensen erover?
+   Alles gebeurt op dit toestel. Geen bibliotheek, geen server.
+   ========================================================================== */
+const $ = id => document.getElementById(id);
+const KEY = 'woordwolk.v1';
+const MAX_BEWAAR = 1500000;            // tekens: grotere teksten bewaren we niet op het toestel
+const MAX_BESTAND = 25 * 1024 * 1024;  // bytes
+const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const escA = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));   // waarde in een attribuut
+function ocCsvVeilig(s) { s = String(s == null ? '' : s); return /^[=+\-@\t\r]/.test(s) && !/^[+-]?\d+([.,]\d+)*%?$/.test(s) ? "'" + s : s; }
+const NL = new Intl.NumberFormat('nl-BE');
+const fmt = n => NL.format(n);
+const meer = (n, een, veel) => fmt(n) + ' ' + (n === 1 ? een : veel);
+const stil = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- Woordenlijsten (eigen lijsten, alfabetisch) ----------
+   Vulwoorden: lidwoorden, voegwoorden, voorzetsels, voornaamwoorden, hulpwerkwoorden met hun vormen
+   en veelgebruikte bijwoorden. Ze tellen niet mee in de lijst, de wolk en de woordparen. */
+const VULWOORDEN = `
+aan aangezien achter af al alle allebei alleen allemaal alles als alsof altijd ander andere anderen anders
+beetje behalve beide ben bent bij bijna bijv bijvoorbeeld binnen boven bovendien buiten bv
+daar daarbij daardoor daarin daarmee daarna daarnaast daarom daarop daarvan daarvoor dan dankzij dat de deden deed deze dezelfde die
+dikwijls ding dingen dit doe doen doet door dus
+echt echter een eens eerst eh eigenlijk elk elkaar elke en enige enkel enkele enz er eraan erbij erg ergens erin ermee erop erover ervan
+ervoor etc euh even
+ga gaan gaat ge gedaan gegaan gehad gekomen gekund genoeg geweest gewoon geworden gij ging gingen graag
+haar had hadden heb hebben hebt heeft heel hele hem hen het hetzelfde hier hierbij hierdoor hierin hiervoor hij hoe hoeveel hoewel hun
+ieder iedere iedereen iemand iets ik in is
+ja je jezelf jij jou jouw jullie
+kan keer kom komen komt kon konden kun kunnen kunt kwam kwamen
+langs laten liet lieten
+maal maar mag me men met mezelf mij mijn misschien mocht mochten moest moesten moet moeten mogen
+na naar naast nadat nadien namelijk natuurlijk net niemand nog nou nu
+of ofwel ok oké om omdat ondanks onder ongeveer ons onszelf onze ook op opdat over overal
+pas per
+rond
+sinds slechts sommige soms steeds
+tegen terwijl tijdens toch toen tot tussen
+u uit uw
+vaak van vanaf vanuit verder via volgens voor vooral voordat
+waar waarbij waardoor waarin waarmee waarom waarop waarover waarvan waarvoor wanneer want waren was wat we weer wegens wel welk welke werd
+werden wie wij wil wilde wilden willen wilt word worden wordt
+zal ze zeer zeker zelf zelfs zich zichzelf zij zijn zo zoals zodat zodra zolang zomaar zonder zou zouden zowel zulk zulke zullen zult
+`.trim().split(/\s+/);
+const STOP = new Set(VULWOORDEN);
+/* Ontkenning en sterkte: geen los woord in de lijst of de wolk, wel het eerste woord van een woordpaar ("niet duidelijk", "te veel"). */
+const NEG = new Set(['geen', 'meer', 'minder', 'niet', 'niets', 'nooit', 'te', 'veel', 'weinig']);
+/* Na een ontkenning mogen deze bijwoorden toch het tweede woord zijn: "niet altijd", "te vaak", "niet genoeg". */
+const NA_NEG = new Set(['altijd', 'echt', 'genoeg', 'graag', 'steeds', 'vaak', 'zomaar']);
+/* Vormen met een apostrof die niets zeggen ('s, z'n, zo'n): vulwoord. Een meervoud zoals auto's blijft een woord. */
+const APOS = new Set(["'k", "'n", "'s", "'t", "d'r", "da's", "m'n", "z'n", "zo'n"]);
+const ENGELS = new Set(`a about after all also am an and any are as at be because been but by can could did do does for from get got had has have he her
+his how i if in into is it its just me more most my no not of on one only or our out really she so some than that the their them then there
+these they this those to too up us very was we were what when which who will with would you your`.split(/\s+/));
+const ENGELS_TEKEN = new Set(['and', 'are', 'for', 'have', 'that', 'the', 'they', 'this', 'what', 'with', 'you']);   // komen in het Nederlands niet voor
+/* Nooit samennemen: ze lijken op enkelvoud en meervoud, maar betekenen iets anders (gevonden met de tests). */
+const NOOIT_SAMEN = new Set(['deel|delen', 'duur|duren', 'kennis|kennissen', 'laag|lagen', 'lag|lagen', 'link|links', 'mis|missen', 'nieuw|nieuws',
+  'recht|rechts', 'slag|slagen', 'toon|tonen', 'vast|vasten', 'vrij|vrijen', 'vroeg|vroegen',
+  'druk|drukken', 'kort|korten', 'snel|snellen', 'sterk|sterken', 'stil|stillen', 'zon|zone', 'maat|mate', 'post|poste', 'kost|koste', 'rust|ruste']);
+
+/* ---------- Voorbeeld: verzonnen antwoorden ---------- */
+const VOORBEELD = [
+  'Er zijn te veel vergaderingen en ze lopen vaak uit.',
+  'Het is niet duidelijk wie verantwoordelijk is voor welk project.',
+  'Minder vergaderen, meer samen aan de slag.',
+  'Ik heb geen tijd om alle mails te lezen.',
+  'De afspraken zijn niet duidelijk, en niemand volgt ze op.',
+  'Een betere planning van de projecten. Nu loopt alles door elkaar.',
+  'Te veel mails in cc. Spreek af wie wat moet weten.',
+  'Meer overleg tussen de teams, vooral bij de start van een project.',
+  'Vergaderingen starten te laat en er is geen agenda.',
+  'Geen tijd voor overleg, iedereen werkt op zijn eigen eiland.',
+  'Duidelijke afspraken over wie wat doet.',
+  "De taken zijn niet goed verdeeld. Sommige collega's hebben veel te veel werk.",
+  'Een vaste plek voor documenten. Nu staat alles verspreid.',
+  'Beslissingen worden niet gedeeld met het hele team.',
+  'Minder mails, meer even bellen of langslopen.',
+  'Het doel van een project is vaak niet duidelijk bij de start.',
+  "Collega's van andere diensten weten niet waar we mee bezig zijn.",
+  'Te weinig feedback na een project.',
+  'Meer vertrouwen, minder controle.',
+  'Een korte vergadering per week is genoeg.',
+  'Projecten worden opgestart zonder planning.',
+  "Geen tijd om nieuwe collega's goed op te vangen.",
+  'De rolverdeling is niet duidelijk. Wie beslist uiteindelijk?',
+  'Een taak blijft liggen als iemand afwezig is.',
+  'Betere afspraken over deadlines.',
+  'Te veel kanalen: mail, chat, gedeelde mappen. Je weet nooit waar iets staat.',
+  'Informatie komt te laat bij de mensen die ermee moeten werken.',
+  'Meer samenwerken tussen diensten in plaats van naast elkaar.',
+  'Vergaderingen zonder duidelijk doel mogen weg.',
+  'Snellere beslissingen. Nu duurt alles te lang.',
+  'Meer waardering voor een collega die extra werk doet.',
+  'Een overzicht van alle lopende projecten voor iedereen.',
+  'Geen tijd voor opleiding, terwijl we die echt nodig hebben.',
+  'De planning verandert te vaak zonder uitleg.',
+  'Duidelijke taken per persoon, en een vaste contactpersoon per project.',
+  'Overleg is er wel, maar de afspraken worden niet opgevolgd.',
+  'Minder vergaderingen op vrijdagnamiddag.',
+  'Feedback geven gebeurt te weinig, en dan nog niet duidelijk.',
+  'Het werk wordt ongelijk verdeeld over het team.',
+  'Samen de prioriteiten bepalen, zodat niet alles dringend is.'
+].join('\n');
+
+/* ---------- Opslag ---------- */
+const WEERGAVEN = ['wolk', 'lijst', 'paren'];
+const leeg = () => ({ v:1, tekst:'', bron:{ soort:'plak', naam:'' }, opties:{ regel:null, samen:true, getallen:false, engels:null, maat:null, n:60 }, tabel:{ kop:null, kolom:null }, weergave:'wolk', weg:[], titel:'' });
+const janee = (v, standaard) => typeof v === 'boolean' ? v : standaard;
+function load() {
+  const d0 = leeg();
+  let raw = null; try { raw = localStorage.getItem(KEY); } catch {}
+  if (!raw) return d0;
+  let d; try { d = JSON.parse(raw); } catch { return d0; }
+  if (!d || typeof d !== 'object' || Array.isArray(d)) return d0;
+  try {
+    if (typeof d.tekst === 'string') d0.tekst = d.tekst.slice(0, MAX_BEWAAR);
+    const b = d.bron && typeof d.bron === 'object' ? d.bron : {};
+    d0.bron = { soort: ['plak', 'csv', 'voorbeeld'].includes(b.soort) ? b.soort : 'plak', naam: typeof b.naam === 'string' ? b.naam.slice(0, 120) : '' };
+    const o = d.opties && typeof d.opties === 'object' ? d.opties : {};
+    d0.opties = { regel: janee(o.regel, null), samen: janee(o.samen, true), getallen: janee(o.getallen, false), engels: janee(o.engels, null),
+      maat: o.maat === 'antw' || o.maat === 'keer' ? o.maat : null, n: [30, 60, 100].includes(o.n) ? o.n : 60 };
+    const t = d.tabel && typeof d.tabel === 'object' ? d.tabel : {};
+    d0.tabel = { kop: janee(t.kop, null), kolom: Number.isInteger(t.kolom) && t.kolom >= 0 && t.kolom < 1000 ? t.kolom : null };
+    d0.weergave = WEERGAVEN.includes(d.weergave) ? d.weergave : 'wolk';
+    d0.weg = [...new Set((Array.isArray(d.weg) ? d.weg : []).filter(w => typeof w === 'string').map(w => w.trim().toLowerCase().slice(0, 60)).filter(Boolean))].slice(0, 500);
+    d0.titel = typeof d.titel === 'string' ? d.titel.slice(0, 90) : '';
+  } catch { return leeg(); }
+  return d0;
+}
+let st = load(), opslagFout = false;
+if (st.bron.soort === 'voorbeeld') st.tekst = VOORBEELD;
+function save() {
+  ocSaves++;
+  const tekst = st.bron.soort === 'voorbeeld' || st.tekst.length > MAX_BEWAAR ? '' : st.tekst;
+  try { localStorage.setItem(KEY, JSON.stringify({ ...st, tekst })); }
+  catch { if (!opslagFout) { opslagFout = true; toast('Bewaren op dit toestel lukt niet. Kies Bewaar als bestand in het menu.'); } }
+}
+let saveT = null;
+const saveLater = () => { clearTimeout(saveT); saveT = setTimeout(save, 500); };
+addEventListener('pagehide', () => { if (saveT) { clearTimeout(saveT); saveT = null; save(); } });
+
+/* ---------- Tabellen: CSV, TSV en geplakte cellen uit een rekenblad ---------- */
+function parseCsv(t, d, max = Infinity) {
+  const rows = [], n = t.length; let row = [], i = 0;
+  if (!n) return rows;
+  for (;;) {
+    let cel, e;
+    if (t[i] === '"') {
+      let j = i + 1, stuk = '';
+      for (;;) {
+        const k = t.indexOf('"', j);
+        if (k < 0) { stuk += t.slice(j); j = n; break; }
+        stuk += t.slice(j, k);
+        if (t[k + 1] === '"') { stuk += '"'; j = k + 2; continue; }
+        j = k + 1; break;
+      }
+      e = j; while (e < n && t[e] !== d && t[e] !== '\n') e++;
+      cel = stuk + t.slice(j, e);
+    } else {
+      e = i; while (e < n && t[e] !== d && t[e] !== '\n') e++;
+      cel = t.slice(i, e);
+    }
+    if (cel.endsWith('\r')) cel = cel.slice(0, -1);
+    row.push(cel); i = e;
+    if (i >= n) { rows.push(row); break; }
+    if (t[i] === d) { i++; if (i >= n) { row.push(''); rows.push(row); break; } continue; }
+    rows.push(row); row = []; i++;
+    if (i >= n || rows.length >= max) break;
+  }
+  return rows;
+}
+function snuffel(t, kandidaten) {
+  let best = null;
+  const proefTekst = t.length > 200000 ? t.slice(0, 200000) : t;
+  for (const d of kandidaten) {
+    if (proefTekst.indexOf(d) < 0) continue;
+    let proef = parseCsv(proefTekst, d, 80);
+    if (t.length > proefTekst.length && proef.length > 2) proef = proef.slice(0, -1);   // laatste rij kan afgekapt zijn
+    proef = proef.filter(r => r.some(c => c.trim()));
+    if (proef.length < 2) continue;
+    const tel = new Map(); proef.forEach(r => tel.set(r.length, (tel.get(r.length) || 0) + 1));
+    let modus = 0, freq = 0; tel.forEach((f, k) => { if (f > freq || (f === freq && k > modus)) { modus = k; freq = f; } });
+    const score = freq / proef.length;
+    if (modus >= 2 && score >= 0.6 && (!best || score > best.score + 0.001)) best = { d, score, modus };
+  }
+  return best;
+}
+function leesTabel(t, bestand) {
+  const s = snuffel(t, bestand ? [';', '\t', ','] : ['\t']);
+  if (!s) return null;
+  const rows = parseCsv(t, s.d).filter(r => r.some(c => c.trim()));
+  if (rows.length < 2) return null;
+  const n = Math.max(...rows.map(r => r.length));
+  const gem = start => { const g = new Array(n).fill(0); for (let i = start; i < rows.length; i++) for (let k = 0; k < n; k++) g[k] += (rows[i][k] || '').trim().length; return g.map(x => x / Math.max(1, rows.length - start)); };
+  const gemData = gem(1), L = gemData.indexOf(Math.max(...gemData));
+  const kop0 = rows[0];
+  const kopAuto = kop0.length === n && kop0.every(c => { const x = c.trim(); return x && x.length <= 80 && !/^[\d\s.,:/%-]+$/.test(x); })
+    && (gemData[L] < 15 || (kop0[L] || '').trim().length < 0.6 * gemData[L]);
+  return { d: s.d, rows, n, kopAuto, gem };
+}
+const SCHEIDING = { ';':'puntkomma', ',':'komma', '\t':'tab' };
+
+/* ---------- Wat is één antwoord? ---------- */
+function autoRegel(t) {
+  const lijnen = t.split('\n').map(s => s.trim()).filter(Boolean);
+  if (lijnen.length < 5) return false;
+  const blokken = t.split(/\n[ \t]*\n/).filter(s => s.trim()).length;
+  if (blokken > lijnen.length / 2) return false;          // er zijn al alinea's
+  const lens = lijnen.map(l => l.length).sort((a, b) => a - b);
+  if (lens[lens.length >> 1] > 200) return false;          // geen korte regels
+  let loopt = 0;                                           // tekst die midden in een zin afbreekt, is geen lijst
+  for (let i = 1; i < lijnen.length; i++) if (/^[a-zà-ÿ]/.test(lijnen[i]) && !/[.!?:;)"']$/.test(lijnen[i - 1])) loopt++;
+  return loopt / (lijnen.length - 1) < 0.4;
+}
+function huidigeTekst() {
+  let t = st.tekst;
+  if (t.indexOf('\r') >= 0) t = t.replace(/\r\n?/g, '\n');
+  return t.normalize('NFC');
+}
+function bereid() {
+  const t = huidigeTekst();
+  if (!t.trim()) return null;
+  const tab = st.bron.soort === 'csv' || t.indexOf('\t') >= 0 ? leesTabel(t, st.bron.soort === 'csv') : null;
+  if (tab) {
+    const kop = st.tabel.kop ?? tab.kopAuto;
+    const g = tab.gem(kop ? 1 : 0), voorstel = g.indexOf(Math.max(...g));
+    const kol = st.tabel.kolom != null && st.tabel.kolom < tab.n ? st.tabel.kolom : voorstel;
+    const lijst = [];
+    for (let i = kop ? 1 : 0; i < tab.rows.length; i++) { const c = (tab.rows[i][kol] || '').trim(); if (c) lijst.push({ t: c, wie: 'Rij ' + (i + 1) }); }
+    return { soort: 'tabel', tab, kop, kol, voorstel, g, lijst };
+  }
+  const autoR = autoRegel(t), regel = st.opties.regel ?? autoR;
+  const delen = (regel ? t.split('\n') : t.split(/\n[ \t]*\n/)).map(s => s.trim()).filter(Boolean);
+  return { soort: 'tekst', regel, autoR, lijst: delen.map((s, i) => ({ t: s, wie: 'Antwoord ' + (i + 1) })) };
+}
+
+/* ---------- Tellen ---------- */
+const WOORD_RE = /['’][stknSTKN](?![\p{L}\p{M}])|[\p{L}\p{M}]+(?:['’\-‐][\p{L}\p{M}]+)*|\d+(?:[.,]\d+)*/gu;
+const RUIMTE = /^[ \t\u00a0\u202f]+$/;
+const isGetal = w => { const c = w.charCodeAt(0); return c > 47 && c < 58; };
+const isApos = w => w.charCodeAt(0) === 39 || APOS.has(w);
+const inhoudBasis = w => !STOP.has(w) && !NEG.has(w) && !isApos(w) && (w.length > 1 || isGetal(w));
+function paarKan(a, b) {
+  if (isApos(a) || isApos(b)) return false;
+  if (NEG.has(a)) {
+    if (b === 'te') return false;
+    if (NEG.has(b) || NA_NEG.has(b)) return true;
+    if (a === 'te' && /en$/.test(b)) return false;       // "te werken", "te doen": geen paar
+    return inhoudBasis(b);
+  }
+  return inhoudBasis(a) && inhoudBasis(b);
+}
+function telAlles(lijst) {
+  const W = new Map(), P = new Map(); let totaal = 0;
+  for (let i = 0; i < lijst.length; i++) {
+    const t = lijst[i].t; let vorige = null, vEind = 0, m;
+    WOORD_RE.lastIndex = 0;
+    while ((m = WOORD_RE.exec(t)) !== null) {
+      let w = m[0].toLowerCase();
+      if (w.indexOf('’') >= 0) w = w.replace(/’/g, "'");
+      if (w.indexOf('‐') >= 0) w = w.replace(/‐/g, '-');
+      if (!isGetal(w)) totaal++;
+      let e = W.get(w); if (!e) { e = { tf: 0, docs: [], last: -1 }; W.set(w, e); }
+      e.tf++; if (e.last !== i) { e.last = i; e.docs.push(i); }
+      if (vorige !== null && RUIMTE.test(t.slice(vEind, m.index)) && paarKan(vorige, w)) {
+        const k = vorige + ' ' + w; let p = P.get(k);
+        if (!p) { p = { tf: 0, docs: [], last: -1, a: vorige, b: w }; P.set(k, p); }
+        p.tf++; if (p.last !== i) { p.last = i; p.docs.push(i); }
+      }
+      vorige = w; vEind = m.index + m[0].length;
+    }
+  }
+  let en = 0; ENGELS_TEKEN.forEach(w => { const e = W.get(w); if (e) en += e.tf; });
+  return { W, P, totaal, n: lijst.length, engelsAuto: en >= 5 && en / Math.max(1, totaal) >= 0.02 };
+}
+/* Enkelvoud en meervoud: alleen deze vaste patronen, en alleen als beide vormen in de tekst staan. */
+function vormen(w) {
+  const uit = [w + 's', w + "'s"];
+  if (!/[^e]e[lr]$/.test(w)) uit.push(w + 'en');           // regel/regelen of kader/kaderen: dat is een werkwoord
+  if (/e$/.test(w)) uit.push(w + 'n');                      // ziekte/ziekten
+  if (/(ee|ie)$/.test(w)) uit.push(w + 'ën');               // idee/ideeën
+  const d = /(^|[^aeiou])[aeiou]([bdfgklmnprstvz])$/.exec(w);
+  if (d) uit.push(w + d[2] + 'en');                         // kat/katten, overleg/overleggen
+  const h = /(aa|ee|oo|uu)([bdfgklmnprstvz])$/.exec(w);
+  if (h) uit.push(w.slice(0, -3) + h[1][0] + h[2] + 'en');  // taak/taken, probleem/problemen
+  if (/heid$/.test(w)) uit.push(w.slice(0, -4) + 'heden');  // mogelijkheid/mogelijkheden
+  // Bijvoeglijk naamwoord met -e: duidelijk/duidelijke, snel/snelle, groot/grote
+  if (!/e$/.test(w)) uit.push(w + 'e');
+  if (d) uit.push(w + d[2] + 'e');
+  if (h) uit.push(w.slice(0, -3) + h[1][0] + h[2] + 'e');
+  return uit;
+}
+function mengDocs(lijsten) {
+  if (lijsten.length === 1) return lijsten[0];
+  const s = new Set(); lijsten.forEach(l => l.forEach(x => s.add(x)));
+  return [...s].sort((a, b) => a - b);
+}
+function opties() {
+  return { samen: st.opties.samen, getallen: st.opties.getallen, engels: st.opties.engels ?? (T ? T.engelsAuto : false), weg: new Set(st.weg), maat: maatNu() };
+}
+function maatNu() { return st.opties.maat ?? (T && T.n > 1 ? 'antw' : 'keer'); }
+const waarde = (x, maat) => maat === 'antw' ? x.df : x.tf;
+const NLC = new Intl.Collator('nl');
+function vat(T, o) {
+  const telt = w => {
+    if (o.weg.has(w)) return false;
+    if (isGetal(w)) return o.getallen;
+    if (w.length < 2 || STOP.has(w) || NEG.has(w) || isApos(w)) return false;
+    return !(o.engels && ENGELS.has(w));
+  };
+  const ouder = new Map();
+  for (const w of T.W.keys()) if (telt(w)) ouder.set(w, w);
+  // Een vorm die bij twee verschillende woorden kan horen (kopen: kop of koop), nemen we niet samen.
+  const basis = new Map();
+  if (o.samen) for (const w of ouder.keys()) {
+    if (isGetal(w)) continue;
+    for (const f of vormen(w)) if (f !== w && ouder.has(f) && !NOOIT_SAMEN.has(w + '|' + f)) { let s = basis.get(f); if (!s) basis.set(f, s = new Set()); s.add(w); }
+  }
+  const wortel = w => { let r = w; while (ouder.get(r) !== r) r = ouder.get(r); let x = w; while (x !== r) { const n = ouder.get(x); ouder.set(x, r); x = n; } return r; };
+  for (const [f, s] of basis) {
+    if (s.size !== 1) continue;
+    const a = wortel([...s][0]), b = wortel(f); if (a !== b) ouder.set(b, a);
+  }
+  const groep = new Map();
+  for (const w of ouder.keys()) { const r = wortel(w); let g = groep.get(r); if (!g) groep.set(r, g = []); g.push(w); }
+  const lid = w => ({ w, tf: T.W.get(w).tf, df: T.W.get(w).docs.length });
+  const vergelijk = (a, b) => waarde(b, o.maat) - waarde(a, o.maat) || b.tf - a.tf || a.w.length - b.w.length || NLC.compare(a.w, b.w);
+  const labelVan = new Map(), groepen = [];
+  for (const leden of groep.values()) {
+    const l = leden.map(lid).sort(vergelijk), label = l[0].w;
+    const docs = mengDocs(leden.map(w => T.W.get(w).docs));
+    leden.forEach(w => labelVan.set(w, label));
+    groepen.push({ k: 'w:' + label, label, vormen: l.map(x => x.w), tf: l.reduce((s, x) => s + x.tf, 0), df: docs.length, docs, paar: false });
+  }
+  const sorteer = (a, b) => waarde(b, o.maat) - waarde(a, o.maat) || b.tf - a.tf || NLC.compare(a.label, b.label);
+  groepen.sort(sorteer);
+  // Woordparen: het eerste woord is een ontkenning of sterkte, of allebei zijn het gewone woorden
+  const pm = new Map();
+  for (const [k, p] of T.P) {
+    const { a, b } = p;
+    if (o.weg.has(a) || o.weg.has(b)) continue;
+    if (NEG.has(a)) { if (!(NEG.has(b) || NA_NEG.has(b) || telt(b))) continue; }
+    else if (!telt(a) || !telt(b)) continue;
+    const sl = (labelVan.get(a) || a) + ' ' + (labelVan.get(b) || b);
+    let x = pm.get(sl); if (!x) pm.set(sl, x = { raw: [], tf: 0, dl: [] });
+    x.raw.push(k); x.tf += p.tf; x.dl.push(p.docs);
+  }
+  const paren = [];
+  for (const [label, x] of pm) {
+    const docs = mengDocs(x.dl), y = { k: 'p:' + label, label, vormen: x.raw, tf: x.tf, df: docs.length, docs, paar: true };
+    if (waarde(y, o.maat) >= 2) paren.push(y);
+  }
+  paren.sort(sorteer);
+  return { groepen, paren, n: T.n, totaal: T.totaal, maat: o.maat, engels: o.engels };
+}
+
+/* ---------- Toestand van het scherm ---------- */
+let prep = null, T = null, R = null, laatsteDuur = 0;
+function herbereken(basis) {
+  const t0 = performance.now();
+  if (basis || !prep) { prep = bereid(); T = prep ? telAlles(prep.lijst) : null; }
+  R = prep && T && prep.lijst.length ? vat(T, opties()) : null;
+  laatsteDuur = performance.now() - t0;
+  toon();
+}
+
+/* ---------- Tekenen: invoer, keuzes, tabel ---------- */
+let kolSig = '';
+function toonInvoer() {
+  const heeft = !!st.tekst.trim();
+  $('start').hidden = heeft;
+  $('tekst-acties').hidden = !heeft;
+  $('instellingen').hidden = !heeft;
+  $('groot-noot').hidden = st.tekst.length <= MAX_BEWAAR;
+  $('vb-bar').hidden = st.bron.soort !== 'voorbeeld' || !heeft;
+  const tab = prep && prep.soort === 'tabel';
+  $('bron-info').textContent = !heeft ? '' : st.bron.soort === 'voorbeeld' ? 'voorbeeld' : st.bron.soort === 'csv' && st.bron.naam ? st.bron.naam : tab ? 'tabel uit een rekenblad' : '';
+  $('tabel').hidden = !tab;
+  $('regel-rij').hidden = tab;
+  if (tab) {
+    const t = prep.tab, rijen = t.rows.length - (prep.kop ? 1 : 0);
+    $('tabel-info').innerHTML = `Dit is een tabel: <b>${esc(meer(t.n, 'kolom', 'kolommen'))}</b> en <b>${esc(meer(rijen, 'rij', 'rijen'))}</b>, gescheiden door een ${esc(SCHEIDING[t.d])}. Elke rij is één antwoord.`;
+    $('o-kop').checked = prep.kop;
+    const namen = [];
+    for (let k = 0; k < t.n; k++) namen.push(prep.kop ? (t.rows[0][k] || '').trim() || 'Kolom ' + (k + 1) : 'Kolom ' + (k + 1));
+    const sig = [t.n, prep.kop, prep.kol, prep.voorstel, t.rows.length, namen.join('\u0001')].join('|');
+    if (sig !== kolSig) {
+      kolSig = sig;
+      let h = '';
+      for (let k = 0; k < t.n; k++) {
+        let vb = '';
+        for (let i = prep.kop ? 1 : 0; i < t.rows.length && !vb; i++) vb = (t.rows[i][k] || '').trim();
+        vb = vb.replace(/\s+/g, ' ');
+        h += `<label class="kol"><input type="radio" name="kol" value="${k}"${k === prep.kol ? ' checked' : ''}><span><b>${esc(namen[k])}${k === prep.voorstel ? '<span class="tip">voorgesteld</span>' : ''}</b><small>${vb ? esc(vb.length > 90 ? vb.slice(0, 88) + '…' : vb) : 'leeg'}</small><em>gemiddeld ${fmt(Math.round(prep.g[k]))} tekens</em></span></label>`;
+      }
+      $('kolommen').innerHTML = h;
+    }
+  } else kolSig = '';
+  if (prep && prep.soort === 'tekst') {
+    $('o-regel').checked = prep.regel;
+    const n = $('regel-noot');
+    n.textContent = st.opties.regel == null && prep.autoR ? 'Vanzelf aangezet: de tekst heeft veel korte regels.' : 'Staat dit uit, dan is elke alinea een antwoord.';
+    n.classList.toggle('auto', st.opties.regel == null && prep.autoR);
+  }
+  $('o-samen').checked = st.opties.samen; $('o-getal').checked = st.opties.getallen;
+  const sam = [tab ? 'elke rij een antwoord' : prep && prep.regel ? 'elke regel een antwoord' : 'elke alinea een antwoord', st.opties.samen ? 'vormen samen' : 'elke vorm apart'];
+  if (st.opties.getallen) sam.push('met getallen');
+  if (st.opties.engels ?? (T ? T.engelsAuto : false)) sam.push('zonder Engelse vulwoorden');
+  sam[0] = sam[0][0].toUpperCase() + sam[0].slice(1);
+  $('inst-sam').textContent = sam.join(' · ');
+  const eng = st.opties.engels ?? (T ? T.engelsAuto : false), en = $('engels-noot');
+  $('o-engels').checked = eng;
+  en.textContent = st.opties.engels == null && T && T.engelsAuto ? 'Vanzelf aangezet: er staat Engels in de tekst.' : 'Zoals the, and en of.';
+  en.classList.toggle('auto', st.opties.engels == null && !!(T && T.engelsAuto));
+}
+
+/* ---------- Tekenen: resultaat ---------- */
+const eenheid = () => R && R.n === 1 ? 'tekst' : 'antwoorden';
+function telZin(x, kort) {
+  if (R.maat === 'antw') return kort ? `in ${fmt(x.df)} van ${fmt(R.n)}` : `in ${fmt(x.df)} van ${fmt(R.n)} antwoorden`;
+  return x.tf === 1 ? '1 keer' : fmt(x.tf) + ' keer';
+}
+function toon() {
+  toonInvoer();
+  const vol = !!R;
+  $('werk').classList.toggle('vol', vol);
+  $('res-card').hidden = !vol;
+  if (!vol) { sluitCtx(false); toonChips(); return; }
+  const n = R.n;
+  $('overzicht').innerHTML = `<b>${esc(n === 1 ? '1 tekst' : meer(n, 'antwoord', 'antwoorden'))}</b>, ${esc(meer(R.totaal, 'woord', 'woorden'))}, ${esc(meer(R.groepen.length, 'verschillend woord', 'verschillende woorden'))} na het weglaten van vulwoorden.`;
+  zetRadio('maat', 'm', R.maat); zetRadio('n-keuze', 'n', String(st.opties.n)); zetRadio('weergave', 'w', st.weergave);
+  $('maat').closest('.instel-groep').hidden = n === 1;
+  $('maat-uitleg').textContent = n === 1 ? 'Eén tekst: de tool telt hoe vaak elk woord voorkomt.' : 'Per antwoord is eerlijker. Eén iemand die een woord tien keer schrijft, telt zo maar één keer.';
+  $('n-groep').hidden = st.weergave !== 'wolk';
+  document.querySelectorAll('[data-view]').forEach(v => { v.hidden = v.dataset.view !== st.weergave; });
+  if ($('titel').value !== st.titel) $('titel').value = st.titel;
+  const kopMaat = R.maat === 'antw' ? `In hoeveel antwoorden (van ${fmt(n)})` : 'Aantal keer';
+  $('lijst-maat').textContent = kopMaat; $('paren-maat').textContent = kopMaat;
+  if (st.weergave === 'wolk') tekenWolk();
+  if (st.weergave === 'lijst') tekenLijst('lijst');
+  if (st.weergave === 'paren') tekenLijst('paren');
+  toonChips();
+  if (ctxK) { const x = vind(ctxK); if (x) vulCtx(x, false); else sluitCtx(false); }
+  markeerGekozen();
+}
+function zetRadio(groep, attr, waarde) { $(groep).querySelectorAll('[role="radio"]').forEach(b => b.setAttribute('aria-checked', String(b.dataset[attr] === waarde))); }
+function vind(k) { if (!R) return null; return (k.startsWith('p:') ? R.paren : R.groepen).find(x => x.k === k) || null; }
+
+/* ---------- De wolk: spiraal met botsingscontrole, met dezelfde maat als het scherm ---------- */
+const FONT = '"DM Sans", system-ui, sans-serif';
+const meet = document.createElement('canvas').getContext('2d');
+function trap(v, max) { return v >= 0.5 * max && max > 1 ? 3 : v >= 0.2 * max && max > 1 ? 2 : 1; }
+function legTekst(l) {   // "in 2 tot 3 antwoorden", "in 1 antwoord", "4 keer"
+  const a = Math.min(...l), b = Math.max(...l), r = a === b ? fmt(a) : fmt(a) + ' tot ' + fmt(b);
+  return R.maat === 'antw' ? 'in ' + r + (b === 1 ? ' antwoord' : ' antwoorden') : r + ' keer';
+}
+function legWolk(items, W, maat) {
+  const pos = []; if (!items.length || W < 60) return { pos, H: 0, weg: 0 };
+  const vals = items.map(x => waarde(x, maat)), cmax = Math.max(...vals), cmin = Math.min(...vals);
+  const minF = W < 480 ? 13 : 14, maxF = Math.round(Math.max(minF + 12, Math.min(W * (W < 480 ? 0.13 : 0.1), 76)));
+  const span = Math.sqrt(cmax) - Math.sqrt(cmin), asp = Math.max(1, Math.min(2.1, W / 330));
+  const CEL = 32, rooster = new Map(), GAT = 2;
+  const sleutel = (gx, gy) => gx * 100003 + gy;
+  const botst = (x, y, w, h) => {
+    const x0 = Math.floor((x - GAT) / CEL), x1 = Math.floor((x + w + GAT) / CEL), y0 = Math.floor((y - GAT) / CEL), y1 = Math.floor((y + h + GAT) / CEL);
+    for (let gx = x0; gx <= x1; gx++) for (let gy = y0; gy <= y1; gy++) {
+      const l = rooster.get(sleutel(gx, gy)); if (!l) continue;
+      for (const p of l) if (x < p.x + p.w + GAT && x + w + GAT > p.x && y < p.y + p.h + GAT && y + h + GAT > p.y) return true;
+    }
+    return false;
+  };
+  const leg = p => {
+    for (let gx = Math.floor(p.x / CEL); gx <= Math.floor((p.x + p.w) / CEL); gx++) for (let gy = Math.floor(p.y / CEL); gy <= Math.floor((p.y + p.h) / CEL); gy++) {
+      const s = sleutel(gx, gy); let l = rooster.get(s); if (!l) rooster.set(s, l = []); l.push(p);
+    }
+  };
+  let weg = 0;
+  for (let i = 0; i < items.length; i++) {
+    let size = span > 0 ? minF + (maxF - minF) * (Math.sqrt(vals[i]) - Math.sqrt(cmin)) / span : (items.length === 1 ? maxF : Math.round((minF + maxF) / 2.4));
+    meet.font = `600 ${size}px ${FONT}`;
+    let tw = meet.measureText(items[i].label).width, px = Math.max(2, Math.round(size * 0.12));
+    if (tw + 2 * px > W) { size = Math.max(minF, Math.floor(size * (W - 2 * px) / (tw + 2 * px))); meet.font = `600 ${size}px ${FONT}`; tw = meet.measureText(items[i].label).width; px = Math.max(2, Math.round(size * 0.12)); }
+    const w = Math.ceil(tw + 2 * px), h = Math.ceil(size * 1.18);
+    if (w > W) { weg++; continue; }
+    let gelegd = null;
+    for (let t = 0, r = 0, stap = 0; r < 5000 && stap < 300000; stap++) {
+      const x = Math.round(W / 2 + asp * r * Math.cos(t) - w / 2), y = Math.round(r * Math.sin(t) - h / 2);
+      if (x >= 0 && x + w <= W && !botst(x, y, w, h)) { gelegd = { x, y, w, h, size, i, tier: trap(vals[i], cmax) }; break; }
+      t += Math.min(0.5, 2.2 / Math.max(1, r * asp)); r = 1.3 * t;
+    }
+    if (!gelegd) { weg++; continue; }
+    leg(gelegd); pos.push(gelegd);
+  }
+  let minY = Infinity, maxY = -Infinity, minX = Infinity, maxX = -Infinity;
+  pos.forEach(p => { minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y + p.h); minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x + p.w); });
+  const dx = Math.round((W - (maxX - minX)) / 2 - minX), dy = 4 - minY;
+  pos.forEach(p => { p.x += dx; p.y += dy; });
+  return { pos, H: maxY - minY + 8, weg, cmax };
+}
+let wolkPos = [], wolkItems = [], wolkB = 0, wolkFont = false;
+function tekenWolk() {
+  const el = $('wolk'), W = Math.floor(el.clientWidth);
+  wolkItems = R.groepen.slice(0, st.opties.n);
+  if (!wolkItems.length) {
+    el.style.height = ''; el.innerHTML = `<p class="wolk-leeg">Er blijven geen woorden over na het weglaten van vulwoorden.</p>`; $('legende').innerHTML = ''; $('ook-vaak').hidden = true; wolkPos = []; return;
+  }
+  const L = legWolk(wolkItems, W, R.maat);
+  wolkPos = L.pos; wolkB = W; wolkFont = document.fonts ? document.fonts.check(`600 16px ${FONT}`) : true;
+  el.style.height = L.H + 'px';
+  el.setAttribute('aria-label', `Woordwolk met ${meer(wolkPos.length, 'woord', 'woorden')}. Het grootste woord staat in het midden. Kies een woord om te lezen wat er staat.`);
+  // In de volgorde van de telling: met Tab ga je van het vaakst genoemde woord naar het minst genoemde
+  const h = wolkPos.slice().sort((a, b) => a.i - b.i).map(p => {
+    const x = wolkItems[p.i], ook = x.vormen.length > 1 ? ', ook ' + x.vormen.filter(v => v !== x.label).join(', ') : '';
+    return `<button type="button" class="ww t${p.tier}" data-k="${escA(x.k)}" style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px;font-size:${p.size}px" aria-label="${escA(x.label + ook + ', ' + telZin(x))}">${esc(x.label)}</button>`;
+  }).join('');
+  el.innerHTML = h;
+  // Legende: kleur en grootte volgen de telling, in drie stappen
+  const per = { 3: [], 2: [], 1: [] }; wolkPos.forEach(p => per[p.tier].push(waarde(wolkItems[p.i], R.maat)));
+  const stukken = [3, 2, 1].filter(t => per[t].length).map(t => `<li><i class="t${t}" aria-hidden="true"></i>${esc(legTekst(per[t]))}</li>`);
+  // Wat een wolk verbergt: de meest voorkomende ontkende paren, meteen klikbaar
+  const neg = R.paren.filter(x => NEG.has(x.label.split(' ')[0])).slice(0, 3), ov = $('ook-vaak');
+  ov.hidden = !neg.length;
+  ov.innerHTML = neg.length ? '<span>Ook vaak:</span>' + neg.map(x => `<button type="button" data-k="${escA(x.k)}" aria-label="${escA(x.label + ', ' + telZin(x))}">${esc(x.label)}<small aria-hidden="true">${fmt(waarde(x, R.maat))}</small></button>`).join('') : '';
+  $('legende').innerHTML = `<li>Grootte en kleur tonen hoe vaak:</li>` + stukken.join('') + (L.weg ? `<li>${meer(L.weg, 'woord past', 'woorden passen')} niet, zie de Lijst</li>` : '');
+}
+/* Tikken naast een klein woord kiest het dichtste woord: zo is elk woord makkelijk te raken. */
+function dichtsteWoord(e) {
+  const r = $('wolk').getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  let best = null, bd = 24;
+  wolkPos.forEach(p => { const dx = Math.max(p.x - x, 0, x - (p.x + p.w)), dy = Math.max(p.y - y, 0, y - (p.y + p.h)), d = Math.hypot(dx, dy); if (d < bd) { bd = d; best = p; } });
+  return best ? $('wolk').querySelector(`[data-k="${CSS.escape(wolkItems[best.i].k)}"]`) : null;
+}
+
+/* ---------- Lijst en woordparen ---------- */
+const toonAantal = { lijst: 100, paren: 100 };
+function tekenLijst(soort) {
+  const ol = $(soort), noot = $(soort + '-noot'), alle = soort === 'paren' ? R.paren : R.groepen;
+  const q = soort === 'lijst' ? $('zoek').value.trim().toLowerCase().normalize('NFC') : '';
+  const l = q ? alle.filter(x => x.label.includes(q) || x.vormen.some(v => v.includes(q))) : alle;
+  const max = alle.length ? waarde(alle[0], R.maat) : 1;
+  const zicht = l.slice(0, toonAantal[soort]);
+  ol.innerHTML = zicht.map(x => {
+    const rang = alle.indexOf(x) + 1, v = waarde(x, R.maat), ook = x.vormen.length > 1 ? x.vormen.filter(f => f !== x.label) : [];
+    const ookT = ook.length ? (x.paar ? 'ook: ' : 'ook: ') + ook.join(', ') : '';
+    return `<li><button type="button" class="rij" data-k="${escA(x.k)}" aria-label="${escA(x.label + (ook.length ? ', ook ' + ook.join(', ') : '') + ': ' + telZin(x))}"><span class="nr" aria-hidden="true">${rang}</span><span class="wrd" aria-hidden="true"><b>${esc(x.label)}</b>${ookT ? `<small>${esc(ookT)}</small>` : ''}</span><span class="bar" aria-hidden="true"><i style="width:${Math.max(2, Math.round(100 * v / max))}%"></i></span><span class="tal" aria-hidden="true">${fmt(v)}</span></button></li>`;
+  }).join('');
+  $(soort + '-meer-rij').hidden = l.length <= zicht.length;
+  let nt = '';
+  if (!l.length) {
+    if (soort === 'paren') nt = R.maat === 'antw' ? 'Geen woordparen die in minstens 2 antwoorden voorkomen.' : 'Geen woordparen die minstens 2 keer voorkomen.';
+    else if (q && st.weg.includes(q)) nt = `"${q}" staat bij de weggelaten woorden. Je kan het daar terugzetten.`;
+    else if (q && (STOP.has(q) || NEG.has(q))) nt = NEG.has(q) ? `"${q}" telt niet als los woord. Kijk bij Woordparen.` : `"${q}" is een vulwoord en telt niet mee.`;
+    else nt = q ? `Geen woord gevonden met "${q}".` : 'Er blijven geen woorden over na het weglaten van vulwoorden.';
+  } else if (q) nt = '';
+  noot.hidden = !nt; noot.textContent = nt;
+}
+
+/* ---------- Wat zeiden mensen? ---------- */
+let ctxK = null, ctxToon = 10, ctxBron = null;
+const breed = matchMedia('(min-width:1024px)');
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/'/g, "['’]").replace(/-/g, '[-‐]');
+function zoekRe(x) {
+  const alt = x.vormen.slice().sort((a, b) => b.length - a.length).map(v => x.paar ? v.split(' ').map(reEsc).join('[ \\t\\u00a0\\u202f]+') : reEsc(v)).join('|');
+  return new RegExp(`(?<![\\p{L}\\p{M}\\d'’\\-‐])(?:${alt})(?![\\p{L}\\p{M}\\d]|['’\\-‐][\\p{L}\\p{M}])`, 'giu');
+}
+/* Bij één lange tekst of een lang antwoord: alleen de zinnen met het woord. */
+function stukken(x) {
+  const re = zoekRe(x), test = new RegExp(re.source, 'iu'), uit = [];
+  x.docs.forEach(i => {
+    const a = prep.lijst[i];
+    if (R.n > 1 && a.t.length <= 600) { uit.push({ t: a.t, wie: a.wie, i }); return; }
+    const zinnen = a.t.match(/[^.!?\n]+(?:[.!?]+["')\]]*)?/g) || [a.t];
+    const raak = zinnen.map(z => z.trim()).filter(z => z && test.test(z));
+    if (R.n > 1) uit.push({ t: raak.join(' … ') || a.t, wie: a.wie, i, deel: true });
+    else raak.forEach(z => uit.push({ t: z, wie: '', i }));
+  });
+  return { re, uit };
+}
+function markeer(el, tekst, re) {
+  re.lastIndex = 0; let last = 0, m;
+  while ((m = re.exec(tekst)) !== null) {
+    if (m.index > last) el.append(tekst.slice(last, m.index));
+    const mk = document.createElement('mark'); mk.textContent = m[0]; el.append(mk);
+    last = m.index + m[0].length; if (!m[0].length) re.lastIndex++;
+  }
+  el.append(tekst.slice(last));
+}
+let ctxStukken = null;
+function vulCtx(x, nieuw) {
+  if (nieuw) ctxToon = 10;
+  $('ctx-leeg').hidden = true; $('ctx-vol').hidden = false;
+  $('ctx-soort').textContent = x.paar ? 'Woordpaar' : 'Woord';
+  $('ctx-h').textContent = x.label;
+  const ookL = x.vormen.filter(v => v !== x.label);
+  $('ctx-tel').innerHTML = R.n === 1 ? `<b>${esc(fmt(x.tf))}</b> keer in de tekst.` : `In <b>${esc(fmt(x.df))}</b> van ${esc(fmt(R.n))} antwoorden, ${esc(x.tf === 1 ? '1 keer' : fmt(x.tf) + ' keer')} in totaal.`;
+  $('ctx-ook').hidden = !ookL.length;
+  $('ctx-ook').textContent = ookL.length ? 'Samengenomen: ' + x.vormen.join(', ') + '.' : '';
+  $('ctx-weg').hidden = x.paar;
+  ctxStukken = stukken(x);
+  const ol = $('ctx-lijst'); ol.textContent = '';
+  ctxStukken.uit.slice(0, ctxToon).forEach(s => {
+    const li = document.createElement('li');
+    if (R.n > 1) { const w = document.createElement('span'); w.className = 'wie'; w.textContent = s.wie + (s.deel ? ', de zinnen met dit woord' : ''); li.append(w); }
+    const p = document.createElement('p'); markeer(p, s.t, ctxStukken.re); li.append(p); ol.append(li);
+  });
+  const tot = ctxStukken.uit.length, zicht = Math.min(ctxToon, tot);
+  $('ctx-meer-rij').hidden = zicht >= tot;
+  $('ctx-stand').textContent = tot > 10 ? `${fmt(zicht)} van ${fmt(tot)} ${R.n === 1 ? 'zinnen' : 'antwoorden'} getoond` : '';
+}
+function openCtx(k, bron) {
+  const x = vind(k); if (!x) return;
+  const zelfde = ctxK === k;
+  ctxK = k; ctxBron = bron ? { k, view: st.weergave } : ctxBron;
+  vulCtx(x, !zelfde);
+  const c = $('ctx');
+  if (!breed.matches) {
+    c.classList.add('open'); c.setAttribute('role', 'dialog'); c.setAttribute('aria-modal', 'true'); $('ctx-back').hidden = false;
+    c.scrollTop = 0;
+  } else {
+    c.scrollTop = 0;
+    const r = c.getBoundingClientRect(); if (r.top < 0 || r.top > innerHeight - 120) c.scrollIntoView({ block: 'nearest', behavior: stil() ? 'auto' : 'smooth' });
+  }
+  markeerGekozen();
+  $('ctx-h').focus({ preventScroll: true });
+}
+function sluitCtx(focus) {
+  const c = $('ctx'), was = ctxK;
+  ctxK = null;
+  c.classList.remove('open'); c.removeAttribute('role'); c.removeAttribute('aria-modal'); $('ctx-back').hidden = true;
+  $('ctx-leeg').hidden = false; $('ctx-vol').hidden = true;
+  markeerGekozen();
+  if (focus && was) {
+    const el = document.querySelector(`[data-view]:not([hidden]) [data-k="${CSS.escape(was)}"]`) || document.querySelector('[data-view]:not([hidden]) [data-k]');
+    if (el) el.focus({ preventScroll: false });
+  }
+}
+function markeerGekozen() {
+  document.querySelectorAll('.gekozen').forEach(b => { b.classList.remove('gekozen'); b.removeAttribute('aria-current'); });
+  if (!ctxK) return;
+  document.querySelectorAll(`[data-k="${CSS.escape(ctxK)}"]`).forEach(b => { b.classList.add('gekozen'); b.setAttribute('aria-current', 'true'); });
+}
+
+/* ---------- Eigen schraplijst ---------- */
+function toonChips() {
+  $('weg-leeg').hidden = st.weg.length > 0;
+  $('chips').innerHTML = st.weg.slice().sort(NLC.compare).map(w => `<li><button type="button" class="chip" data-terug="${escA(w)}" aria-label="Zet ${escA(w)} terug">${esc(w)}<span class="terug" aria-hidden="true">Zet terug</span></button></li>`).join('');
+}
+function laatWeg(x) {
+  const nieuw = x.vormen.filter(v => !st.weg.includes(v)); if (!nieuw.length) return;
+  st.weg = st.weg.concat(nieuw); save();
+  const view = st.weergave;
+  sluitCtx(false); herbereken(false);
+  const v = document.querySelector(`[data-view="${view}"] [data-k]`) || $('weg-h'); v && v.focus({ preventScroll: true });
+  toast(`"${x.label}" weggelaten`, ocUndoable(() => { st.weg = st.weg.filter(w => !nieuw.includes(w)); save(); herbereken(false); }));
+}
+function zetTerug(w) {
+  st.weg = st.weg.filter(x => x !== w); save(); herbereken(false);
+  const b = document.querySelector('#chips .chip') || $('weg-h'); b && b.focus({ preventScroll: true });
+  toast(`"${w}" telt weer mee`);
+}
+
+/* ---------- Delen: afbeelding, CSV, top 20 ---------- */
+function download(blob, name) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+const vandaag = () => { const d = new Date(), p = v => String(v).padStart(2, '0'); return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); };
+const KLEUR = { 3: '#047857', 2: '#334155', 1: '#64748b' };
+async function downloadPng() {
+  if (!R || !R.groepen.length) { toast('Plak eerst een tekst.'); return; }
+  try { await document.fonts.load(`600 20px ${FONT}`); await document.fonts.load(`700 20px ${FONT}`); } catch {}
+  const items = R.groepen.slice(0, st.opties.n), BW = 960, M = 48;
+  const L = legWolk(items, BW - 2 * M, R.maat), titel = st.titel.trim();
+  const top = titel ? 88 : 36, H = Math.ceil(top + L.H + 84);
+  const c = document.createElement('canvas'); c.width = BW * 2; c.height = H * 2;
+  const g = c.getContext('2d'); g.scale(2, 2);
+  g.fillStyle = '#ffffff'; g.fillRect(0, 0, BW, H);
+  if (titel) {
+    g.fillStyle = '#1e293b'; g.font = `700 26px ${FONT}`; g.textBaseline = 'alphabetic';
+    let t = titel; while (g.measureText(t).width > BW - 2 * M && t.length > 4) t = t.slice(0, -2);
+    g.fillText(t === titel ? t : t.trim() + '…', M, 56);
+  }
+  g.textBaseline = 'middle'; g.textAlign = 'center';
+  L.pos.forEach(p => { g.font = `600 ${p.size}px ${FONT}`; g.fillStyle = KLEUR[p.tier]; g.fillText(items[p.i].label, M + p.x + p.w / 2, top + p.y + p.h / 2 + p.size * 0.04); });
+  g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  // Legende en voetregel, klein en grijs
+  let x = M, y = H - 44; g.font = `400 12px ${FONT}`;
+  const per = { 3: [], 2: [], 1: [] }; L.pos.forEach(p => per[p.tier].push(waarde(items[p.i], R.maat)));
+  g.fillStyle = '#64748b'; const kop = 'Grootte en kleur tonen hoe vaak: '; g.fillText(kop, x, y); x += g.measureText(kop).width + 4;
+  [3, 2, 1].filter(t => per[t].length).forEach(t => {
+    const s = legTekst(per[t]);
+    g.fillStyle = KLEUR[t]; g.fillRect(x, y - 9, 10, 10); x += 15; g.fillStyle = '#64748b'; g.fillText(s, x, y); x += g.measureText(s).width + 16;
+  });
+  g.fillStyle = '#64748b'; g.fillText(`Gemaakt met Woordwolk · Onder Constructie · ${R.n === 1 ? '1 tekst' : meer(R.n, 'antwoord', 'antwoorden')}`, M, H - 20);
+  c.toBlob(b => { if (!b) { toast('De afbeelding maken lukt hier niet'); return; } download(b, 'woordwolk-' + vandaag() + '.png'); toast('Afbeelding gedownload'); }, 'image/png');
+}
+function downloadCsv() {
+  if (!R || !R.groepen.length) { toast('Plak eerst een tekst.'); return; }
+  const cel = v => { const s = ocCsvVeilig(v); return /[;"\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const rijen = [['woord', 'aantal', 'aantal antwoorden', 'samengenomen vormen']].concat(R.groepen.map(x => [x.label, x.tf, x.df, x.vormen.length > 1 ? x.vormen.join(', ') : '']));
+  download(new Blob(['\ufeff' + rijen.map(r => r.map(cel).join(';')).join('\r\n') + '\r\n'], { type: 'text/csv;charset=utf-8' }), 'woordwolk-telling-' + vandaag() + '.csv');
+  toast('Telling gedownload');
+}
+async function kopieer(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch {}
+  try { const t = document.createElement('textarea'); t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select(); const ok = document.execCommand('copy'); t.remove(); return ok; } catch { return false; }
+}
+function topTekst() {
+  const kop = (st.titel.trim() ? st.titel.trim() + '\n' : '') + `Top ${Math.min(20, R.groepen.length)} woorden (${R.n === 1 ? '1 tekst' : meer(R.n, 'antwoord', 'antwoorden')}${R.n > 1 ? ', ' + (R.maat === 'antw' ? 'geteld per antwoord' : 'alle keren geteld') : ''}):`;
+  return kop + '\n' + R.groepen.slice(0, 20).map((x, i) => `${i + 1}. ${x.label}${x.vormen.length > 1 ? ' (ook: ' + x.vormen.filter(v => v !== x.label).join(', ') + ')' : ''}: ${telZin(x)}`).join('\n');
+}
+async function kopieerTop() {
+  if (!R || !R.groepen.length) { toast('Plak eerst een tekst.'); return; }
+  toast(await kopieer(topTekst()) ? 'Top 20 gekopieerd' : 'Kopiëren lukt hier niet');
+}
+async function kopieerCtx() {
+  if (!ctxStukken) return;
+  const tekst = ctxStukken.uit.map(s => s.t).join('\n\n');
+  toast(await kopieer(tekst) ? meer(ctxStukken.uit.length, R.n === 1 ? 'zin' : 'antwoord', R.n === 1 ? 'zinnen' : 'antwoorden') + ' gekopieerd' : 'Kopiëren lukt hier niet');
+}
+
+/* ---------- Tekst: typen, plakken, bestand, voorbeeld, nieuwe tekst ---------- */
+let rekenT = null;
+function tekstGewijzigd() {
+  st.tekst = $('tekst').value;
+  if (st.bron.soort === 'voorbeeld') st.bron = { soort: 'plak', naam: '' };
+  clearTimeout(rekenT);
+  rekenT = setTimeout(() => { herbereken(true); save(); }, st.tekst.length > 300000 ? 700 : 350);
+}
+function zetTekst(t, bron) {
+  st.tekst = t; st.bron = bron; st.opties.regel = null; st.opties.engels = null; st.opties.maat = null; st.tabel = { kop: null, kolom: null };
+  $('tekst').value = t; ctxK = null; toonAantal.lijst = toonAantal.paren = 100; $('zoek').value = '';
+  herbereken(true); save();
+}
+function bewaarStand() { return { tekst: st.tekst, bron: { ...st.bron }, opties: { ...st.opties }, tabel: { ...st.tabel } }; }
+function zetStand(s) { st.tekst = s.tekst; st.bron = s.bron; st.opties = s.opties; st.tabel = s.tabel; $('tekst').value = s.tekst; herbereken(true); save(); }
+function nieuweTekst() {
+  const oud = bewaarStand();
+  zetTekst('', { soort: 'plak', naam: '' });
+  $('tekst').focus();
+  toast('Tekst gewist', ocUndoable(() => zetStand(oud)));
+}
+function voorbeeld() {
+  const oud = st.tekst.trim() ? bewaarStand() : null;
+  zetTekst(VOORBEELD, { soort: 'voorbeeld', naam: '' });
+  if (oud) toast('Voorbeeld geladen', ocUndoable(() => zetStand(oud)));
+  requestAnimationFrame(() => $('vb-bar').scrollIntoView({ block: 'start', behavior: stil() ? 'auto' : 'smooth' }));
+}
+function zelfBeginnen() { zetTekst('', { soort: 'plak', naam: '' }); $('tekst').focus(); }
+async function leesBestand(f) {
+  if (f.size > MAX_BESTAND) { toast('Dit bestand is te groot. Kies een bestand kleiner dan 25 MB.'); return; }
+  let t;
+  try {
+    const buf = await f.arrayBuffer();
+    t = new TextDecoder('utf-8').decode(buf);
+    if (t.indexOf('\ufffd') >= 0) t = new TextDecoder('windows-1252').decode(buf);   // CSV uit een oud rekenblad
+  } catch { toast('Dit bestand kan ik niet lezen.'); return; }
+  t = t.replace(/^\ufeff/, '').replace(/\r\n?/g, '\n');
+  if (/[\u0000-\u0008\u000e-\u001f]/.test(t.slice(0, 4000))) { toast('Dit is geen tekstbestand. Kies een .txt- of .csv-bestand.'); return; }
+  const oud = st.tekst.trim() ? bewaarStand() : null;
+  const csv = /\.(csv|tsv)$/i.test(f.name) || /csv|tab-separated/.test(f.type);
+  zetTekst(t, { soort: csv ? 'csv' : 'plak', naam: f.name.slice(0, 120) });
+  const msg = 'Geopend: ' + f.name + (st.tekst.length > MAX_BEWAAR ? '. Te groot om te bewaren op dit toestel.' : '');
+  toast(msg, oud ? ocUndoable(() => zetStand(oud)) : undefined);
+}
+/* "Open bestand" opent ook een .txt- of .csv-bestand. Een bewaarde Woordwolk (.json) gaat naar het gedeelde blok. */
+document.addEventListener('change', e => {
+  if (!e.target || e.target.id !== 'oc-bestand-in') return;
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  if (/\.json$/i.test(f.name) || f.type === 'application/json') return;
+  e.stopImmediatePropagation();
+  leesBestand(f);
+}, true);
+
+/* ---------- Alles wissen ---------- */
+async function ocWipeAll() {
+  if (!await ocConfirm(`Alles wissen in ${OC_TOOL}?`, 'Je tekst, je keuzes en je weggelaten woorden verdwijnen. Je kan dit nog ongedaan maken tot je iets anders doet.', 'Alles wissen')) return;
+  clearTimeout(rekenT); clearTimeout(saveT); saveT = null;
+  const copy = JSON.parse(JSON.stringify(st));
+  try { localStorage.removeItem(KEY); } catch {}
+  st = leeg(); $('tekst').value = ''; $('zoek').value = ''; ctxK = null;
+  herbereken(true);
+  toast('Alles gewist', ocUndoable(() => { st = copy; $('tekst').value = st.tekst; herbereken(true); save(); }));
+}
+
+/* ---------- Melding met ongedaan maken ---------- */
+let undoFn = null, toastTimer = null;
+function toast(msg, undo) {
+  undoFn = undo || null;
+  $('toast-text').textContent = msg;
+  $('toast-btn').hidden = !undo;
+  $('toast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { $('toast').classList.remove('show'); undoFn = null; }, undo ? 6000 : (msg.length > 60 ? 4500 : 2600));
+}
+$('toast-btn').addEventListener('click', () => {
+  const f = undoFn; undoFn = null;
+  $('toast').classList.remove('show');
+  if (f) f();
+});
+
+/* ---------- Toetsen: Escape sluit eerst het paneel (vóór het menu, dat zijn eigen Escape heeft) ---------- */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && ctxK && !document.querySelector('.ocw-back') && !$('menu').classList.contains('open')) { e.preventDefault(); sluitCtx(true); return; }
+  if (e.key === 'Tab' && ctxK && $('ctx').classList.contains('open')) {
+    const f = [...$('ctx').querySelectorAll('button:not([hidden]), [tabindex="-1"]')].filter(x => x.offsetParent !== null && !x.closest('[hidden]'));
+    if (!f.length) return;
+    const i = f.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
+  }
+});
+
+/* ---------- Menu ---------- */
+function closeMenu(focus) { $('menu').classList.remove('open'); $('menu-btn').setAttribute('aria-expanded', 'false'); if (focus) $('menu-btn').focus(); }
+const menuItems = () => [...$('menu').querySelectorAll('[role="menuitem"]')].filter(b => !b.hidden);
+$('menu-btn').addEventListener('click', e => {
+  e.stopPropagation();
+  const open = !$('menu').classList.contains('open');
+  $('menu').classList.toggle('open', open); $('menu-btn').setAttribute('aria-expanded', String(open));
+  if (open && e.detail === 0) { const f = menuItems()[0]; f && f.focus(); }
+});
+document.addEventListener('click', e => { if (!e.target.closest('.menu-wrap')) closeMenu(); });
+$('menu').addEventListener('keydown', e => {
+  const l = menuItems(), i = l.indexOf(document.activeElement);
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); const n = l[(i + (e.key === 'ArrowDown' ? 1 : -1) + l.length) % l.length]; n && n.focus(); }
+  if (e.key === 'Tab') closeMenu();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('menu').classList.contains('open')) { closeMenu($('menu').contains(document.activeElement)); } });
+$('menu').addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  closeMenu();
+  if (b.dataset.act === 'png') downloadPng();
+  if (b.dataset.act === 'csv') downloadCsv();
+  if (b.dataset.act === 'top') kopieerTop();
+});
+document.addEventListener('click', e => { if (e.target.closest('[data-act="wipe"]')) ocWipeAll(); });
+
+/* ---------- Invoer volgen ---------- */
+const tekstEl = $('tekst');
+tekstEl.value = st.tekst;
+tekstEl.addEventListener('input', tekstGewijzigd);
+tekstEl.addEventListener('dragover', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) { e.preventDefault(); tekstEl.classList.add('sleep'); } });
+tekstEl.addEventListener('dragleave', () => tekstEl.classList.remove('sleep'));
+tekstEl.addEventListener('drop', e => { const f = e.dataTransfer?.files?.[0]; tekstEl.classList.remove('sleep'); if (!f) return; e.preventDefault(); leesBestand(f); });
+$('voorbeeld').addEventListener('click', voorbeeld);
+$('vb-eigen').addEventListener('click', zelfBeginnen);
+$('nieuw').addEventListener('click', nieuweTekst);
+$('o-regel').addEventListener('change', e => { st.opties.regel = e.target.checked; herbereken(true); save(); });
+$('o-samen').addEventListener('change', e => { st.opties.samen = e.target.checked; herbereken(false); save(); toast(e.target.checked ? 'Vormen worden samengenomen' : 'Elke vorm telt apart'); });
+$('o-getal').addEventListener('change', e => { st.opties.getallen = e.target.checked; herbereken(false); save(); });
+$('o-engels').addEventListener('change', e => { st.opties.engels = e.target.checked; herbereken(false); save(); });
+$('o-kop').addEventListener('change', e => { st.tabel.kop = e.target.checked; herbereken(true); save(); });
+$('kolommen').addEventListener('change', e => { if (e.target.name !== 'kol') return; st.tabel.kolom = +e.target.value; herbereken(true); save(); });
+$('weergave').addEventListener('click', e => { const b = e.target.closest('[data-w]'); if (!b || b.dataset.w === st.weergave) return; st.weergave = b.dataset.w; save(); toon(); });
+$('maat').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b || b.dataset.m === maatNu()) return; st.opties.maat = b.dataset.m; herbereken(false); save(); });
+$('n-keuze').addEventListener('click', e => { const b = e.target.closest('[data-n]'); if (!b || +b.dataset.n === st.opties.n) return; st.opties.n = +b.dataset.n; save(); toon(); });
+$('titel').addEventListener('input', e => { st.titel = e.target.value.slice(0, 90); saveLater(); });
+$('titel').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
+$('zoek').addEventListener('input', () => { toonAantal.lijst = 100; tekenLijst('lijst'); markeerGekozen(); });
+$('wolk').addEventListener('click', e => { const b = e.target.closest('.ww') || (e.detail ? dichtsteWoord(e) : null); if (b) openCtx(b.dataset.k, true); });
+['lijst', 'paren'].forEach(s => $(s).addEventListener('click', e => { const b = e.target.closest('.rij'); if (b) openCtx(b.dataset.k, true); }));
+['lijst', 'paren'].forEach(s => $(s + '-meer').addEventListener('click', () => { toonAantal[s] += 200; tekenLijst(s); markeerGekozen(); }));
+$('ctx-sluit').addEventListener('click', () => sluitCtx(true));
+$('ctx-back').addEventListener('click', () => sluitCtx(true));
+$('ctx-meer').addEventListener('click', () => { ctxToon += 10; const x = vind(ctxK); if (x) { const n = $('ctx-lijst').children.length; vulCtx(x, false); const li = $('ctx-lijst').children[n]; if (li) { li.tabIndex = -1; li.focus({ preventScroll: false }); } } });
+$('ctx-weg').addEventListener('click', () => { const x = vind(ctxK); if (x) laatWeg(x); });
+$('ctx-kopie').addEventListener('click', kopieerCtx);
+$('ook-vaak').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (b) openCtx(b.dataset.k, true); });
+$('chips').addEventListener('click', e => { const b = e.target.closest('[data-terug]'); if (b) zetTerug(b.dataset.terug); });
+$('dl-png').addEventListener('click', downloadPng);
+$('dl-csv').addEventListener('click', downloadCsv);
+$('kopie-top').addEventListener('click', kopieerTop);
+$('vul-lijst').textContent = VULWOORDEN.join(', ') + '. Ook ' + [...APOS].join(', ') + ' en woorden van één letter. Niet, geen, nooit, niets, te, weinig, veel, meer en minder tellen niet als los woord, wel in woordparen.';
+breed.addEventListener('change', () => { if (ctxK) { const k = ctxK; sluitCtx(false); openCtx(k, false); } });
+
+/* Een andere breedte of een draai van het scherm: de wolk opnieuw schikken */
+let rsT = null;
+try { new ResizeObserver(() => { clearTimeout(rsT); rsT = setTimeout(() => { if (R && st.weergave === 'wolk' && Math.abs($('wolk').clientWidth - wolkB) >= 2) { tekenWolk(); markeerGekozen(); } }, 120); }).observe($('wolk')); } catch {}
+/* De letters komen soms pas later binnen: dan opnieuw meten */
+try { document.fonts.ready.then(() => { if (R && st.weergave === 'wolk' && !wolkFont) { tekenWolk(); markeerGekozen(); } }); } catch {}
+
+/* ---------- Andere tabbladen gelijk houden ---------- */
+window.addEventListener('storage', e => {
+  if (e.key !== KEY) return;
+  st = load(); if (st.bron.soort === 'voorbeeld') st.tekst = VOORBEELD;
+  if (!st.tekst && e.newValue && tekstEl.value.length > MAX_BEWAAR) st.tekst = tekstEl.value;   // een grote tekst staat niet in de opslag
+  tekstEl.value = st.tekst; herbereken(true);
+});
+
+/* ---------- Start ---------- */
+herbereken(true);
+</script>
+<script>
+/* Opnieuw beginnen: zichtbaar zodra er echt iets ingevuld is; start de eigen 'Alles wissen' van de tool.
+   'Leeg' = wat de tool zelf bewaart zonder inbreng van de gebruiker (na een eerste bezoek of na wissen). */
+(() => {
+  const meta = document.querySelector('meta[name="oc:opslag"]');
+  const keys = meta ? meta.content.split(',').map(s => s.trim()).filter(k => k && !k.startsWith('oc.share.') && !k.endsWith('*')) : [];
+  const BASE = 'oc.leeg.' + location.pathname;   // niet onder oc-app.*: dat wist het gegevensscherm apart
+  const get = k => { try { return localStorage.getItem(k); } catch { return null; } };
+  const vals = () => Object.fromEntries(keys.map(k => [k, get(k)]));
+  const has = v => Array.isArray(v) ? v.length > 0 : v && typeof v === 'object' ? Object.values(v).some(has) : typeof v === 'string' && v.trim().length > 0;
+  const content = raw => { try { return has(JSON.parse(raw)); } catch { return !!raw; } };
+  let base = null; try { base = JSON.parse(get(BASE) || 'null'); } catch {}
+  const setBase = () => { base = vals(); try { localStorage.setItem(BASE, JSON.stringify(base)); } catch {} sync(); };
+  const filled = () => { const v = vals(); return keys.some(k => v[k] != null && content(v[k]) && !(base && v[k] === base[k])); };
+  const row = document.getElementById('oc-restart-row');
+  function sync() { row.hidden = !filled() || !document.querySelector('[data-act="wipe"]'); }
+  let t; const later = () => { clearTimeout(t); t = setTimeout(sync, 350); };
+  ['click', 'input', 'change', 'keyup'].forEach(ev => document.addEventListener(ev, later, true));
+  window.addEventListener('storage', later); window.addEventListener('focus', later);
+  // Eerste bezoek: wat de tool zelf meteen bewaart, telt als leeg. Een tool die nog niets klaarlegde
+  // voor andere tools (oc.share.*), heeft nog geen echte inhoud.
+  const share = meta ? meta.content.split(',').map(s => s.trim()).find(k => k.startsWith('oc.share.')) : null;
+  if (!base && share && get(share) == null) setBase();
+  else if (keys.every(k => get(k) == null)) setTimeout(setBase, 900);
+  // Na wissen (via deze knop of het menu): de nieuwe toestand is de lege toestand.
+  document.addEventListener('click', e => {
+    if (!e.target.closest('[data-act="wipe"]')) return;
+    const before = JSON.stringify(vals()); let n = 0;
+    const iv = setInterval(() => {
+      if (++n > 40) return clearInterval(iv);
+      if (document.querySelector('.ocw-back')) return;               // bevestiging staat nog open
+      if (JSON.stringify(vals()) !== before) { clearInterval(iv); setTimeout(setBase, 400); }
+      else if (n > 5) clearInterval(iv);                              // geannuleerd
+    }, 150);
+  }, true);
+  document.getElementById('oc-restart-btn').addEventListener('click', () => { const w = document.querySelector('[data-act="wipe"]'); w && w.click(); });
+  sync();
+})();
+</script>
+<input type="file" id="oc-bestand-in" accept=".txt,.csv,.tsv,.json,text/plain,text/csv,text/tab-separated-values,application/json" hidden>
+<script>
+/* oc-bestand: je werk in deze tool bewaren als bestand en later (of op een ander toestel) weer openen.
+   Formaat = dat van de reservekopie in de app: { app:'Onder Constructie', version:1, created, tool, data:{ sleutel: tekst } }.
+   Een reservekopie uit de app kan je hier ook openen: de tool neemt er alleen zijn eigen deel uit. */
+window.ocBestand = (function () {
+  function patronen() {
+    var m = document.querySelector('meta[name="oc:opslag"]');
+    return m ? m.content.split(',').map(function (s) { return s.trim(); }).filter(Boolean) : [];
+  }
+  function past(k, p) { return p.slice(-1) === '*' ? k.indexOf(p.slice(0, -1)) === 0 : k === p; }
+  function eigen(k) { return patronen().some(function (p) { return past(k, p); }); }
+  function sleutels() {
+    var uit = [];
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && eigen(k)) uit.push(k); } } catch (e) {}
+    return uit;
+  }
+  function naam() {
+    var m = document.querySelector('meta[name="oc:titel"]') || document.querySelector('meta[name="application-name"]');
+    return (m && m.content) || (document.title.split(/\s[–-]\s/)[0] || 'tool').trim();
+  }
+  function slug(s) { return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  /* bewaar(): downloadt het bestand. Geeft het aantal bewaarde sleutels terug (0 = niets om te bewaren). */
+  function bewaar(extraNaam) {
+    var keys = sleutels(); if (!keys.length) return 0;
+    var data = {}; keys.forEach(function (k) { try { data[k] = localStorage.getItem(k); } catch (e) {} });
+    var id = location.pathname.replace(/\/index\.html$/, '').split('/').filter(Boolean).pop() || 'tool';
+    var blob = new Blob([JSON.stringify({ app: 'Onder Constructie', version: 1, created: new Date().toISOString(), tool: id, data: data }, null, 1)], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    var stuk = slug(naam()) + (extraNaam ? '-' + slug(extraNaam) : '');
+    a.download = stuk + '-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    return keys.length;
+  }
+  /* lees(file): Promise met { data: {sleutel: tekst} } van alleen de eigen sleutels.
+     Fout 'vorm' = geen bestand van Onder Constructie; fout 'leeg' = niets van deze tool in het bestand. */
+  function lees(file) {
+    return file.text().then(function (t) {
+      var d; try { d = JSON.parse(t); } catch (e) { throw new Error('vorm'); }
+      if (!d || d.app !== 'Onder Constructie' || typeof d.data !== 'object' || !d.data) throw new Error('vorm');
+      var uit = {}, n = 0;
+      Object.keys(d.data).forEach(function (k) { if (eigen(k) && typeof d.data[k] === 'string') { uit[k] = d.data[k]; n++; } });
+      if (!n) throw new Error('leeg');
+      return { data: uit, aantal: n, created: d.created || null };
+    });
+  }
+  /* zetTerug(gelezen): vervangt het huidige werk van deze tool door wat in het bestand staat, en laat andere tabbladen herladen. */
+  function zetTerug(g) {
+    sleutels().forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+    Object.keys(g.data).forEach(function (k) { try { localStorage.setItem(k, g.data[k]); } catch (e) {} });
+  }
+  function melding(err) {
+    return err && err.message === 'leeg' ? 'In dit bestand staat niets van ' + naam() + '.'
+      : 'Dit bestand kan ik niet openen. Kies een bestand dat je met "Bewaar als bestand" of als reservekopie maakte.';
+  }
+  return { bewaar: bewaar, lees: lees, zetTerug: zetTerug, melding: melding, sleutels: sleutels, naam: naam };
+})();
+</script>
+<script>
+/* Bewaar als bestand / Open bestand */
+(() => {
+  const heeftWerk = () => { try { return !document.getElementById('oc-restart-row').hidden; } catch (e) { return true; } };
+  const extraNaam = () => { try { return String((L => Array.isArray(L) && L.length === 1 ? L[0].name : '')(state.lists) || '').trim(); } catch (e) { return ''; } };
+  const inp = document.getElementById('oc-bestand-in');
+  // Een lange melding blijft langer staan (minstens 4,5 s): toon ze opnieuw voor ze verdwijnt.
+  const lang = msg => { toast(msg); setTimeout(() => { const t = document.getElementById('toast-text'); if (t && t.textContent === msg) toast(msg); }, 2300); };
+  const sluit = () => { const m = document.getElementById('menu'), b = document.getElementById('menu-btn'); if (m) m.classList.remove('open'); if (b) b.setAttribute('aria-expanded', 'false'); };
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-bestand]'); if (!b) return;
+    sluit();
+    if (b.dataset.bestand === 'bewaar') {
+      if (!heeftWerk() || !ocBestand.bewaar(extraNaam())) { toast('Er is nog niets om te bewaren.'); return; }
+      toast('Bestand gedownload');
+    } else { inp.value = ''; inp.click(); }
+  });
+  inp.addEventListener('change', async () => {
+    const f = inp.files && inp.files[0]; if (!f) return;
+    let g; try { g = await ocBestand.lees(f); } catch (err) { lang(ocBestand.melding(err)); return; }
+    if (heeftWerk() && !await ocConfirm('Bestand openen?', 'Dit vervangt wat nu in ' + ocBestand.naam() + ' staat. Doorgaan?', 'Vervang')) return;
+    // Tot de herlaadbeurt mag niets het teruggezette werk nog overschrijven (uitgestelde bewaring, pagehide, ander tabblad).
+    const pat = (document.querySelector('meta[name="oc:opslag"]') || {}).content || '';
+    const eigen = k => pat.split(',').map(s => s.trim()).filter(Boolean).some(p => p.slice(-1) === '*' ? String(k).indexOf(p.slice(0, -1)) === 0 : k === p);
+    ocBestand.zetTerug(g);
+    try {
+      const set = Storage.prototype.setItem, rem = Storage.prototype.removeItem;
+      Storage.prototype.setItem = function (k, v) { if (this === localStorage && eigen(k)) return; return set.call(this, k, v); };
+      Storage.prototype.removeItem = function (k) { if (this === localStorage && eigen(k)) return; return rem.call(this, k); };
+    } catch (e) {}
+    location.reload();
+  });
+})();
+</script>
+<script>
+/* oc-sync: reageert op "Wissen" in de app (ook in andere tabbladen) en geeft Esc door aan de app */
+(function () {
+  if (window.__ocSync) return; window.__ocSync = true;
+  var gewist = false;
+  function wis() {
+    if (gewist) return; gewist = true;
+    try { var orig = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k === 'oc.wis') return orig.call(this, k, v); }; } catch (e) {}
+    try { document.body.innerHTML = '<p role="status" style="font-family:\'DM Sans\',system-ui,sans-serif;padding:3rem 1.5rem;text-align:center;color:#475569;font-size:1.0625rem">Er is iets veranderd op dit toestel. Deze pagina laadt opnieuw…</p>'; } catch (e) {}
+    setTimeout(function () { location.reload(); }, 400);
+  }
+  try { var bc = new BroadcastChannel('oc-sync'); bc.onmessage = function (e) { if (e.data && e.data.type === 'wis') wis(); }; } catch (e) {}
+  addEventListener('storage', function (e) { if (e.key === 'oc.wis' || e.key === null) wis(); });
+  /* Gebruikerstest november 2026, voor alle tools:
+     Ctrl/Cmd+Z doet "Ongedaan" zolang die melding zichtbaar is (in een tekstveld doet de browser zijn eigen ongedaan);
+     een rij keuzeknoppen (role="radiogroup") is één Tab-stop, de pijltjes gaan naar een andere keuze, Spatie of Enter kiest;
+     een naamveld met data-oc-titel ziet eruit als een veld (potloodje, onderlijn bij aanwijzen of typen);
+     een naam getypt in een veld met data-oc-projectnaam wordt de projectnaam van de app, als die nog leeg is. */
+  var STANDAARD = /^((mijn|nieuwe?) )?(project|analyse|lijst|keuze|kaart|ideeënkaart|doelgroep|matrix|plan|groep|team|tabel|informatietabel|log|retro|sprint|scan|proces)( \d+)?$|^naamloos$|^hele organisatie$/i;
+  window.ocStandaardNaam = function (v) { v = String(v || '').trim(); return !v || STANDAARD.test(v); };
+  function typt(a) { return a && (a.isContentEditable || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || (a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|reset|range|color|file)$/i.test(a.type))); }
+  function zichtbaar(x) {
+    if (x.disabled || x.hidden || !x.getClientRects().length) return false;
+    for (var el = x; el && el.nodeType === 1; el = el.parentElement) { var cs = getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < 0.1) return false; }
+    var r = x.getBoundingClientRect(); return r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth;
+  }
+  addEventListener('keydown', function (e) {
+    if (e.defaultPrevented || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey || String(e.key).toLowerCase() !== 'z' || typt(document.activeElement)) return;
+    var b = [].filter.call(document.querySelectorAll('[role="status"] button, [aria-live] button'), function (x) { return /^\s*ongedaan/i.test(x.textContent) && zichtbaar(x); }).pop();
+    if (b) { e.preventDefault(); b.click(); }
+  });
+  function radios(g) { return [].filter.call(g.querySelectorAll('[role="radio"]'), function (x) { return x.closest('[role="radiogroup"]') === g; }); }
+  function bruikbaar(x) { return !x.disabled && x.getAttribute('aria-disabled') !== 'true' && x.getClientRects().length; }
+  // Kiezen met Spatie of Enter laat de tool vaak opnieuw tekenen: de focus blijft dan op de gekozen keuze.
+  var terug = null;
+  document.addEventListener('click', function (e) {
+    var x = e.detail === 0 && e.target && e.target.closest && e.target.closest('[role="radio"]'); if (!x || x.tagName === 'INPUT') return;
+    var s = [].map.call(x.attributes, function (a) { return a.name === 'id' || /^data-/.test(a.name) ? '[' + a.name + '="' + (window.CSS && CSS.escape ? CSS.escape(a.value) : a.value) + '"]' : ''; }).join('');
+    terug = s ? { s: '[role="radio"]' + s, t: Date.now() } : null;
+  }, true);
+  function roving() {
+    var a0 = document.activeElement;
+    if (terug && Date.now() - terug.t < 2000 && (!a0 || a0 === document.body)) { var y = document.querySelector(terug.s); if (y) try { y.focus({ preventScroll: true }); } catch (e) {} terug = null; }
+    [].forEach.call(document.querySelectorAll('[role="radiogroup"]'), function (g) {
+      var r = radios(g); if (!r.length || r.some(function (x) { return x.tagName === 'INPUT'; })) return;
+      var a = document.activeElement, keep = r.indexOf(a) >= 0 ? a : r.filter(function (x) { return x.getAttribute('aria-checked') === 'true' && bruikbaar(x); })[0] || r.filter(bruikbaar)[0] || r[0];
+      r.forEach(function (x) { var t = x === keep ? '0' : '-1'; if (x.getAttribute('tabindex') !== t) x.setAttribute('tabindex', t); });
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    var x = e.target, d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1, Home: -2, End: 2 }[e.key];
+    if (!d || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || !x.getAttribute || x.getAttribute('role') !== 'radio' || x.tagName === 'INPUT') return;
+    var g = x.closest('[role="radiogroup"]'); if (!g) return;
+    var r = radios(g).filter(bruikbaar), i = r.indexOf(x); if (i < 0) return;
+    var n = r[d === -2 ? 0 : d === 2 ? r.length - 1 : (i + d + r.length) % r.length];
+    e.preventDefault(); r.forEach(function (y) { y.setAttribute('tabindex', y === n ? '0' : '-1'); }); n.focus();
+  });
+  var meet = null;
+  function titels() {
+    [].forEach.call(document.querySelectorAll('input[data-oc-titel]'), function (el) {
+      if (!el.offsetParent) return;
+      var cs = getComputedStyle(el), t = el.value || el.placeholder || '';
+      if (!meet) { meet = document.createElement('span'); meet.setAttribute('aria-hidden', 'true'); meet.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;white-space:pre'; document.body.appendChild(meet); }
+      meet.style.font = cs.font; meet.style.letterSpacing = cs.letterSpacing; meet.textContent = t;
+      var w = meet.getBoundingClientRect().width;
+      var px = Math.ceil(w + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth) + 8) + 'px';
+      if (el.style.width !== px) el.style.width = px;
+    });
+  }
+  function opmaak() {
+    if (!document.getElementById('oc-sync-stijl') && document.querySelector('[data-oc-titel]')) {
+      var s = document.createElement('style'); s.id = 'oc-sync-stijl';
+      s.textContent = 'input[data-oc-titel]{flex:0 1 auto!important;max-width:100%;min-width:5.5em;box-sizing:border-box;text-overflow:ellipsis;cursor:text;border-radius:6px 6px 0 0;padding-right:26px!important;'
+        + 'border-bottom:1.5px dashed transparent!important;background-repeat:no-repeat!important;background-position:right 4px center!important;background-size:15px 15px!important;'
+        + 'background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2394a3b8%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M12 20h9%27/%3E%3Cpath d=%27M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z%27/%3E%3C/svg%3E")!important}'
+        + 'input[data-oc-titel]:hover{border-bottom-color:#cbd5e1!important}'
+        + 'input[data-oc-titel]:focus{border-bottom:1.5px solid #047857!important;background-image:none!important}'
+        + 'input[data-oc-titel]::placeholder{color:#94a3b8;opacity:1}'
+        + 'input[data-oc-titel]+*{margin-left:auto}';
+      document.head.appendChild(s);
+    }
+    titels();
+  }
+  var gepland = false;
+  function later() { if (gepland) return; gepland = true; requestAnimationFrame(function () { gepland = false; roving(); opmaak(); }); }
+  function start() {
+    later();
+    try { new MutationObserver(later).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-checked', 'hidden', 'class'] }); } catch (e) {}
+    document.addEventListener('input', function (e) { if (e.target.hasAttribute && e.target.hasAttribute('data-oc-titel')) titels(); }, true);
+    addEventListener('resize', later);
+    try { document.fonts.ready.then(titels); document.fonts.addEventListener('loadingdone', titels); } catch (e) {}   // de letters komen soms pas later binnen
+    setInterval(function () { if (!document.hidden) titels(); }, 700);   // een tool kan de waarde zetten zonder de pagina te wijzigen
+  }
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
+  var eigenNaam = null, naamT = null;
+  function projectNu() { try { var p = JSON.parse(localStorage.getItem('oc.project')); return p && typeof p.name === 'string' ? p.name.trim() : ''; } catch (e) { return ''; } }
+  function deelNaam(el) {
+    var v = String(el.value || '').trim().slice(0, 80), nu = projectNu();
+    if (ocStandaardNaam(v) || (nu && nu !== eigenNaam)) return;
+    if ([].some.call(document.querySelectorAll('.vb-bar'), function (b) { return b.getClientRects().length; })) return;   // in het voorbeeld niet
+    if (v === nu) return;
+    try { localStorage.setItem('oc.project', JSON.stringify({ name: v, since: Date.now() })); eigenNaam = v; } catch (e) {}
+  }
+  document.addEventListener('input', function (e) { var el = e.target; if (!el.hasAttribute || !el.hasAttribute('data-oc-projectnaam')) return; clearTimeout(naamT); naamT = setTimeout(function () { deelNaam(el); }, 900); }, true);
+  ['change', 'focusout'].forEach(function (ev) { document.addEventListener(ev, function (e) { var el = e.target; if (el.hasAttribute && el.hasAttribute('data-oc-projectnaam')) { clearTimeout(naamT); deelNaam(el); } }, true); });
+  /* oc-terug: kom je uit een andere tool, dan brengt de terugknop linksboven je daar terug ("← Prioriteren").
+     Anders blijft hij naar de groep gaan (Projectmanagement, Zakmes, Reset). In de app regelt de app dit zelf. */
+  (function () {
+    if (window.__ocTerug) return; window.__ocTerug = true;
+    var ss; try { ss = window.sessionStorage; ss.getItem('x'); } catch (e) { return; }
+    var hier = location.pathname, vorige = null;
+    try { vorige = ss.getItem('oc.hier'); ss.setItem('oc.hier', location.href); } catch (e) {}
+    addEventListener('pageshow', function () { try { ss.setItem('oc.hier', location.href); } catch (e) {} });
+    var naam = (document.title || '').split(/\s+[–-]\s+Onder Constructie/)[0].trim();
+    try { if (naam && naam.length < 60) ss.setItem('oc.naam:' + hier, naam); } catch (e) {}
+    if (window.top !== window) return;
+    function zet() {
+      var a = document.querySelector('a.back-link, a.crumb'); if (!a || a.dataset.ocTerug) return;
+      var ref = document.referrer, u; if (!ref) return;
+      try { u = new URL(ref); } catch (e) { return; }
+      if (u.origin !== location.origin || u.pathname === hier) return;
+      try { if (new URL(a.href, location.href).pathname === u.pathname) return; } catch (e) { return; }
+      var bron = null; try { bron = ss.getItem('oc.naam:' + u.pathname); } catch (e) {}
+      if (!bron) return;
+      a.dataset.ocTerug = '1';
+      var sp = a.querySelector('span');
+      if (sp) sp.textContent = bron;
+      else {
+        var eerste = true;
+        [].slice.call(a.childNodes).forEach(function (n) { if (n.nodeType === 3 && n.nodeValue.trim()) { n.nodeValue = eerste ? ' ' + bron + ' ' : ''; eerste = false; } });
+      }
+      a.setAttribute('aria-label', 'Terug naar ' + bron);
+      a.href = ref;
+      var terug = vorige === ref;   // de vorige pagina in dit tabblad is die tool: echt teruggaan, dan staat alles nog zoals je het liet
+      a.addEventListener('click', function (e) {
+        if (!terug || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+        e.preventDefault(); history.back();
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', zet); else zet();
+  }());
+  /* oc-overnemen: de knop "Overnemen uit…" valt op als knop en zegt wat er klaarligt ("5 taken uit Retro en Risicomatrix"). */
+  (function () {
+    var VEEL = { taak: 'taken', actie: 'acties', risico: "risico's", betrokkene: 'betrokkenen', besluit: 'besluiten', doel: 'doelen' };
+    var EEN = { taak: 'taak', actie: 'actie', risico: 'risico', betrokkene: 'betrokkene', besluit: 'besluit', doel: 'doel' };
+    var zelf = '';
+    try { var mt = document.querySelector('meta[name="oc:opslag"]'), mz = mt && /oc\.share\.([\w-]+)/.exec(mt.content); zelf = mz ? mz[1] : ''; } catch (e) {}
+    function esc(v) { return String(v).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function samenvatting(types) {
+      var tools = [], perType = {}, n = 0, al = 0, keys = [], gezien = {}, heeft = {};
+      function norm(v) { return String(v || '').normalize('NFC').toLowerCase().replace(/\s+/g, ' ').trim().replace(/^[\s.,;:!?·-]+|[\s.,;:!?·-]+$/g, ''); }
+      try { for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i)); } catch (e) { return ''; }
+      // Wat de tool al heeft (window.ocHave), telt niet als nieuw
+      try { if (typeof window.ocHave === 'function') (window.ocHave(types) || []).forEach(function (x) { heeft[norm(x)] = 1; }); } catch (e) {}
+      // Zoals de kiezer: elke tekst van elke soort één keer, bij de rijkste bron (notitie, wie, wanneer), dan de grootste lijst, dan de recentste
+      var lijsten = [];
+      keys.forEach(function (k) {
+        if (!k || k.indexOf('oc.share.') !== 0 || k === 'oc.share.' + zelf) return;
+        try { var d = JSON.parse(localStorage.getItem(k)); if (!d || !Array.isArray(d.lists)) return;
+          d.lists.forEach(function (l) {
+            var its = (l && Array.isArray(l.items) ? l.items : []).filter(function (it) { return it && types.indexOf(it.type) >= 0 && typeof it.text === 'string' && it.text.trim(); });
+            if (its.length) lijsten.push({ naam: String(d.tool || d.id || ''), t: +d.updated || 0, items: its });
+          });
+        } catch (e) {}
+      });
+      var best = {};
+      lijsten.forEach(function (l) { l.items.forEach(function (it) {
+        var s = it.type + '|' + norm(it.text), sc = [(it.note ? 2 : 0) + (it.who ? 1 : 0) + (it.when ? 1 : 0), l.items.length, l.t], e = best[s];
+        var beter = !e; for (var i = 0; !beter && e && i < 3; i++) { if (sc[i] !== e.sc[i]) { beter = sc[i] > e.sc[i]; break; } }
+        if (beter) best[s] = { sc: sc, l: l, type: it.type, tekst: it.text };
+      }); });
+      var perTool = {};
+      Object.keys(best).forEach(function (s) {
+        var b = best[s]; if (heeft[norm(b.tekst)]) { al++; return; }
+        n++; perType[b.type] = (perType[b.type] || 0) + 1;
+        var tl = perTool[b.l.naam] || (perTool[b.l.naam] = { naam: b.l.naam, t: 0 }); tl.t = Math.max(tl.t, b.l.t);
+      });
+      tools = Object.keys(perTool).map(function (k) { return perTool[k]; });
+      if (!n) return al ? 'Alles staat er al' : '';
+      tools.sort(function (a, b) { return b.t - a.t; });
+      var nm = tools.map(function (x) { return x.naam; }), soort = Object.keys(perType);
+      var wat = soort.length === 1 && VEEL[soort[0]] ? n + ' ' + (n === 1 ? EEN[soort[0]] : VEEL[soort[0]]) : n + (n === 1 ? ' punt' : ' punten');
+      var uit = nm.length === 1 ? nm[0] : nm.length === 2 ? nm[0] + ' en ' + nm[1] : nm[0] + ', ' + nm[1] + ' en ' + (nm.length - 2) + ' andere';
+      return wat + ' uit ' + uit;
+    }
+    var stijl = false;
+    function css() {
+      if (stijl || document.getElementById('oc-imp-stijl')) return; stijl = true;
+      var s = document.createElement('style'); s.id = 'oc-imp-stijl';
+      s.textContent = 'button.oc-import.oc-imp2{display:inline-flex;align-items:center;gap:.625rem;max-width:100%;min-height:52px;margin:0;padding:.4375rem .75rem .4375rem .4375rem;border:1.5px solid #a7f3d0;border-radius:12px;background:#ecfdf5;color:#065f46;font:inherit;text-align:left;white-space:normal;cursor:pointer;box-shadow:none;transition:background .12s,border-color .12s}'
+        + 'button.oc-import.oc-imp2:hover{background:#d1fae5;border-color:#10b981}button.oc-import.oc-imp2[hidden]{display:none}'
+        + '.oc-imp2 .oc-imp-ico{flex:none;width:34px;height:34px;border-radius:9px;background:#fff;color:#047857;display:grid;place-items:center;box-shadow:inset 0 0 0 1px #a7f3d0}'
+        + '.oc-imp2 .oc-imp-ico svg{width:18px;height:18px}.oc-imp2 .oc-imp-t{display:flex;flex-direction:column;min-width:0;line-height:1.25}'
+        + '.oc-imp2 .oc-imp-t b{font-size:.875rem;font-weight:700;color:#065f46}'
+        + '.oc-imp2 .oc-imp-t small{font-size:.8125rem;font-weight:500;color:#047857;overflow-wrap:anywhere}'
+        + '.oc-imp2 .oc-imp-pijl{flex:none;width:18px;height:18px;margin-left:auto;color:#047857}'
+        + '@media (prefers-reduced-motion:reduce){button.oc-import.oc-imp2{transition:none}}';
+      document.head.appendChild(s);
+    }
+    var ICO = '<span class="oc-imp-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11M7.5 9.5L12 14l4.5-4.5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span>';
+    var PIJL = '<svg class="oc-imp-pijl" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+    function versier() {
+      var bs = document.querySelectorAll('button.oc-import[data-oc-types]'); if (!bs.length) return;
+      css();
+      [].forEach.call(bs, function (b) {
+        var sam = samenvatting(String(b.dataset.ocTypes).split(',').map(function (x) { return x.trim(); }));
+        if (b.dataset.ocSam === sam && b.querySelector('.oc-imp-t')) return;
+        b.dataset.ocSam = sam; b.classList.add('oc-imp2');
+        b.innerHTML = ICO + '<span class="oc-imp-t"><b>Overnemen uit andere tools</b>' + (sam ? '<small>' + esc(sam) + '</small>' : '') + '</span>' + PIJL;
+      });
+    }
+    var gepland = false;
+    function plan() { if (gepland) return; gepland = true; (window.requestAnimationFrame || setTimeout)(function () { gepland = false; versier(); }); }
+    try { new MutationObserver(plan).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) {}
+    addEventListener('storage', plan); addEventListener('focus', plan); addEventListener('pageshow', plan);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', plan); else plan();
+  }());
+  if (window.parent === window) return;
+  addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || e.defaultPrevented) return;
+    var a = document.activeElement;
+    if (a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return;
+    if (document.querySelector('dialog[open], [role="dialog"]:not([hidden]):not([aria-hidden="true"]), [aria-modal="true"]:not([hidden]), [aria-expanded="true"], .open, .show, .active.modal, .is-open')) return;
+    try { parent.postMessage({ type: 'oc-esc' }, location.origin); } catch (err) {}
+  }, true);
+})();
+</script>
+<script>
+/* Eenheid: "Begin met ..." zet de cursor in het eerste veld; staat er een standaardnaam, dan is die geselecteerd zodat je meteen overtypt */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-oc-begin]'); if (!b) return;
+  const el = [...document.querySelectorAll(b.dataset.ocBegin)].find(x => x.offsetParent !== null); if (!el) return;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.scrollIntoView({ block:'center', behavior: still ? 'auto' : 'smooth' });
+  el.focus({ preventScroll:true });
+  if (el.select && /^(INPUT|TEXTAREA)$/.test(el.tagName) && el.value.trim() && /^((mijn|nieuwe?) )?(project|analyse|lijst|keuze|kaart|ideeënkaart|doelgroep|matrix|plan|groep|team|tabel|informatietabel|log|retro|sprint|scan|proces)( \d+)?$|^naamloos$|^hele organisatie$/i.test(el.value.trim())) el.select();
+});
+</script>
+<script>
+/* oc-uitleg v1 begin */
+/* "Hoe werkt dit?": zet de gewone uitleg in <details class="explain"><div class="inner"> om tot een kaart met
+   inleiding, genummerde stappen, tip en verwijzingen naar andere tools. De tekst zelf blijft in de HTML staan,
+   dus zonder JavaScript is alles nog gewoon leesbaar. Sturen per tool kan met data-uitleg op een lijst of alinea:
+   "stappen" (genummerd), "begrippen" (zonder nummers), "lijst" (laten zoals hij is), "tip", "noot", "stil". */
+(function () {
+  var d = document.querySelector('details.explain');
+  if (!d || d.classList.contains('oc-u')) return;
+  var sum = d.querySelector(':scope > summary'), inner = d.querySelector(':scope > .inner');
+  if (!sum || !inner) return;
+  var SLUG = 'hoe-werkt-dit';
+  var SVG = function (b, w) { return '<svg viewBox="0 0 ' + (w || 24) + ' ' + (w || 24) + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + b + '</svg>'; };
+  var ICO = {
+    kaart: '<svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">'
+      + '<circle cx="7" cy="6.5" r="2.25" fill="#047857"/><circle cx="7" cy="14" r="2.25" fill="#10b981"/><circle cx="7" cy="21.5" r="2.25" fill="#10b981"/>'
+      + '<path d="M13 6.5h9.5M13 14h6.5M13 21.5h8" stroke="#10b981" stroke-width="2.25" stroke-linecap="round"/></svg>',
+    pijl: SVG('<path d="M6 9l6 6 6-6"/>'),
+    tip: SVG('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>'),
+    stil: SVG('<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
+    naar: SVG('<path d="M8 16L16 8M9.5 8H16v6.5"/>')
+  };
+  var maak = function (tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+  var tekst = function (e) { return (e.textContent || '').replace(/\s+/g, ' ').trim(); };
+  var soort = function (e) { return (e.getAttribute('data-uitleg') || '').toLowerCase(); };
+
+  // eerste tekst van een stuk DOM netjes laten beginnen: leestekens weg, hoofdletter
+  function netjesBegin(node) {
+    var w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), t;
+    while ((t = w.nextNode())) {
+      var s = t.nodeValue.replace(/^[\s:.,;]+/, '');
+      if (!s) { t.nodeValue = ''; continue; }
+      t.nodeValue = s.charAt(0).toUpperCase() + s.slice(1);
+      return true;
+    }
+    return false;
+  }
+  // toetsen als toets tonen
+  var TOETS = /(^|[^\wÀ-ÿ+])(Shift\+Tab|Alt\+↑|Alt\+↓|Enter|Escape|Esc|Backspace|Delete|F2|Tab)(?![\wÀ-ÿ])/g;
+  function toetsen(root) {
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), lijst = [], t;
+    while ((t = w.nextNode())) { TOETS.lastIndex = 0; if (TOETS.test(t.nodeValue) && !t.parentNode.closest('a, kbd, code')) lijst.push(t); }
+    lijst.forEach(function (t) {
+      var s = t.nodeValue, frag = document.createDocumentFragment(), van = 0, m;
+      TOETS.lastIndex = 0;
+      while ((m = TOETS.exec(s))) {
+        var start = m.index + m[1].length;
+        frag.appendChild(document.createTextNode(s.slice(van, start)));
+        var k = document.createElement('kbd'); k.textContent = m[2]; frag.appendChild(k);
+        van = start + m[2].length;
+      }
+      frag.appendChild(document.createTextNode(s.slice(van)));
+      t.parentNode.replaceChild(frag, t);
+    });
+  }
+  // begint dit lijstitem met een vetgedrukte titel?
+  function kopVan(li) {
+    for (var n = li.firstChild; n; n = n.nextSibling) {
+      if (n.nodeType === 3 && !n.nodeValue.trim()) continue;
+      return n.nodeType === 1 && /^(B|STRONG)$/.test(n.tagName) ? n : null;
+    }
+    return null;
+  }
+
+  var kids = Array.prototype.slice.call(inner.children);
+  var lijsten = kids.filter(function (k) { return /^(UL|OL)$/.test(k.tagName) && soort(k) !== 'lijst'; });
+  var metKop = lijsten.filter(function (l) { var li = l.querySelectorAll(':scope > li'); return li.length > 1 && Array.prototype.every.call(li, kopVan); });
+  // stappen: uitdrukkelijk gevraagd, of de enige lijst waarvan elk item met een vette titel begint
+  var stapLijst = lijsten.filter(function (l) { return soort(l) === 'stappen'; })[0]
+    || (metKop.length === 1 && soort(metKop[0]) !== 'begrippen' ? metKop[0] : null);
+
+  var raam = maak('div', 'oc-u-raam'), lees = maak('div', 'oc-u-lees'), doe = maak('div', 'oc-u-doe'), aantal = 0;
+  kids.forEach(function (k, i) {
+    var s = soort(k), t = tekst(k);
+    if (i === 0 && k.tagName === 'P' && !/^Tip\b/.test(t) && !/^(tip|noot|stil)$/.test(s)) { k.classList.add('oc-u-intro'); lees.appendChild(k); return; }
+    if (k === stapLijst) {
+      var ol = maak('ol', 'oc-u-stappen');
+      Array.prototype.forEach.call(k.querySelectorAll(':scope > li'), function (li) {
+        var b = kopVan(li), stap = maak('li', 'oc-u-stap'), tx = maak('div', 'oc-u-stap-tekst');
+        aantal++;
+        stap.appendChild(maak('span', 'oc-u-nr', String(aantal))).setAttribute('aria-hidden', 'true');
+        var titel = maak('span', 'oc-u-stap-titel'), rest = maak('span', 'oc-u-stap-uitleg');
+        if (b) { titel.innerHTML = b.innerHTML.replace(/\s*[.:]\s*$/, ''); b.remove(); }
+        while (li.firstChild) rest.appendChild(li.firstChild);
+        if (b) tx.appendChild(titel); else rest.classList.add('oc-u-enkel');
+        if (netjesBegin(rest)) tx.appendChild(rest);
+        stap.appendChild(tx); ol.appendChild(stap);
+      });
+      doe.appendChild(ol); k.remove(); return;
+    }
+    if (/^(UL|OL)$/.test(k.tagName) && s !== 'lijst' && (s === 'begrippen' || metKop.indexOf(k) > -1)) {
+      k.className = 'oc-u-begrippen';
+      Array.prototype.forEach.call(k.children, function (li) { var w = maak('span', 'oc-u-begrip-tekst'); while (li.firstChild) w.appendChild(li.firstChild); li.className = 'oc-u-begrip'; li.appendChild(w); });
+      doe.appendChild(k); return;
+    }
+    var tip = k.tagName === 'P' && (s === 'tip' || /^Tip\b[^:.]{0,40}:/.test(t));
+    if (tip) {
+      var kaart = maak('div', 'oc-u-tip'), m = t.match(/^(Tip\b[^:.]{0,40}):/);
+      kaart.setAttribute('role', 'note');
+      kaart.innerHTML = ICO.tip;
+      var tt = maak('div'), tk = maak('span', 'oc-u-tip-titel', m ? m[1] : 'Tip'), tb = maak('span', 'oc-u-tip-tekst');
+      while (k.firstChild) tb.appendChild(k.firstChild);
+      if (m) { // "Tip:" of "Tip voor ...:" weghalen uit de tekst zelf
+        var w = document.createTreeWalker(tb, NodeFilter.SHOW_TEXT), n, weg = m[0].length;
+        while (weg > 0 && (n = w.nextNode())) { var l = n.nodeValue.replace(/^\s+/, '').length, voor = n.nodeValue.length - l; var x = Math.min(weg, l); n.nodeValue = n.nodeValue.slice(voor + x); weg -= x; }
+        netjesBegin(tb);
+      }
+      tt.appendChild(tk); tt.appendChild(tb); kaart.appendChild(tt);
+      doe.appendChild(kaart); k.remove(); return;
+    }
+    if (s === 'stil' || (k.tagName === 'P' && /^Alles blijft op dit toestel/.test(t))) {
+      k.className = 'oc-u-stil'; var sp = maak('span'); while (k.firstChild) sp.appendChild(k.firstChild);
+      k.innerHTML = ICO.stil; k.appendChild(sp); doe.appendChild(k); return;
+    }
+    if (k.tagName === 'P') k.classList.add('oc-u-noot');
+    doe.appendChild(k);
+  });
+
+  // verwijzingen naar andere tools als chips, elk één keer
+  var hier = location.pathname.replace(/index\.html$/, ''), gezien = {}, chips = [];
+  Array.prototype.forEach.call(doe.querySelectorAll('a[href]'), function (a) {
+    var u; try { u = new URL(a.getAttribute('href'), location.href); } catch (e) { return; }
+    var thuis = u.host === location.host || /(^|\.)onderconstructie\.github\.io$/.test(u.host);
+    var pad = u.pathname.replace(/index\.html$/, '');
+    if (!thuis || pad === hier || pad === '/' || gezien[pad] || u.hash) return;
+    gezien[pad] = 1;
+    var c = maak('a', 'oc-u-chip'); c.href = a.getAttribute('href');
+    c.innerHTML = '<span class="oc-u-chip-ico">' + ICO.naar + '</span>';
+    c.appendChild(document.createTextNode(tekst(a)));
+    chips.push(c);
+  });
+  if (lees.firstChild) raam.appendChild(lees); else raam.classList.add('oc-u-zonder-intro');
+  // een lange inleiding krijgt pas naast de stappen plaats op een echt breed scherm
+  if (lees.firstChild && tekst(lees.firstChild).split(' ').length > 50) raam.classList.add('oc-u-lang');
+  raam.appendChild(doe);
+  if (chips.length) {
+    var samen = maak('div', 'oc-u-samen'), id = 'oc-u-samen-' + Math.random().toString(36).slice(2, 7);
+    samen.appendChild(maak('span', 'oc-u-samen-titel', 'Werkt samen met')).id = id;
+    var rij = maak('div', 'oc-u-chips'); rij.setAttribute('role', 'group'); rij.setAttribute('aria-labelledby', id);
+    chips.forEach(function (c) { rij.appendChild(c); });
+    samen.appendChild(rij); raam.appendChild(samen);
+  }
+  toetsen(raam);
+  inner.innerHTML = ''; inner.appendChild(raam);
+
+  // kop: icoon, titel, belofte, pijl
+  var titel = tekst(sum) || 'Hoe werkt dit?';
+  var woorden = tekst(raam).split(' ').length, min = Math.max(1, Math.round(woorden / 180));
+  var belofte = (aantal ? aantal + ' stappen, ' : '') + min + (min === 1 ? ' minuut' : ' minuten') + ' lezen';
+  sum.innerHTML = '<span class="oc-u-ico" aria-hidden="true">' + ICO.kaart + '</span>'
+    + '<span class="oc-u-kop"><span class="oc-u-titel"></span><span class="oc-u-meta"></span></span>'
+    + (aantal > 1 && aantal < 10 ? '<span class="oc-u-route" aria-hidden="true">' + Array.apply(null, Array(aantal)).map(function (x, i) { return '<i>' + (i + 1) + '</i>'; }).join('') + '</span>' : '')
+    + '<span class="oc-u-pijl" aria-hidden="true">' + ICO.pijl + '</span>';
+  sum.querySelector('.oc-u-titel').textContent = titel;
+  sum.querySelector('.oc-u-meta').textContent = belofte;
+  if (!d.id) d.id = SLUG;
+  d.classList.add('oc-u');
+
+  // vloeiend openen en sluiten (niet bij minder beweging)
+  var rustig = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: true };
+  var ease = 'cubic-bezier(0.2, 0.7, 0.2, 1)', loopt = null, staat = d.open;
+  function klaar() { loopt = null; inner.style.overflow = ''; inner.style.height = ''; }
+  function zet(open, vloeiend) {
+    staat = open;
+    if (!vloeiend || rustig.matches || !inner.animate) { if (loopt) loopt.cancel(); klaar(); d.open = open; return; }
+    var nu = d.open ? inner.getBoundingClientRect().height : 0;
+    if (loopt) loopt.cancel();
+    d.open = true; inner.style.overflow = 'hidden';
+    var doel = open ? inner.scrollHeight : 0;
+    loopt = inner.animate([{ height: nu + 'px', opacity: open ? (nu ? 1 : 0) : 1 }, { height: doel + 'px', opacity: open ? 1 : 0 }],
+      { duration: open ? 420 : 260, easing: ease });
+    loopt.onfinish = function () { klaar(); if (!open) d.open = false; };
+    loopt.oncancel = function () { inner.style.overflow = ''; };
+    if (open && !nu) {
+      var stukken = raam.querySelectorAll('.oc-u-intro, .oc-u-stap, .oc-u-begrip, .oc-u-tip, .oc-u-noot, .oc-u-stil, .oc-u-samen');
+      Array.prototype.forEach.call(stukken, function (e, i) {
+        e.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: 80 + Math.min(i, 8) * 55, easing: ease, fill: 'backwards' });
+      });
+      Array.prototype.forEach.call(raam.querySelectorAll('.oc-u-stap'), function (e, i) {
+        try { e.animate([{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], { pseudoElement: '::before', duration: 360, delay: 200 + i * 55, easing: ease, fill: 'backwards' }); } catch (x) {}
+      });
+    }
+  }
+  sum.addEventListener('click', function (e) { e.preventDefault(); zet(!staat, true); });
+  d.addEventListener('toggle', function () { if (!loopt) staat = d.open; });
+
+  // #hoe-werkt-dit opent het blok
+  function vanAdres(vloeiend) {
+    var h = location.hash.slice(1); try { h = decodeURIComponent(h); } catch (x) {}
+    if (h !== SLUG && h !== d.id) return;
+    if (!staat) zet(true, vloeiend);
+    requestAnimationFrame(function () { d.scrollIntoView({ behavior: vloeiend && !rustig.matches ? 'smooth' : 'auto', block: 'start' }); });
+  }
+  window.addEventListener('hashchange', function () { vanAdres(true); });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href="#' + SLUG + '"]');
+    if (a && location.hash === '#' + SLUG) { e.preventDefault(); vanAdres(true); }
+  });
+  vanAdres(false);
+})();
+/* oc-uitleg v1 einde */
+</script>
+</body>
+</html>
