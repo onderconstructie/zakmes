@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pdf-schaar – Onder Constructie</title>
+<meta name="description" content="Voeg pdf's samen, haal pagina's eruit, draai en herschik ze, en splits een pdf in stukken. Alles gebeurt op je eigen toestel: je bestanden verlaten je toestel niet.">
+<meta name="oc:titel" content="Pdf-schaar">
+<meta name="oc:groep" content="zakmes">
+<meta name="oc:labels" content="pdf">
+<meta name="oc:kort" content="Pdf's samenvoegen, pagina's eruit halen, draaien en herschikken">
+<meta name="oc:volgorde" content="147">
+<meta name="oc:opslag" content="pdfschaar.v1">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='20' cy='20' r='18' fill='%23f8fafc' stroke='%23e2e8f0' stroke-width='1.5'/%3E%3Cpath d='M9.5 19V10.5a2 2 0 0 1 2-2h7l5 5V19' stroke='%2364748b'/%3E%3Cpath d='M18.5 8.5v5h5' stroke='%2364748b'/%3E%3Cpath d='M9.5 25v4.5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V25' stroke='%2364748b'/%3E%3Cpath d='M7.5 22h2.5M13 22h2.5' stroke='%2310b981'/%3E%3Ccircle cx='28.5' cy='17.75' r='2.5' fill='%23d1fae5' stroke='%2310b981'/%3E%3Ccircle cx='28.5' cy='26.25' r='2.5' fill='%23d1fae5' stroke='%2310b981'/%3E%3Cpath d='M26.6 19.4L19 24.5M26.6 24.6L19 19.5' stroke='%2310b981'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/dm-sans-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/dm-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+:root {
+  --slate-900:#0f172a; --slate-800:#1e293b; --slate-700:#334155; --slate-600:#475569;
+  --slate-500:#64748b; --slate-400:#94a3b8; --slate-300:#cbd5e1; --slate-200:#e2e8f0;
+  --slate-100:#f1f5f9; --slate-50:#f8fafc; --wit:#ffffff;
+  --accent:#10b981; --accent-dark:#047857; --accent-hover:#065f46; --accent-light:#d1fae5; --accent-50:#ecfdf5; --accent-mid:#a7f3d0;
+  --rood:#b91c1c;
+  --bottom: env(safe-area-inset-bottom, 0px);
+  --balk-h: 0px;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family:'DM Sans', system-ui, sans-serif; background:var(--slate-50); color:var(--slate-700);
+  line-height:1.5; min-height:100vh; min-height:100dvh; -webkit-font-smoothing:antialiased;
+  display:flex; flex-direction:column;
+}
+button, input, select, textarea { font:inherit; color:inherit; }
+button { background:none; border:0; cursor:pointer; }
+button:disabled { cursor:default; }
+[hidden] { display:none !important; }
+.sr-only { position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+/* Kop (zoals de andere Zakmes-tools: terug naar het Zakmes) */
+.header { background:var(--wit); border-bottom:1px solid var(--slate-200); padding:1.5rem 1.25rem 1.75rem; position:relative; text-align:center; }
+.back-link { position:absolute; top:1.25rem; left:1.25rem; display:inline-flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--slate-500); text-decoration:none; transition:color 0.2s; }
+.back-link:hover { color:var(--accent-dark); }
+.back-link svg { width:16px; height:16px; }
+.logo svg { width:56px; height:56px; }
+.title { font-size:1.625rem; font-weight:700; color:var(--slate-800); letter-spacing:-0.03em; line-height:1.2; margin-top:0.5rem; }
+.subtitle { font-size:0.9375rem; color:var(--slate-500); }
+/* Eenheid: één kop zoals in de andere tools (november 2026) */
+header.header, .oc-head { display:block; background:#fff; border-bottom:1px solid #e2e8f0; padding:1.5rem 1.25rem 1.75rem; position:relative; text-align:center; }
+header.header .back-link, .oc-head .back-link { position:absolute; top:1.25rem; left:1.25rem; display:inline-flex; align-items:center; gap:0.5rem; min-height:44px; min-width:44px; padding:0; margin:0; font-size:0.875rem; font-weight:400; color:#64748b; text-decoration:none; background:none; border-radius:8px; transition:color 0.2s; }
+header.header .back-link:hover, .oc-head .back-link:hover { color:#047857; }
+header.header .back-link svg, .oc-head .back-link svg { width:16px; height:16px; flex:none; }
+header.header .logo, .oc-head .logo { display:block; width:56px; height:63px; margin:0 auto; }
+header.header .logo svg, .oc-head .logo svg { display:block; width:56px; height:56px; }
+header.header h1, header.header h1.title, .oc-head h1, .oc-head h1.title { font-size:1.625rem; font-weight:700; color:#1e293b; letter-spacing:-0.03em; line-height:1.2; margin:0.5rem 0 0; }
+header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h1 + p.subtitle { font-size:0.9375rem; color:#64748b; max-width:34rem; margin:0.125rem auto 0; line-height:1.5; }
+@media (max-width:640px) {
+  header.header .back-link, .oc-head .back-link { position:static; display:flex; justify-content:center; margin:0 auto 0.75rem; width:max-content; }
+  header.header .back-link span, .oc-head .back-link span { display:inline; }
+}
+
+.main { flex:1 0 auto; width:100%; max-width:1200px; margin:0 auto; padding:1.25rem clamp(1rem, 2.5vw, 2.5rem) 3rem; }
+.card { background:var(--wit); border:1px solid var(--slate-200); border-radius:16px; box-shadow:0 1px 2px rgba(15,23,42,0.04); min-width:0; }
+.fijn { font-size:0.8125rem; color:var(--slate-500); line-height:1.45; }
+
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:44px; padding:0.5rem 1rem; border-radius:10px; border:1px solid var(--slate-200); background:var(--wit); font-size:0.9375rem; font-weight:600; color:var(--slate-700); text-decoration:none; line-height:1.25; text-align:center; white-space:nowrap; }
+.btn:hover { border-color:var(--accent-mid); background:var(--accent-50); }
+.btn svg { width:18px; height:18px; flex:none; color:var(--slate-500); }
+.btn.primair { background:#047857; border-color:#047857; color:#fff; }
+.btn.primair svg { color:#fff; }
+.btn.primair:hover { background:#065f46; border-color:#065f46; }
+.btn:disabled { opacity:0.5; }
+.btn.primair:disabled:hover { background:#047857; }
+.linkknop { display:inline-flex; align-items:center; min-height:44px; padding:0.25rem 0.625rem; border-radius:8px; font-size:0.875rem; font-weight:600; color:#047857; }
+.linkknop:hover { background:var(--accent-50); }
+.icon-btn { width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:10px; color:var(--slate-500); flex-shrink:0; }
+.icon-btn:hover:not(:disabled) { background:var(--slate-100); color:var(--slate-700); }
+.icon-btn svg { width:20px; height:20px; }
+.icon-btn:disabled { color:var(--slate-300); }
+
+/* Lege toestand: een uitnodigende plek om te beginnen */
+.leeg { padding:1rem; }
+.dropzone {
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:0.25rem;
+  padding:2.25rem 1.25rem 1.75rem; border:2px dashed var(--slate-300); border-radius:14px; background:var(--slate-50);
+  transition:border-color 0.15s, background 0.15s;
+}
+.dropzone.over, body.sleept-bestand .dropzone { border-color:var(--accent); background:var(--accent-50); }
+.dz-ico { width:64px; height:64px; display:grid; place-items:center; border-radius:18px; background:var(--wit); box-shadow:inset 0 0 0 1px var(--slate-200); margin-bottom:0.5rem; }
+.dz-ico svg { width:36px; height:36px; }
+.dz-t { font-size:1.1875rem; font-weight:700; color:var(--slate-800); letter-spacing:-0.01em; line-height:1.3; }
+.dz-sub { font-size:0.9375rem; color:var(--slate-600); max-width:30rem; }
+.prive { display:flex; align-items:center; justify-content:center; gap:0.375rem; margin-top:0.875rem; font-size:0.875rem; color:var(--slate-600); }
+.prive svg { width:16px; height:16px; flex:none; color:var(--accent-dark); }
+.oc-start-btns { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-top:0.875rem; }
+.oc-start-btns .oc-begin, .oc-start-btns .oc-vb { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:44px; padding:0.5rem 1.125rem; border:0; border-radius:10px; font:inherit; font-weight:600; font-size:0.9375rem; line-height:1.3; cursor:pointer; text-align:center; }
+.oc-start-btns .oc-begin { background:#047857; color:#fff; }
+.oc-start-btns .oc-begin:hover { background:#065f46; }
+.oc-start-btns .oc-begin svg { width:18px; height:18px; }
+.drie { list-style:none; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:0.75rem; margin-top:1rem; }
+.drie li { display:flex; gap:0.75rem; align-items:flex-start; padding:0.875rem; border:1px solid var(--slate-200); border-radius:14px; background:var(--wit); }
+.drie .ico { flex:none; width:44px; height:44px; display:grid; place-items:center; border-radius:12px; background:var(--slate-50); box-shadow:inset 0 0 0 1px var(--slate-200); }
+.drie .ico svg { width:26px; height:26px; }
+.drie b { display:block; font-size:0.9375rem; color:var(--slate-800); line-height:1.3; }
+.drie span { display:block; font-size:0.875rem; color:var(--slate-600); line-height:1.4; margin-top:0.125rem; }
+@media (max-width:760px) { .drie { grid-template-columns:1fr; gap:0.5rem; } .drie li { padding:0.75rem; } }
+
+/* Bedieningsbalk bovenaan de kaart: blijft staan als je scrolt */
+.bord-kop {
+  position:sticky; top:0; z-index:6; background:var(--wit); border-bottom:1px solid var(--slate-100); border-radius:16px 16px 0 0;
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.5rem 0.75rem; padding:0.75rem 0.75rem 0.75rem 1rem;
+}
+.kop-l, .kop-r { display:flex; align-items:center; gap:0.5rem; min-width:0; }
+.kop-r { margin-left:auto; gap:0.25rem; }
+.kop-r .btn.primair { margin:0 0.25rem 0 0.375rem; }
+.kort { display:none; }
+
+/* Je bestanden */
+.bronnen { position:relative; list-style:none; display:flex; flex-wrap:wrap; gap:0.5rem; padding:0.875rem 1rem 0; }
+.chip { position:relative; display:inline-flex; align-items:center; gap:0.5rem; max-width:100%; min-height:46px; padding:0 0 0 0.375rem; border:1px solid var(--slate-200); border-radius:999px; background:var(--wit); font-size:0.875rem; color:var(--slate-700); }
+.chip .nm { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:16rem; font-weight:600; color:var(--slate-800); }
+.chip .n { flex:none; color:var(--slate-500); font-variant-numeric:tabular-nums; }
+.chip .weg { width:44px; height:44px; border-radius:0 999px 999px 0; display:grid; place-items:center; color:var(--slate-500); flex:none; }
+.chip .weg:hover { background:var(--slate-100); color:var(--slate-700); }
+.chip .weg svg { width:16px; height:16px; }
+.letter { flex:none; display:inline-grid; place-items:center; min-width:24px; height:24px; padding:0 0.25rem; border-radius:999px; font-size:0.75rem; font-weight:700; line-height:1; background:var(--l-bg); color:var(--l-fg); box-shadow:inset 0 0 0 1px var(--l-rand, transparent); font-variant-numeric:tabular-nums; }
+
+/* Meldingen bij openen */
+.fouten { margin:0.875rem 1rem 0; padding:0.625rem 0.5rem 0.625rem 0.875rem; display:flex; gap:0.625rem; align-items:flex-start; background:#fffbeb; border:1px solid #fde68a; border-radius:12px; color:#78350f; font-size:0.875rem; line-height:1.45; }
+.leeg .fouten { margin:0 0 0.75rem; }
+.fouten > svg { width:18px; height:18px; flex:none; margin-top:0.125rem; color:#b45309; }
+.fouten .ft { flex:1 1 auto; min-width:0; }
+.fouten b { display:block; color:#78350f; }
+.fouten ul { list-style:none; }
+.fouten li { overflow-wrap:anywhere; position:relative; padding-left:0.875rem; }
+.fouten li::before { content:''; position:absolute; left:0.125rem; top:0.6em; width:5px; height:5px; border-radius:50%; background:#b45309; }
+.fouten li + li { margin-top:0.25rem; }
+.fouten .icon-btn { width:44px; height:44px; margin:-0.375rem 0 -0.375rem auto; color:#92400e; }
+.fouten .icon-btn:hover { background:#fef3c7; color:#78350f; }
+
+/* Rij boven het raster */
+.info-rij { display:flex; flex-wrap:wrap; align-items:center; gap:0.25rem 0.75rem; padding:0.75rem 1rem 0.25rem; }
+.telling { font-size:0.9375rem; font-weight:600; color:var(--slate-800); font-variant-numeric:tabular-nums; }
+.info-rij .hint { margin-left:auto; font-size:0.875rem; color:var(--slate-500); }
+.hint .aanraak { display:none; }
+@media (hover:none), (pointer:coarse) { .hint .muis { display:none; } .hint .aanraak { display:inline; } }
+
+/* Het raster met pagina's: 2 kolommen op een gsm, 4 op een tablet, 6 breed */
+.raster { list-style:none; position:relative; display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:0.75rem; padding:0.75rem 1rem 1.25rem; }
+@media (min-width:600px) { .raster { grid-template-columns:repeat(3, minmax(0, 1fr)); } }
+@media (min-width:900px) { .raster { grid-template-columns:repeat(4, minmax(0, 1fr)); gap:0.875rem; } }
+@media (min-width:1180px) { .raster { grid-template-columns:repeat(6, minmax(0, 1fr)); } }
+.blad { position:relative; min-width:0; }
+.vel {
+  position:relative; width:100%; display:flex; flex-direction:column; gap:0.375rem; padding:0.5rem 0.5rem 0.375rem;
+  border:1.5px solid var(--slate-200); border-radius:14px; background:var(--wit); text-align:left;
+  touch-action:manipulation; -webkit-touch-callout:none; -webkit-user-select:none; user-select:none;
+  transition:border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.vel:hover { border-color:var(--accent-mid); }
+.vlak { position:relative; display:grid; place-items:center; aspect-ratio:4 / 5; width:100%; border-radius:9px; background:var(--slate-100); padding:9%; overflow:hidden; }
+.papier { position:relative; display:block; background:var(--wit); box-shadow:0 1px 3px rgba(15,23,42,0.14), 0 0 0 1px rgba(15,23,42,0.06); transition:width 0.2s, height 0.2s; }
+.papier::before { content:''; position:absolute; left:14%; right:14%; top:14%; height:40%; background:repeating-linear-gradient(to bottom, var(--slate-100) 0 6%, transparent 6% 16%); }
+.papier.klaar::before { display:none; }
+.papier canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
+.papier .geen { position:absolute; inset:0; display:grid; place-items:center; padding:0.25rem; font-size:0.75rem; color:var(--slate-500); text-align:center; line-height:1.3; }
+.vink { flex:none; width:22px; height:22px; border-radius:50%; display:grid; place-items:center; background:var(--wit); box-shadow:inset 0 0 0 1.5px var(--slate-400); color:transparent; transition:background 0.12s, box-shadow 0.12s; }
+.vink svg { width:14px; height:14px; }
+.blad-voet { display:flex; align-items:center; gap:0.4375rem; min-height:26px; padding:0 0.125rem; }
+.nr { font-size:0.9375rem; font-weight:700; color:var(--slate-800); font-variant-numeric:tabular-nums; line-height:1.2; }
+.blad-voet .letter { margin-left:auto; }
+.tip { position:absolute; left:0.375rem; right:0.375rem; bottom:2.375rem; z-index:2; padding:0.3125rem 0.5rem; border-radius:8px; background:var(--slate-800); color:#fff; font-size:0.75rem; line-height:1.35; overflow-wrap:anywhere; opacity:0; visibility:hidden; transition:opacity 0.12s, visibility 0s 0.12s; pointer-events:none; }
+@media (hover:hover) { .vel:hover .tip { opacity:1; visibility:visible; transition-delay:0.35s, 0.35s; } }
+.vel:focus-visible .tip { opacity:1; visibility:visible; transition:opacity 0.12s; }
+.vel[aria-pressed="true"] { border-color:var(--accent); background:var(--accent-50); box-shadow:0 0 0 1px var(--accent); }
+.vel[aria-pressed="true"] .vlak { background:#d1fae5; }
+.vel[aria-pressed="true"] .vink { background:#047857; box-shadow:none; color:#fff; }
+.blad.weg-sleep .vel { opacity:0.35; }
+body.sleept, body.sleept * { cursor:grabbing !important; }
+.invoeg { position:absolute; width:4px; border-radius:2px; background:var(--accent); box-shadow:0 0 0 2px rgba(16,185,129,0.25); pointer-events:none; z-index:3; }
+.spook { position:fixed; z-index:60; pointer-events:none; width:120px; padding:6px; border-radius:12px; background:var(--wit); box-shadow:0 14px 34px rgba(15,23,42,0.28), 0 0 0 1.5px var(--accent); transform:translate(-50%, -60%) rotate(-3deg); }
+.spook canvas, .spook .leeg-spook { display:block; width:100%; height:auto; border-radius:4px; background:var(--slate-100); }
+.spook .leeg-spook { aspect-ratio:3 / 4; }
+.spook .aantal { position:absolute; top:-10px; right:-10px; min-width:28px; height:28px; padding:0 0.375rem; border-radius:999px; background:#047857; color:#fff; font-size:0.875rem; font-weight:700; display:grid; place-items:center; }
+.leeg-raster { padding:2rem 1rem 2.5rem; text-align:center; color:var(--slate-600); font-size:0.9375rem; }
+.leeg-raster b { display:block; color:var(--slate-800); }
+
+/* Balk met acties zodra er iets geselecteerd is */
+.selbalk {
+  position:fixed; z-index:40; left:50%; bottom:calc(var(--bottom) + 0.75rem); transform:translateX(-50%); width:min(calc(100% - 1.5rem), 1120px);
+  display:flex; align-items:center; gap:0.5rem 1rem; padding:0.5rem 0.5rem 0.5rem 1rem; border-radius:16px; background:var(--wit);
+  border:1px solid var(--slate-200); box-shadow:0 14px 40px rgba(15,23,42,0.18), 0 2px 6px rgba(15,23,42,0.06);
+}
+.sel-info { display:flex; align-items:center; gap:0.25rem 0.5rem; min-width:0; flex:none; }
+.sel-info b { font-size:0.9375rem; color:var(--slate-800); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.sel-acties { display:flex; align-items:center; gap:0.25rem; margin-left:auto; min-width:0; }
+.sel-acties button { display:inline-flex; align-items:center; gap:0.375rem; min-height:44px; padding:0.375rem 0.5rem; border-radius:10px; font-size:0.875rem; font-weight:600; color:var(--slate-700); white-space:nowrap; }
+.sel-acties button:hover { background:var(--slate-100); }
+.sel-acties button svg { width:20px; height:20px; flex:none; color:var(--slate-500); }
+.sel-acties .sep { width:1px; align-self:stretch; margin:0.375rem 0.125rem; background:var(--slate-200); }
+.sel-x { margin-left:0.125rem; }
+@media (min-width:761px) { .sel-info .linkknop { display:none; } }
+@media (max-width:760px) { .sel-x { display:none; } }
+.sel-acties .gevaar, .sel-acties .gevaar svg { color:#b91c1c; }
+.sel-acties .gevaar:hover { background:#fef2f2; }
+.sel-acties button:disabled { opacity:0.4; }
+.sel-acties button:disabled:hover { background:none; }
+body.met-sel .main { padding-bottom:calc(var(--balk-h) + 2.5rem); }
+body.met-sel .toast { bottom:calc(var(--bottom) + var(--balk-h) + 1.5rem); }
+@media (max-width:1150px) { .sel-acties .extra { display:none; } }
+@media (max-width:960px) { .sel-acties .lang { display:none; } .sel-acties .kort { display:inline; } }
+@media (max-width:760px) {
+  .selbalk { flex-direction:column; align-items:stretch; gap:0.125rem; padding:0.375rem 0.375rem 0.375rem; bottom:calc(var(--bottom) + 0.5rem); width:calc(100% - 1rem); }
+  .sel-info { justify-content:space-between; padding-left:0.625rem; }
+  .sel-acties { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:0.125rem; margin:0; }
+  .sel-acties .sep { display:none; }
+  .sel-acties button { flex-direction:column; justify-content:center; gap:0.125rem; min-height:52px; padding:0.25rem 0.125rem; font-size:0.75rem; line-height:1.15; white-space:normal; text-align:center; }
+}
+
+/* Vensters: bewaren en splitsen */
+html:has(.venster-achter:not([hidden])) { overflow:hidden; }
+.venster-achter { position:fixed; inset:0; z-index:70; display:flex; align-items:center; justify-content:center; padding:1rem; background:rgba(15,23,42,0.45); }
+@supports (backdrop-filter:blur(3px)) { .venster-achter { backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); } }
+.venster { position:relative; width:100%; max-width:520px; max-height:calc(100dvh - 2rem); overflow:auto; overscroll-behavior:contain; background:var(--wit); border-radius:18px; box-shadow:0 24px 60px rgba(15,23,42,0.28); padding:1.25rem 1.25rem 1rem; color:var(--slate-700); }
+.v-kop { display:flex; align-items:flex-start; gap:0.75rem; margin-bottom:0.25rem; }
+.v-kop h2 { flex:1 1 auto; font-size:1.25rem; font-weight:700; color:var(--slate-800); letter-spacing:-0.02em; line-height:1.3; padding-top:0.5rem; }
+.v-kop .icon-btn { margin:-0.25rem -0.5rem 0 0; }
+.v-intro { font-size:0.9375rem; color:var(--slate-600); margin-bottom:1rem; }
+.veld-lbl { display:block; font-size:0.875rem; font-weight:600; color:var(--slate-700); margin-bottom:0.375rem; }
+.naamveld { display:flex; align-items:stretch; border:1.5px solid var(--slate-300); border-radius:10px; background:var(--wit); overflow:hidden; }
+.naamveld:focus-within { border-color:#047857; box-shadow:0 0 0 3px rgba(16,185,129,0.18); }
+.naamveld input { flex:1 1 auto; min-width:0; min-height:46px; padding:0.5rem 0.75rem; border:0; outline:none; font-size:1rem; color:var(--slate-800); background:none; }
+.naamveld .ext { display:grid; place-items:center; padding:0 0.75rem; background:var(--slate-50); border-left:1px solid var(--slate-200); color:var(--slate-500); font-size:0.9375rem; }
+.v-noot { font-size:0.8125rem; color:var(--slate-500); margin-top:0.5rem; }
+.v-knoppen { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:0.5rem; margin-top:1.25rem; }
+.v-knoppen .btn.stil { border-color:transparent; background:var(--slate-100); color:var(--slate-700); }
+.v-knoppen .btn.stil:hover { background:var(--slate-200); }
+.v-knoppen .links { margin-right:auto; }
+.manieren { border:0; display:grid; gap:0.5rem; }
+.manieren legend { font-size:0.875rem; font-weight:600; color:var(--slate-700); margin-bottom:0.375rem; }
+.manier { display:grid; grid-template-columns:auto minmax(0, 1fr); gap:0.125rem 0.75rem; align-items:start; padding:0.75rem 0.875rem; border:1.5px solid var(--slate-200); border-radius:12px; cursor:pointer; transition:border-color 0.12s, background 0.12s; }
+.manier:hover { border-color:var(--accent-mid); }
+.manier:has(input:checked) { border-color:var(--accent); background:var(--accent-50); }
+.manier input[type="radio"] { width:20px; height:20px; margin-top:0.125rem; accent-color:#047857; }
+.manier .m-t { font-size:0.9375rem; font-weight:600; color:var(--slate-800); }
+.manier .m-s { grid-column:2; font-size:0.8125rem; color:var(--slate-600); }
+.manier .m-in { grid-column:2; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-top:0.375rem; }
+.manier .m-in[hidden] { display:none !important; }
+.invoer { min-height:44px; padding:0.375rem 0.75rem; border:1.5px solid var(--slate-300); border-radius:10px; background:var(--wit); font-size:1rem; color:var(--slate-800); }
+.invoer:focus { outline:none; border-color:#047857; box-shadow:0 0 0 3px rgba(16,185,129,0.18); }
+.invoer.fout { border-color:#b91c1c; }
+.invoer.getal { width:5.5rem; font-variant-numeric:tabular-nums; }
+.invoer.reeks { flex:1 1 12rem; min-width:0; }
+.stap { display:inline-grid; place-items:center; width:44px; height:44px; border-radius:10px; border:1px solid var(--slate-200); background:var(--wit); color:var(--slate-600); font-size:1.25rem; font-weight:600; line-height:1; }
+.stap:hover { background:var(--slate-100); }
+.uitkomst { margin-top:0.875rem; min-height:1.5em; font-size:0.9375rem; color:var(--slate-700); }
+.uitkomst.fout { color:#b91c1c; font-weight:600; }
+.delen { list-style:none; display:grid; gap:0.5rem; margin-top:0.25rem; }
+.deel { display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0.5rem 0.5rem 0.875rem; border:1px solid var(--slate-200); border-radius:12px; }
+.deel .d-t { flex:1 1 auto; min-width:0; }
+.deel .d-n { display:block; font-size:0.9375rem; font-weight:600; color:var(--slate-800); overflow-wrap:anywhere; line-height:1.3; }
+.deel .d-p { display:block; font-size:0.8125rem; color:var(--slate-500); font-variant-numeric:tabular-nums; }
+.deel .btn { flex:none; padding:0.5rem 0.75rem; }
+.deel .btn.gedaan { border-color:var(--accent-mid); background:var(--accent-50); color:#065f46; }
+.deel .btn.gedaan svg { color:#047857; }
+.delen-meer { font-size:0.8125rem; color:var(--slate-500); margin-top:0.5rem; }
+@media (max-width:560px) {
+  .venster-achter { align-items:flex-end; padding:0; }
+  .venster { max-width:none; max-height:calc(100dvh - 1.5rem); border-radius:18px 18px 0 0; padding:1rem 1rem calc(var(--bottom) + 1rem); }
+}
+
+/* Bezig: voortgang bij openen en bewaren */
+.bezig { position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center; padding:1rem; background:rgba(248,250,252,0.6); }
+.bezig-kaart { width:min(100%, 360px); padding:1.125rem 1.25rem; border-radius:16px; background:var(--wit); border:1px solid var(--slate-200); box-shadow:0 18px 46px rgba(15,23,42,0.18); }
+.bezig-t { font-size:0.9375rem; font-weight:600; color:var(--slate-800); overflow-wrap:anywhere; }
+.bezig-d { font-size:0.8125rem; color:var(--slate-500); margin-top:0.125rem; font-variant-numeric:tabular-nums; }
+.balkje { height:8px; margin-top:0.75rem; border-radius:4px; background:var(--slate-100); overflow:hidden; }
+.balkje span { display:block; height:100%; width:0; border-radius:4px; background:var(--accent); transition:width 0.15s; }
+
+/* Laat los om toe te voegen */
+.los { position:fixed; inset:0; z-index:75; display:none; align-items:center; justify-content:center; padding:1rem; background:rgba(236,253,245,0.86); pointer-events:none; }
+body.sleept-bestand .los { display:flex; }
+.los-kaart { display:flex; flex-direction:column; align-items:center; gap:0.5rem; padding:1.5rem 2rem; border:2px dashed var(--accent); border-radius:18px; background:var(--wit); font-size:1.125rem; font-weight:700; color:#065f46; }
+.los-kaart svg { width:40px; height:40px; color:#047857; }
+
+/* Menu */
+.menu-wrap { position:relative; }
+.menu {
+  position:absolute; right:0; top:48px; z-index:40; min-width:270px; max-width:calc(100vw - 16px); background:var(--wit); border:1px solid var(--slate-200);
+  border-radius:12px; box-shadow:0 12px 32px rgba(15,23,42,0.14); padding:0.375rem; display:none;
+}
+.menu.open { display:block; }
+.menu button { width:100%; display:flex; align-items:center; gap:0.625rem; padding:0.5625rem 0.625rem; min-height:44px; border-radius:8px; font-size:0.9375rem; text-align:left; color:var(--slate-700); }
+.menu button:hover { background:var(--slate-100); }
+.menu button svg { width:18px; height:18px; color:var(--slate-500); flex-shrink:0; }
+.menu .sep { height:1px; background:var(--slate-100); margin:0.25rem 0.375rem; }
+.menu .danger, .menu .danger svg { color:#dc2626; }
+.menu .ocb-t { display:flex; flex-direction:column; min-width:0; white-space:normal; line-height:1.3; }
+.menu .ocb-t small { font-size:0.8125rem; color:var(--slate-500, #64748b); margin-top:0.125rem; }
+.menu .ocb-note { margin:0; padding:0.25rem 0.625rem 0.375rem; font-size:0.8125rem; line-height:1.35; color:var(--slate-500, #64748b); white-space:normal; }
+.menu button:disabled { opacity:0.45; cursor:default; }
+
+/* Melding */
+.toast {
+  position:fixed; left:50%; bottom:calc(var(--bottom) + 1.25rem); transform:translate(-50%, calc(100% + 3rem)); visibility:hidden; z-index:50;
+  background:var(--slate-800); color:var(--wit); border-radius:12px; padding:0.625rem 0.625rem 0.625rem 1rem;
+  display:flex; align-items:center; gap:0.875rem; font-size:0.9375rem; box-shadow:0 10px 30px rgba(15,23,42,0.25);
+  transition:transform 0.25s ease, visibility 0s 0.25s, bottom 0.2s; max-width:calc(100% - 2rem); min-height:44px;
+}
+.toast.show { transform:translate(-50%, 0); visibility:visible; transition:transform 0.25s ease, bottom 0.2s; }
+.toast button { color:#6ee7b7; font-weight:600; padding:0.25rem 0.5rem; border-radius:6px; min-height:44px; flex-shrink:0; white-space:nowrap; }
+#toast-text { min-width:0; overflow-wrap:anywhere; word-break:normal; padding-right:0.375rem; }
+.toast button:hover { background:rgba(255,255,255,0.08); }
+
+/* Voet */
+.footer { text-align:center; padding:2rem 2rem calc(var(--bottom) + 2rem); border-top:1px solid var(--slate-200); background:var(--wit); }
+.quote { font-size:0.8125rem; color:var(--accent-dark); }
+footer.oc-footer, footer.oc-footer .oc-quote, .footer .quote { color:#047857; }
+.ocw-row .ocw-yes { background:#dc2626; } .ocw-row .ocw-yes:hover { background:#b91c1c; }
+.ocw-row button { min-height:44px; }
+details.explain { margin-top:1.25rem; }
+
+/* Toegankelijkheid en soepel op gsm */
+:focus-visible { outline:2px solid #047857 !important; outline-offset:2px; }
+.back-link { min-height:44px; min-width:44px; }
+html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+button, a, summary, label, select, [role="button"], [role="radio"], input[type="checkbox"], input[type="radio"] { touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+@media (hover:none) {
+  button:not(:disabled):active, a:active, summary:active, [role="button"]:active { filter:brightness(0.93); }
+  .vel:hover { border-color:var(--slate-200); }
+  .vel[aria-pressed="true"]:hover { border-color:var(--accent); }
+}
+html:has(.ocs-back, .ocw-back) { overflow:hidden; }
+@media (forced-colors:active) {
+  .vel[aria-pressed="true"] { outline:3px solid Highlight; }
+  .invoeg { background:Highlight; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
+
+/* Breedtes */
+@media (max-width:560px) {
+  .main { padding-left:0.75rem; padding-right:0.75rem; }
+  .leeg { padding:0.75rem; }
+  .dropzone { padding:1.75rem 1rem 1.5rem; }
+  .bord-kop { padding:0.5rem 0.375rem 0.5rem 0.5rem; gap:0.375rem; }
+  .kop-l { gap:0.375rem; }
+  .bord-kop .btn { padding:0.5rem 0.75rem; }
+  .kop-l .lang, .kop-r .lang { display:none; }
+  .kop-l .kort, .kop-r .kort { display:inline; }
+  /* op een gsm: je bestanden in één rij die je opzij schuift */
+  .bronnen { flex-wrap:nowrap; overflow-x:auto; overscroll-behavior-x:contain; scroll-snap-type:x proximity; scroll-padding-inline:0.625rem; scrollbar-width:none; padding:0.75rem 0.625rem 0.125rem; gap:0.375rem; }
+  .bronnen::-webkit-scrollbar { display:none; }
+  .chip { flex:none; scroll-snap-align:start; }
+  .chip .nm { max-width:9.5rem; }
+  .info-rij { padding:0.625rem 0.625rem 0.125rem; }
+  .info-rij .hint { margin-left:0; flex-basis:100%; }
+  .raster { gap:0.5rem; padding:0.5rem 0.625rem 1rem; }
+  .fouten { margin:0.75rem 0.625rem 0; }
+}
+@media (max-width:380px) { .kop-r .btn.primair { margin-left:0.125rem; } .bord-kop .btn { padding:0.5rem 0.625rem; } }
+/* voorbeeldtekst in velden: contrast minstens 4,5:1 */
+input::placeholder, textarea::placeholder { color:#64748b; opacity:1; }
+/* oc-uitleg v1 begin */
+/* "Hoe werkt dit?": één blok voor alle tools. Zonder JavaScript blijft de gewone uitklapper leesbaar.
+   Het script zet .oc-u op <details class="explain"> en bouwt de inhoud om tot inleiding, stappen, tip en verwijzingen. */
+details.explain { scroll-margin-top:1rem; }
+details.explain.oc-u { --u-groen:#10b981; --u-donker:#047857; --u-licht:#a7f3d0; --u-zacht:#ecfdf5;
+  background:#ffffff; border:1px solid #e2e8f0; border-radius:18px; box-shadow:0 1px 2px rgba(15,23,42,0.04); transition:border-color 0.2s, box-shadow 0.2s; }
+details.explain.oc-u:hover, details.explain.oc-u[open] { border-color:#cbd5e1; }
+details.explain.oc-u[open] { box-shadow:0 1px 2px rgba(15,23,42,0.04), 0 12px 32px -18px rgba(15,23,42,0.18); }
+
+/* ingeklapt: een uitnodigende kaart */
+details.explain.oc-u > summary { display:flex; align-items:center; gap:0.875rem; min-height:76px; padding:0.875rem 1rem 0.875rem 0.875rem; border-radius:17px; cursor:pointer; list-style:none; color:#1e293b; font-weight:400; outline:none; -webkit-tap-highlight-color:transparent; }
+details.explain.oc-u > summary::-webkit-details-marker { display:none; }
+details.explain.oc-u > summary::after, details.explain.oc-u > summary::before { content:none; }
+details.explain.oc-u > summary svg { transform:none; margin:0; }
+details.explain.oc-u > summary:focus-visible { box-shadow:0 0 0 2px #ffffff, 0 0 0 4px var(--u-groen); }
+details.explain.oc-u[open] > summary { border-bottom-left-radius:0; border-bottom-right-radius:0; }
+details.explain.oc-u .oc-u-ico { flex-shrink:0; width:48px; height:48px; border-radius:14px; background:var(--u-zacht); display:flex; align-items:center; justify-content:center; transition:background-color 0.2s; }
+details.explain.oc-u .oc-u-ico svg { width:28px; height:28px; display:block; }
+details.explain.oc-u .oc-u-kop { flex:1; min-width:0; display:flex; flex-direction:column; gap:0.125rem; }
+details.explain.oc-u .oc-u-titel { font-size:1.0625rem; font-weight:700; color:#1e293b; letter-spacing:-0.01em; line-height:1.3; }
+details.explain.oc-u .oc-u-meta { font-size:0.8125rem; color:#64748b; line-height:1.35; font-variant-numeric:tabular-nums; }
+details.explain.oc-u .oc-u-pijl { flex-shrink:0; width:40px; height:40px; border-radius:50%; background:#f1f5f9; color:#475569; display:flex; align-items:center; justify-content:center; transition:background-color 0.2s, color 0.2s, transform 0.35s cubic-bezier(0.2,0.7,0.2,1); }
+details.explain.oc-u .oc-u-pijl svg { width:20px; height:20px; }
+details.explain.oc-u > summary:hover .oc-u-pijl { background:var(--u-zacht); color:var(--u-donker); }
+details.explain.oc-u[open] .oc-u-pijl { transform:rotate(180deg); background:var(--u-zacht); color:var(--u-donker); }
+
+/* op brede schermen: de stappen als kleine route, die plaats maakt voor de echte stappen bij openen */
+details.explain.oc-u .oc-u-route { display:none; align-items:center; flex-shrink:0; margin-right:0.75rem; transition:opacity 0.25s, visibility 0.25s; }
+details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.75rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
+details.explain.oc-u .oc-u-route i:first-child { margin-left:0; }
+details.explain.oc-u .oc-u-route i + i::before { content:''; position:absolute; right:calc(100% + 1.5px); top:calc(50% - 0.75px); width:16px; height:1.5px; background:var(--u-licht); }
+details.explain.oc-u > summary:hover .oc-u-route i { border-color:var(--u-groen); }
+details.explain.oc-u[open] .oc-u-route { opacity:0; visibility:hidden; }
+@media (min-width:700px) { details.explain.oc-u .oc-u-route { display:flex; } }
+
+/* uitgeklapt */
+details.explain.oc-u > .inner { padding:0; margin:0; border:0; border-radius:0; background:none; font-size:0.9375rem; color:#475569; container-type:inline-size; }
+details.explain.oc-u > .inner p, details.explain.oc-u > .inner ul, details.explain.oc-u > .inner ol, details.explain.oc-u > .inner li { margin:0; }
+details.explain.oc-u .oc-u-raam { border-top:1px solid #f1f5f9; margin:0 1.25rem; padding:1.25rem 0 1.5rem; display:grid; gap:1.375rem; }
+details.explain.oc-u .oc-u-lees, details.explain.oc-u .oc-u-doe { display:flex; flex-direction:column; gap:1.125rem; min-width:0; }
+details.explain.oc-u .oc-u-intro { font-size:1.0625rem; line-height:1.55; color:#334155; letter-spacing:-0.005em; margin:0; max-width:40em; text-wrap:pretty; }
+details.explain.oc-u .oc-u-noot { margin:0; line-height:1.6; max-width:42em; text-wrap:pretty; }
+details.explain.oc-u .oc-u-noot b { color:#1e293b; }
+
+/* stappen: genummerde tijdlijn */
+details.explain.oc-u ol.oc-u-stappen { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+details.explain.oc-u .oc-u-stap { position:relative; display:grid; grid-template-columns:2.25rem minmax(0,1fr); column-gap:0.875rem; padding-bottom:1.125rem; }
+details.explain.oc-u .oc-u-stap:last-child { padding-bottom:0; }
+details.explain.oc-u .oc-u-stap::before { content:''; position:absolute; left:calc(1.125rem - 1px); top:2.5rem; bottom:0.25rem; width:2px; border-radius:2px; background:var(--u-licht); transform-origin:top; }
+details.explain.oc-u .oc-u-stap:last-child::before { content:none; }
+details.explain.oc-u .oc-u-nr { width:2.25rem; height:2.25rem; border-radius:50%; background:#ffffff; border:2px solid var(--u-groen); color:var(--u-donker); font-size:0.9375rem; font-weight:700; display:flex; align-items:center; justify-content:center; font-variant-numeric:tabular-nums; line-height:1; }
+details.explain.oc-u .oc-u-stap-tekst { padding-top:0.3125rem; min-width:0; }
+details.explain.oc-u .oc-u-stap-titel { display:block; font-size:1rem; font-weight:700; color:#1e293b; line-height:1.35; letter-spacing:-0.005em; }
+details.explain.oc-u .oc-u-stap-uitleg { display:block; margin-top:0.25rem; line-height:1.55; color:#475569; text-wrap:pretty; }
+details.explain.oc-u .oc-u-stap-uitleg b { color:#1e293b; }
+
+details.explain.oc-u .oc-u-stap-uitleg.oc-u-enkel { margin-top:0; color:#334155; }
+details.explain.oc-u .oc-u-doe > ul:not([class]), details.explain.oc-u .oc-u-doe > ol:not([class]) { padding-left:1.25rem; display:grid; gap:0.375rem; line-height:1.55; }
+details.explain.oc-u .oc-u-doe > ul:not([class]) > li::marker { color:var(--u-groen); }
+
+/* begrippen: dezelfde opbouw zonder nummers, voor lijsten die geen volgorde zijn */
+details.explain.oc-u ul.oc-u-begrippen { list-style:none; margin:0; padding:0; display:grid; gap:0.875rem; }
+details.explain.oc-u .oc-u-begrip { display:grid; grid-template-columns:0.5rem minmax(0,1fr); column-gap:0.875rem; }
+details.explain.oc-u .oc-u-begrip::before { content:''; width:0.5rem; height:0.5rem; border-radius:50%; background:var(--u-groen); margin-top:0.5rem; }
+
+/* tip */
+details.explain.oc-u .oc-u-tip { display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:0.75rem; align-items:start; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:0.875rem 1rem; }
+details.explain.oc-u .oc-u-tip svg { width:22px; height:22px; color:var(--u-donker); margin-top:0.0625rem; }
+details.explain.oc-u .oc-u-tip-titel { display:block; font-weight:700; color:#1e293b; font-size:0.9375rem; line-height:1.4; }
+details.explain.oc-u .oc-u-tip-tekst { display:block; line-height:1.55; color:#475569; margin-top:0.125rem; }
+details.explain.oc-u kbd { display:inline-block; font:inherit; font-size:0.8125rem; font-weight:600; line-height:1.35; color:#334155; background:#ffffff; border:1px solid #cbd5e1; border-bottom-width:2px; border-radius:6px; padding:0 0.4375rem; margin:0 0.0625rem; vertical-align:0.0625rem; white-space:nowrap; }
+
+/* stil: alles blijft op dit toestel */
+details.explain.oc-u .oc-u-stil { display:flex; gap:0.5rem; align-items:flex-start; font-size:0.875rem; color:#64748b; line-height:1.5; margin:0; }
+details.explain.oc-u .oc-u-stil svg { flex-shrink:0; width:18px; height:18px; margin-top:0.0625rem; color:#64748b; }
+
+/* verwijzingen naar andere tools */
+details.explain.oc-u .oc-u-samen { display:flex; flex-direction:column; gap:0.5rem; }
+details.explain.oc-u .oc-u-samen-titel { font-size:0.875rem; font-weight:600; color:#475569; }
+details.explain.oc-u .oc-u-chips { display:flex; flex-wrap:wrap; gap:0.5rem; }
+details.explain.oc-u a.oc-u-chip { display:inline-flex; align-items:center; gap:0.5rem; min-height:44px; margin:0; padding:0 0.875rem 0 0.5rem; border:1px solid var(--u-licht); border-radius:999px; background:#ffffff; color:var(--u-donker); font-size:0.9375rem; font-weight:600; text-decoration:none; line-height:1.2; transition:background-color 0.2s, border-color 0.2s; }
+details.explain.oc-u .oc-u-chip-ico { width:28px; height:28px; border-radius:50%; background:var(--u-zacht); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+details.explain.oc-u .oc-u-chip-ico svg { width:15px; height:15px; }
+details.explain.oc-u a.oc-u-chip:hover { background:var(--u-zacht); border-color:var(--u-groen); }
+details.explain.oc-u a.oc-u-chip:focus-visible { outline:2px solid var(--u-groen); outline-offset:2px; }
+details.explain.oc-u .oc-u-noot a, details.explain.oc-u .oc-u-stap-uitleg a, details.explain.oc-u .oc-u-tip-tekst a { color:var(--u-donker); font-weight:600; text-decoration:underline; text-decoration-color:var(--u-licht); text-decoration-thickness:2px; text-underline-offset:3px; }
+details.explain.oc-u .oc-u-noot a:hover { text-decoration-color:var(--u-donker); }
+/* tikdoel: de link blijft gewoon in de zin, maar is minstens 44 px hoog; de regels schuiven niet uit elkaar */
+details.explain.oc-u .oc-u-noot a, details.explain.oc-u .oc-u-stap-uitleg a, details.explain.oc-u .oc-u-tip-tekst a { padding-block:calc(22.5px - 0.6em); padding-inline:3px; margin-inline:-3px; }
+
+/* breed: links lezen, rechts doen */
+@container (min-width:720px) and (max-width:999.98px) {
+  details.explain.oc-u .oc-u-raam.oc-u-lang { grid-template-columns:minmax(0,1fr); grid-template-rows:none; }
+  details.explain.oc-u .oc-u-lang .oc-u-lees, details.explain.oc-u .oc-u-lang .oc-u-doe, details.explain.oc-u .oc-u-lang .oc-u-samen { grid-column:1; grid-row:auto; }
+}
+@container (min-width:720px) {
+  details.explain.oc-u .oc-u-raam { grid-template-columns:minmax(0,5fr) minmax(0,7fr); grid-template-rows:auto 1fr; column-gap:3rem; row-gap:1.75rem; align-items:start; padding:1.75rem 0.5rem 2rem; }
+  details.explain.oc-u .oc-u-lees { grid-column:1; grid-row:1; }
+  details.explain.oc-u .oc-u-doe { grid-column:2; grid-row:1 / span 2; }
+  details.explain.oc-u .oc-u-samen { grid-column:1; grid-row:2; }
+  details.explain.oc-u .oc-u-zonder-intro { grid-template-columns:minmax(0,1fr); }
+  details.explain.oc-u .oc-u-zonder-intro .oc-u-doe, details.explain.oc-u .oc-u-zonder-intro .oc-u-samen { grid-column:1; grid-row:auto; }
+  details.explain.oc-u .oc-u-intro { font-size:1.25rem; line-height:1.5; }
+}
+@media (min-width:760px) { details.explain.oc-u .oc-u-raam { margin:0 1.5rem; } details.explain.oc-u > summary { padding:1rem 1.25rem 1rem 1rem; } }
+
+/* beweging enkel als antwoord op openen */
+@media (prefers-reduced-motion:reduce) {
+  details.explain.oc-u, details.explain.oc-u .oc-u-pijl, details.explain.oc-u .oc-u-ico, details.explain.oc-u .oc-u-route, details.explain.oc-u .oc-u-route i, details.explain.oc-u a.oc-u-chip { transition:none; }
+}
+@media print { details.explain { display:none; } }
+/* oc-uitleg v1 einde */
+</style>
+</head>
+<body>
+
+<header class="header oc-head">
+  <a href="../" class="back-link" aria-label="Terug naar Zakmes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Zakmes
+  </a>
+  <div class="logo" aria-hidden="true">
+    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="18" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/><path d="M9.5 19V10.5a2 2 0 0 1 2-2h7l5 5V19" stroke="#64748b"/><path d="M18.5 8.5v5h5" stroke="#64748b"/><path d="M9.5 25v4.5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V25" stroke="#64748b"/><path d="M7.5 22h2.5M13 22h2.5" stroke="#10b981"/><circle cx="28.5" cy="17.75" r="2.5" fill="#d1fae5" stroke="#10b981"/><circle cx="28.5" cy="26.25" r="2.5" fill="#d1fae5" stroke="#10b981"/><path d="M26.6 19.4L19 24.5M26.6 24.6L19 19.5" stroke="#10b981"/></svg>
+  </div>
+  <h1 class="title">Pdf-schaar</h1>
+  <p class="subtitle">Pdf's samenvoegen, pagina's eruit halen, draaien en herschikken</p>
+</header>
+
+<main class="main">
+  <section class="card werkblad" id="werkblad" aria-labelledby="wb-h">
+    <h2 class="sr-only" id="wb-h">Je pagina's</h2>
+
+    <div class="leeg" id="leeg">
+      <div class="dropzone" id="dropzone">
+        <span class="dz-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5z" stroke="#64748b"/><path d="M13.5 3v5.5H19" stroke="#64748b"/><path d="M12 11.5v6M9 14.5l3-3 3 3" stroke="#10b981"/></svg></span>
+        <p class="dz-t">Kies pdf's of sleep ze hierheen</p>
+        <p class="dz-sub">Je ziet meteen alle pagina's. Daarna bewaar je het resultaat als een nieuwe pdf.</p>
+        <div class="oc-start-btns"><button type="button" class="oc-begin" data-kies><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 16v-5M9.5 13.5 12 11l2.5 2.5"/></svg>Kies pdf's</button></div>
+        <p class="prive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Je bestanden verlaten je toestel niet.</p>
+      </div>
+      <ul class="drie" aria-label="Wat kan je doen?">
+        <li><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5" stroke="#64748b"/><rect x="14" y="3" width="7" height="9" rx="1.5" stroke="#64748b"/><path d="M6.5 14.5L9 17M17.5 14.5L15 17" stroke="#64748b"/><rect x="8" y="16.5" width="8" height="5" rx="1.25" fill="#d1fae5" stroke="#10b981"/></svg></span><div><b>Samenvoegen</b><span>Open meer pdf's en bewaar ze als één bestand.</span></div></li>
+        <li><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="10" width="5.5" height="8" rx="1.25" stroke="#64748b"/><rect x="16" y="10" width="5.5" height="8" rx="1.25" stroke="#64748b"/><rect x="9.25" y="4" width="5.5" height="8" rx="1.25" fill="#d1fae5" stroke="#10b981"/><path d="M10 20.5h4" stroke="#cbd5e1"/></svg></span><div><b>Pagina's eruit halen</b><span>Verwijder pagina's, of bewaar een deel als nieuwe pdf.</span></div></li>
+        <li><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="8" width="9.5" height="12.5" rx="1.5" stroke="#64748b"/><path d="M14 3.5a7 7 0 0 1 6.5 7" stroke="#10b981"/><path d="M21 7.5l-.5 3-3-.5" stroke="#10b981"/></svg></span><div><b>Draaien en herschikken</b><span>Draai pagina's recht en zet ze in de goede volgorde.</span></div></li>
+      </ul>
+    </div>
+
+    <div class="vol" id="vol" hidden>
+      <div class="bord-kop">
+        <div class="kop-l">
+          <button type="button" class="btn" data-kies><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 12v6M9 15h6"/></svg><span class="lang">Pdf toevoegen</span><span class="kort">Toevoegen</span></button>
+          <button type="button" class="btn" id="splits-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6.5" r="2.75"/><circle cx="6" cy="17.5" r="2.75"/><path d="M20 5L8.3 15.6M14.2 13.5L20 19M8.3 8.4L11.6 11.4"/></svg>Splitsen</button>
+        </div>
+        <div class="kop-r">
+          <button type="button" class="icon-btn" id="terug-btn" aria-label="Ongedaan maken" title="Ongedaan maken (Ctrl+Z)" aria-keyshortcuts="Control+Z" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+          <button type="button" class="icon-btn" id="weer-btn" aria-label="Opnieuw" title="Opnieuw (Ctrl+Shift+Z)" aria-keyshortcuts="Control+Shift+Z" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+          <button type="button" class="btn primair" id="bewaar-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span class="lang">Bewaar als pdf</span><span class="kort">Bewaar</span></button>
+          <div class="menu-wrap">
+            <button class="icon-btn" id="menu-btn" type="button" aria-label="Meer acties" aria-haspopup="true" aria-expanded="false" aria-controls="menu">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+            </button>
+            <div class="menu" id="menu" role="menu" aria-label="Meer acties">
+              <button type="button" data-kies role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 12v6M9 15h6"/></svg><span class="ocb-t">Pdf toevoegen<small>De pagina's komen achteraan</small></span></button>
+              <button type="button" data-act="alles" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12.5l2.75 2.75L16 9.5"/></svg><span id="menu-alles-t">Alles selecteren</span></button>
+              <button type="button" data-act="splits" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6.5" r="2.75"/><circle cx="6" cy="17.5" r="2.75"/><path d="M20 5L8.3 15.6M14.2 13.5L20 19M8.3 8.4L11.6 11.4"/></svg><span class="ocb-t">Splitsen<small>In stukken, elk een eigen pdf</small></span></button>
+              <div class="sep" role="separator"></div>
+              <button type="button" data-act="wipe" class="danger" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>Alles leegmaken</button>
+              <p class="ocb-note">Je originele bestanden blijven altijd zoals ze zijn.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="bronnen" id="bronnen" aria-label="Je bestanden"></ul>
+      <div class="fouten" id="fouten" role="alert" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5L2.5 20h19z"/><path d="M12 10v4.5M12 17.25v.01"/></svg>
+        <div class="ft"><b>Niet geopend</b><ul id="fouten-lijst"></ul></div>
+        <button type="button" class="icon-btn" id="fouten-weg" aria-label="Melding sluiten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div class="info-rij">
+        <p class="telling" id="telling" aria-live="polite"></p>
+        <button type="button" class="linkknop" id="alles-btn">Alles selecteren</button>
+        <p class="hint"><span class="muis">Klik om te selecteren, Shift-klik voor een reeks. Sleep om te verschuiven.</span><span class="aanraak">Tik om te selecteren. Hou even vast en sleep om te verschuiven.</span></p>
+      </div>
+      <ol class="raster" id="raster" aria-label="Pagina's, in volgorde" aria-describedby="raster-uitleg"></ol>
+      <p class="sr-only" id="raster-uitleg">Pijltjes gaan naar een andere pagina. Spatie selecteert. Delete verwijdert de selectie.</p>
+      <div class="leeg-raster" id="leeg-raster" hidden><p><b>Geen pagina's meer</b>Voeg een pdf toe, of maak het verwijderen ongedaan.</p></div>
+    </div>
+  </section>
+
+  <details class="explain" id="hoe-werkt-dit">
+    <summary>Hoe werkt dit?</summary>
+    <div class="inner">
+      <p>Met de Pdf-schaar voeg je pdf's samen, haal je pagina's eruit, draai je ze en zet je ze in de goede volgorde. Daarna bewaar je het resultaat als een nieuwe pdf.</p>
+      <ul>
+        <li><b>Open je pdf's.</b> Kies ze, of sleep ze op de pagina. Je ziet alle pagina's in één raster. De letter onderaan toont uit welk bestand een pagina komt.</li>
+        <li><b>Selecteer pagina's.</b> Tik op een pagina. Met Shift kies je een reeks. Onderaan verschijnt een balk: draaien, verschuiven, verwijderen of apart bewaren.</li>
+        <li><b>Zet ze in volgorde.</b> Sleep een pagina naar een andere plaats. Op een gsm of tablet hou je ze eerst even vast. Of gebruik Naar voren en Naar achteren in de balk.</li>
+        <li><b>Bewaar.</b> Bewaar als pdf maakt één nieuw bestand. Met Splitsen maak je er meer kleine van. Je originele bestanden blijven zoals ze zijn.</li>
+      </ul>
+      <p>Tip: een vergissing? Maak ze ongedaan met de pijl bovenaan, of met Ctrl+Z.</p>
+      <p>Wat kan niet: tekst of afbeeldingen in een pdf aanpassen, tekst herkennen in een scan, ondertekenen, een pdf kleiner maken of een formulier invullen. Een pdf met een wachtwoord opent de Pdf-schaar niet.</p>
+      <p>Alles blijft op dit toestel. Je bestanden verlaten je toestel niet en worden niet bewaard. Sluit je de pagina, dan zijn ze hier weg.</p>
+    </div>
+  </details>
+</main>
+
+<footer class="footer oc-footer">
+  <p class="quote oc-quote">Knippen en plakken, zonder lijm.</p>
+</footer>
+
+<div class="selbalk" id="selbalk" role="toolbar" aria-label="Acties voor je selectie" hidden>
+  <div class="sel-info"><b id="sel-n"></b><button type="button" class="linkknop" id="sel-geen">Niets selecteren</button></div>
+  <div class="sel-acties">
+    <button type="button" data-sel="links" aria-label="Draai naar links"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4v5h5"/><path d="M3.6 14a8.5 8.5 0 1 0 2.1-7.9L3 9"/></svg><span class="lang">Draai links</span><span class="kort">Links</span></button>
+    <button type="button" data-sel="rechts" aria-label="Draai naar rechts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4v5h-5"/><path d="M20.4 14a8.5 8.5 0 1 1-2.1-7.9L21 9"/></svg><span class="lang">Draai rechts</span><span class="kort">Rechts</span></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" data-sel="voren" aria-label="Naar voren schuiven"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg><span class="lang">Naar voren</span><span class="kort">Eerder</span></button>
+    <button type="button" data-sel="achter" aria-label="Naar achteren schuiven"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="lang">Naar achteren</span><span class="kort">Later</span></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" data-sel="bewaar" aria-label="Bewaar de selectie als nieuwe pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span class="lang">Bewaar<span class="extra"> als nieuwe pdf</span></span><span class="kort">Bewaar</span></button>
+    <button type="button" data-sel="weg" class="gevaar" aria-label="Verwijder de selectie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg><span class="lang">Verwijder</span><span class="kort">Verwijder</span></button>
+  </div>
+  <button type="button" class="icon-btn sel-x" id="sel-x" aria-label="Niets selecteren" title="Niets selecteren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+</div>
+
+<div class="venster-achter" id="bewaar-v" hidden>
+  <div class="venster" role="dialog" aria-modal="true" aria-labelledby="bewaar-h" aria-describedby="bewaar-intro">
+    <div class="v-kop"><h2 id="bewaar-h">Bewaar als pdf</h2><button type="button" class="icon-btn" data-sluit aria-label="Sluiten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <p class="v-intro" id="bewaar-intro"></p>
+    <form id="bewaar-f" novalidate>
+      <label class="veld-lbl" for="bewaar-naam">Bestandsnaam</label>
+      <div class="naamveld"><input id="bewaar-naam" type="text" autocomplete="off" spellcheck="false" maxlength="100" enterkeyhint="done"><span class="ext" aria-hidden="true">.pdf</span></div>
+      <p class="v-noot">Je originele bestanden blijven zoals ze zijn.</p>
+      <div class="v-knoppen"><button type="button" class="btn stil" data-sluit>Annuleer</button><button type="submit" class="btn primair" id="bewaar-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Bewaar</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="venster-achter" id="splits-v" hidden>
+  <div class="venster" role="dialog" aria-modal="true" aria-labelledby="splits-h" aria-describedby="splits-intro">
+    <div class="v-kop"><h2 id="splits-h">Splitsen</h2><button type="button" class="icon-btn" data-sluit aria-label="Sluiten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div id="splits-stap1">
+      <p class="v-intro" id="splits-intro"></p>
+      <form id="splits-f" novalidate>
+        <fieldset class="manieren">
+          <legend>Hoe wil je splitsen?</legend>
+          <label class="manier"><input type="radio" name="manier" value="pagina"><span class="m-t">Elke pagina apart</span><span class="m-s" id="m-pagina-s"></span></label>
+          <label class="manier"><input type="radio" name="manier" value="aantal"><span class="m-t">Per groep van een aantal pagina's</span><span class="m-s">Bv. per 2: pagina 1 en 2, dan 3 en 4, enzovoort.</span>
+            <span class="m-in" id="m-aantal-in"><button type="button" class="stap" data-stap="-1" aria-label="Eén minder">−</button><input class="invoer getal" id="m-n" type="number" inputmode="numeric" min="1" step="1" value="2" aria-label="Aantal pagina's per bestand"><button type="button" class="stap" data-stap="1" aria-label="Eén meer">+</button><span class="m-s" aria-hidden="true">pagina's per bestand</span></span></label>
+          <label class="manier"><input type="radio" name="manier" value="reeks"><span class="m-t">Volgens reeksen</span><span class="m-s">Elke reeks wordt één bestand. De nummers zijn die op de pagina's.</span>
+            <span class="m-in" id="m-reeks-in"><input class="invoer reeks" id="m-reeks" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="bv. 1-3, 5, 8-10" aria-label="Reeksen, bv. 1-3, 5, 8-10" aria-describedby="splits-uit"></span></label>
+        </fieldset>
+        <p class="uitkomst" id="splits-uit" aria-live="polite"></p>
+        <div class="v-knoppen"><button type="button" class="btn stil" data-sluit>Annuleer</button><button type="submit" class="btn primair" id="splits-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6.5" r="2.75"/><circle cx="6" cy="17.5" r="2.75"/><path d="M20 5L8.3 15.6M14.2 13.5L20 19M8.3 8.4L11.6 11.4"/></svg>Splitsen</button></div>
+      </form>
+    </div>
+    <div id="splits-stap2" hidden>
+      <p class="v-intro" id="splits-klaar" tabindex="-1"></p>
+      <ul class="delen" id="delen"></ul>
+      <p class="delen-meer" id="delen-meer" hidden></p>
+      <div class="v-knoppen"><button type="button" class="btn stil links" id="splits-terug">Andere keuze</button><button type="button" class="btn" data-sluit>Sluiten</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="bezig" id="bezig" hidden>
+  <div class="bezig-kaart" role="status" aria-live="polite">
+    <p class="bezig-t" id="bezig-t"></p>
+    <p class="bezig-d" id="bezig-d"></p>
+    <div class="balkje" aria-hidden="true"><span id="bezig-balk"></span></div>
+  </div>
+</div>
+
+<div class="los" aria-hidden="true"><div class="los-kaart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Laat los om toe te voegen</div></div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-text"></span><button id="toast-btn" type="button" hidden>Ongedaan</button></div>
+<input type="file" id="kies-in" accept="application/pdf,.pdf" multiple hidden>
+
+<script>
+/* ---------- Alles leegmaken, klaarleggen ---------- */
+const OC_ID = 'pdfschaar', OC_TOOL = 'Pdf-schaar';
+let ocSaves = 0;
+// Bevestiging in de pagina (geen pop-up van de browser).
+// Stijl van de bevestiging en de knoppen 'Overnemen uit…': meteen laden.
+function ocStyle() {
+  if (!document.getElementById('ocw-style')) {
+    const s = document.createElement('style'); s.id = 'ocw-style';
+    s.textContent = `.ocw-back{position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);font-family:'DM Sans',system-ui,sans-serif}
+      .ocw{width:100%;max-width:400px;background:#fff;border-radius:16px;padding:1.375rem 1.375rem 1.125rem;box-shadow:0 20px 50px rgba(15,23,42,.25);color:#1e293b}
+      .ocw b{display:block;font-size:1.0625rem;letter-spacing:-.01em;margin-bottom:.375rem}
+      .ocw p{font-size:.9375rem;line-height:1.5;color:#475569}
+      .ocw-row{display:flex;justify-content:flex-end;gap:.5rem;margin-top:1.25rem}
+      .ocw-row button{font:inherit;font-size:.9375rem;font-weight:600;padding:.625rem 1rem;min-height:44px;border-radius:10px;border:0;cursor:pointer}
+      .ocw-no{background:#f1f5f9;color:#475569} .ocw-yes{background:#dc2626;color:#fff} .ocw-yes:hover{background:#b91c1c}
+      .oc-import{display:inline-flex;align-items:center;gap:.375rem;font:inherit;font-size:.8125rem;font-weight:600;color:#059669;background:#fff;border:1px dashed #a7f3d0;border-radius:999px;padding:.3125rem .75rem;cursor:pointer;white-space:nowrap}
+      .oc-import:hover{background:#ecfdf5;border-color:#10b981} .oc-import svg{width:15px;height:15px} .oc-import[hidden]{display:none}`;
+    document.head.appendChild(s);
+  }
+}
+ocStyle();
+function ocConfirm(title, text, okText) {
+  return new Promise(resolve => {
+    const back = document.createElement('div'); back.className = 'ocw-back';
+    back.innerHTML = '<div class="ocw" role="alertdialog" aria-modal="true"><b></b><p></p><div class="ocw-row"><button class="ocw-no" type="button">Annuleer</button><button class="ocw-yes" type="button"></button></div></div>';
+    back.querySelector('b').textContent = title; back.querySelector('p').textContent = text; back.querySelector('.ocw-yes').textContent = okText;
+    document.body.appendChild(back);
+    const done = v => { document.removeEventListener('keydown', key, true); back.remove(); resolve(v); };
+    const key = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false); } };
+    document.addEventListener('keydown', key, true);
+    back.querySelector('.ocw-no').onclick = () => done(false);
+    back.querySelector('.ocw-yes').onclick = () => done(true);
+    back.addEventListener('click', e => { if (e.target === back) done(false); });
+    back.querySelector('.ocw-no').focus();
+  });
+}
+// Ongedaan maken van een wisbeurt kan alleen zolang er sindsdien niets anders bewaard werd.
+function ocUndoable(restore) {
+  const mark = ocSaves;
+  return () => {
+    if (ocSaves !== mark) { setTimeout(() => toast('Ongedaan maken kan niet meer: er is intussen iets veranderd'), 60); return; }
+    restore();
+  };
+}
+/* ==========================================================================
+   Pdf-schaar: pdf's samenvoegen, pagina's eruit halen, draaien, herschikken en splitsen.
+   Alles gebeurt in deze pagina, op dit toestel: geen upload, geen netwerk naar buiten.
+   De pdf-inhoud staat alleen in het geheugen. In localStorage komt hooguit de laatst gekozen splitsmanier.
+   De twee hulpbibliotheken (bewerken en miniaturen) laden pas als je een pdf opent, van /lib/ op deze site.
+   ========================================================================== */
+const $ = id => document.getElementById(id);
+const KEY = 'pdfschaar.v1';
+const LIB = { bewerk: '/lib/pdf-lib-1.17.1.min.js', toon: '/lib/pdfjs-4.10.38/pdf.min.mjs', werker: '/lib/pdfjs-4.10.38/pdf.worker.min.mjs' };
+const MAX_BYTES = 300 * 1024 * 1024;
+const MAX_STAPPEN = 100;
+
+const aantal = n => n === 1 ? '1 pagina' : `${n} pagina's`;
+const stam = naam => String(naam || '').replace(/\.pdf$/i, '').trim() || 'document';
+const rust = () => new Promise(r => setTimeout(r, 16));
+const norm90 = a => (((Math.round((+a || 0) / 90) * 90) % 360) + 360) % 360;
+
+/* ---------- Instellingen (klein, geen inhoud) ---------- */
+function leesInst() {
+  let d = null; try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch {}
+  return {
+    manier: d && ['pagina', 'aantal', 'reeks'].includes(d.manier) ? d.manier : 'pagina',
+    n: d && Number.isInteger(d.n) && d.n >= 1 && d.n <= 9999 ? d.n : 2,
+  };
+}
+function bewaarInst(i) { ocSaves++; try { localStorage.setItem(KEY, JSON.stringify({ v: 1, manier: i.manier, n: i.n })); } catch {} }
+
+/* ---------- Hulpbibliotheken: pas laden als je een pdf opent ---------- */
+let PDFJS = null, werker = null, libsP = null;
+function laadScript(src) {
+  return new Promise((ok, nok) => {
+    const s = document.createElement('script'); s.src = src; s.async = true;
+    s.onload = () => ok(); s.onerror = () => { s.remove(); nok(new Error('lib')); };
+    document.head.appendChild(s);
+  });
+}
+function laadLibs() {
+  if (!libsP) libsP = Promise.all([window.PDFLib ? null : laadScript(LIB.bewerk), import(LIB.toon)]).then(([, m]) => {
+    if (!window.PDFLib || !m || !m.getDocument) throw new Error('lib');
+    m.GlobalWorkerOptions.workerSrc = LIB.werker;
+    PDFJS = m;
+    try { werker = new m.PDFWorker({ name: 'pdfschaar' }); } catch { werker = null; }
+  }).catch(e => { libsP = null; throw e; });
+  return libsP;
+}
+
+/* ---------- Toestand ---------- */
+// Een bron = een geopend bestand. Een pagina = { uid, bron, index (in de bron), rot (extra draaiing in graden) }.
+const KLEUREN = [
+  { bg: '#d1fae5', fg: '#065f46' }, { bg: '#e2e8f0', fg: '#334155' }, { bg: '#047857', fg: '#ffffff' },
+  { bg: '#64748b', fg: '#ffffff' }, { bg: '#a7f3d0', fg: '#064e3b' }, { bg: '#ffffff', fg: '#475569', rand: '#94a3b8' },
+];
+const bronnen = new Map();
+let pages = [], sel = new Set(), anker = null, focusUid = null;
+let undo = [], redo = [], versie = 0, gewijzigd = false, wisBuffer = null;
+let uidTel = 0, bronTel = 0, druk = false;
+
+function letterVan(k) { let s = ''; k++; while (k > 0) { const r = (k - 1) % 26; s = String.fromCharCode(65 + r) + s; k = Math.floor((k - 1) / 26); } return s; }
+const idx = uid => pages.findIndex(p => p.uid === uid);
+const selLijst = () => pages.filter(p => sel.has(p.uid));
+
+/* ---------- Geschiedenis: Ongedaan en Opnieuw ---------- */
+const snap = () => ({ pages: pages.slice(), sel: [...sel] });
+function zetSnap(s) { pages = s.pages.slice(); sel = new Set(s.sel); }
+function wijzig(fn) {
+  undo.push(snap()); if (undo.length > MAX_STAPPEN) undo.shift();
+  redo = []; fn(); versie++; gewijzigd = true; ocSaves++;
+  opruimen(); render();
+}
+function stapTerug() { if (!undo.length) return false; redo.push(snap()); zetSnap(undo.pop()); versie++; gewijzigd = true; naHerstel(); return true; }
+function stapVooruit() { if (!redo.length) return false; undo.push(snap()); zetSnap(redo.pop()); versie++; gewijzigd = true; naHerstel(); return true; }
+function naHerstel() {
+  const er = new Set(pages.map(p => p.uid)); [...sel].forEach(u => er.has(u) || sel.delete(u));
+  render();
+}
+// Een "Ongedaan" in een melding geldt alleen zolang er intussen niets anders veranderde.
+function terugAls(v) {
+  return () => {
+    if (versie !== v) { setTimeout(() => toast('Ongedaan maken kan niet meer: er is intussen iets veranderd'), 60); return; }
+    stapTerug();
+  };
+}
+// Bestanden die nergens meer nodig zijn (ook niet om ongedaan te maken), gaan echt uit het geheugen.
+function opruimen() {
+  const nodig = new Set(pages.map(p => p.bron));
+  const voeg = s => s.pages.forEach(p => nodig.add(p.bron));
+  undo.forEach(voeg); redo.forEach(voeg);
+  if (wisBuffer) { wisBuffer.pages.forEach(p => nodig.add(p.bron)); wisBuffer.undo.forEach(voeg); wisBuffer.redo.forEach(voeg); }
+  for (const b of [...bronnen.values()]) if (!nodig.has(b.id)) sluitBron(b);
+}
+function sluitBron(b) {
+  bronnen.delete(b.id);
+  for (const [uid, t] of tegels) if (t.bron === b.id) { if (io) io.unobserve(t.li); t.li.remove(); tegels.delete(uid); zicht.delete(uid); getekend.delete(uid); }
+  const d = b.pdf; b.pdf = null; b.bytes = null; b.lib = null;
+  try { d && d.destroy(); } catch {}
+  if (b.pdfP) b.pdfP.then(x => { try { x && x.destroy(); } catch {} }, () => {});
+}
+
+/* ---------- Openen ---------- */
+function isPdf(bytes) {
+  const n = Math.min(bytes.length, 1024);
+  for (let i = 0; i + 4 < n; i++) if (bytes[i] === 0x25 && bytes[i + 1] === 0x50 && bytes[i + 2] === 0x44 && bytes[i + 3] === 0x46 && bytes[i + 4] === 0x2d) return true;
+  return false;
+}
+function leesBestand(f, voortgang) {
+  return new Promise((ok, nok) => {
+    const r = new FileReader();
+    r.onprogress = e => { if (e.lengthComputable && e.total) voortgang(e.loaded / e.total * 0.6); };
+    r.onload = () => ok(r.result); r.onerror = () => nok(r.error || new Error('lezen'));
+    r.readAsArrayBuffer(f);
+  });
+}
+async function openBron(f, voortgang) {
+  if (f.size > MAX_BYTES) throw new Error('groot');
+  let buf; try { buf = await leesBestand(f, voortgang); } catch { throw new Error('lezen'); }
+  const bytes = new Uint8Array(buf);
+  if (!isPdf(bytes)) throw new Error('geen');
+  voortgang(0.65); await rust();
+  let lib;
+  try { lib = await window.PDFLib.PDFDocument.load(bytes, { updateMetadata: false }); }
+  catch (e) { throw new Error(/encrypt/i.test(String(e && e.message)) ? 'slot' : 'kapot'); }
+  if (lib.isEncrypted) throw new Error('slot');
+  const n = lib.getPageCount(); if (!n) throw new Error('leeg');
+  const dims = lib.getPages().map(pg => { const s = pg.getSize(); return [Math.abs(s.width) || 595, Math.abs(s.height) || 842, norm90(pg.getRotation().angle)]; });
+  const k = bronTel++, id = 'b' + bronTel;
+  const b = { id, naam: String(f.name || 'naamloos.pdf'), letter: letterVan(k), kleur: KLEUREN[k % KLEUREN.length], bytes, lib, dims, pdf: null, pdfP: null };
+  // De miniaturen: een kopie van de bytes, want de werker neemt ze over. Lukt dat niet, dan werkt de rest gewoon.
+  b.pdfP = PDFJS.getDocument({
+    data: bytes.slice(), worker: werker || undefined, isEvalSupported: false, enableXfa: false, verbosity: 0,
+    useSystemFonts: true, disableAutoFetch: true, disableStream: true, disableFontFace: false,
+  }).promise.then(d => { if (bronnen.has(id)) { b.pdf = d; return d; } try { d.destroy(); } catch {} return null; }, () => null);
+  bronnen.set(id, b);
+  voortgang(1);
+  return b;
+}
+const REDEN = {
+  geen: n => `${n} is geen pdf.`,
+  kapot: n => `${n} is beschadigd en kan niet gelezen worden.`,
+  slot: n => `${n} is beveiligd met een wachtwoord. Zo'n pdf kan je hier niet openen.`,
+  leeg: n => `${n} heeft geen pagina's.`,
+  groot: n => `${n} is te groot. Het mag hooguit 300 MB zijn.`,
+  lezen: n => `${n} kon niet gelezen worden. Probeer het nog eens.`,
+};
+async function voegToe(lijst) {
+  lijst = [...(lijst || [])]; if (!lijst.length || druk) return;
+  druk = true; sluitMenu(); verbergFouten();
+  const fouten = [], nieuw = [];
+  bezig.start(lijst.length === 1 ? `${lijst[0].name} openen` : `${lijst.length} bestanden openen`, '');
+  try {
+    try { await laadLibs(); }
+    catch { toonFouten(['De pdf-hulp kon niet laden. Ben je online? De eerste keer is er internet nodig, daarna niet meer.']); return; }
+    for (let i = 0; i < lijst.length; i++) {
+      const f = lijst[i];
+      const wat = lijst.length > 1 ? `Bestand ${i + 1} van ${lijst.length}` : '';
+      bezig.zet(`${f.name} openen`, wat, i / lijst.length);
+      try { nieuw.push(await openBron(f, x => bezig.zet(null, wat, (i + x) / lijst.length))); }
+      catch (e) { fouten.push((REDEN[e && e.message] || REDEN.kapot)(String(f.name || 'Dit bestand'))); }
+    }
+  } finally { bezig.stop(); druk = false; }
+  if (nieuw.length) {
+    const eerste = pages.length;
+    wijzig(() => { nieuw.forEach(b => b.dims.forEach((_, j) => pages.push({ uid: 'p' + (++uidTel), bron: b.id, index: j, rot: 0 }))); });
+    const n = nieuw.reduce((s, b) => s + b.dims.length, 0);
+    toast(nieuw.length === 1 ? `${nieuw[0].naam} geopend: ${aantal(n)}` : `${nieuw.length} bestanden geopend: ${aantal(n)}`);
+    if (eerste > 0) { const t = tegels.get(pages[eerste].uid); if (t) t.li.scrollIntoView({ block: 'nearest', behavior: zacht() }); }
+  }
+  if (fouten.length) toonFouten(fouten);
+}
+function toonFouten(lijst) {
+  $('fouten-lijst').replaceChildren(...lijst.map(t => { const li = document.createElement('li'); li.textContent = t; return li; }));
+  $('fouten').hidden = false; render();
+}
+function verbergFouten() { $('fouten').hidden = true; }
+$('fouten-weg').addEventListener('click', () => {
+  verbergFouten();
+  const f = [...document.querySelectorAll('[data-kies]')].find(x => x.offsetParent !== null); if (f) f.focus();
+});
+
+/* ---------- Tekenen: het raster ---------- */
+const tegels = new Map();      // uid -> tegel
+const zicht = new Set();       // uids in of bij beeld
+const getekend = new Set();    // uids met een miniatuur
+const MAX_GETEKEND = 90;
+const VINK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => {
+  es.forEach(e => { const u = e.target.dataset.uid; if (e.isIntersecting) zicht.add(u); else zicht.delete(u); });
+  plan();
+}, { rootMargin: '600px 0px' }) : null;
+
+function maakTegel(p) {
+  const b = bronnen.get(p.bron);
+  const li = document.createElement('li'); li.className = 'blad'; li.dataset.uid = p.uid;
+  const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'vel'; btn.tabIndex = -1;
+  btn.innerHTML = '<span class="vlak"><span class="papier"></span></span>'
+    + '<span class="blad-voet" aria-hidden="true"><span class="vink">' + VINK + '</span><span class="nr"></span><span class="letter"></span></span><span class="tip" aria-hidden="true"></span>';
+  li.appendChild(btn);
+  const t = { uid: p.uid, bron: p.bron, li, btn, papier: btn.querySelector('.papier'), nr: btn.querySelector('.nr'), letter: btn.querySelector('.letter'), tip: btn.querySelector('.tip'), klaar: false, rot: null, bezig: false, mis: false };
+  t.letter.textContent = b.letter;
+  t.letter.style.setProperty('--l-bg', b.kleur.bg); t.letter.style.setProperty('--l-fg', b.kleur.fg); if (b.kleur.rand) t.letter.style.setProperty('--l-rand', b.kleur.rand);
+  t.tip.textContent = `${b.naam}, pagina ${p.index + 1}`;
+  tegels.set(p.uid, t);
+  if (io) io.observe(li); else zicht.add(p.uid);
+  return t;
+}
+const VLAK = 0.82 / 1.07;   // verhouding van de binnenkant van het vlak (4 op 5 met 9% rand)
+function werkBij(t, p, i, n) {
+  const b = bronnen.get(p.bron), d = b.dims[p.index], totaal = (d[2] + p.rot) % 360;
+  const r = totaal % 180 ? d[1] / d[0] : d[0] / d[1];
+  const w = r < VLAK ? (r / VLAK * 100) : 100;
+  const sw = w.toFixed(2) + '%', ar = r.toFixed(4);
+  if (t.papier.style.width !== sw) t.papier.style.width = sw;
+  if (t.papier.style.aspectRatio !== ar) t.papier.style.aspectRatio = ar;
+  t.nr.textContent = String(i + 1);
+  const gekozen = sel.has(p.uid);
+  if (t.btn.getAttribute('aria-pressed') !== String(gekozen)) t.btn.setAttribute('aria-pressed', String(gekozen));
+  const lbl = `Pagina ${i + 1} van ${n}. Uit ${b.naam}, pagina ${p.index + 1}${p.rot ? `, ${p.rot} graden gedraaid` : ''}.`;
+  if (t.btn.getAttribute('aria-label') !== lbl) t.btn.setAttribute('aria-label', lbl);
+  const ti = p.uid === focusUid ? 0 : -1; if (t.btn.tabIndex !== ti) t.btn.tabIndex = ti;
+}
+function render() {
+  const heeft = pages.length > 0 || undo.length > 0;
+  $('leeg').hidden = heeft; $('vol').hidden = !heeft;
+  // de melding bij openen staat bij wat je ziet: onder je bestanden, of boven de plek om te beginnen
+  const fo = $('fouten');
+  if (heeft) { if (fo.previousElementSibling !== $('bronnen')) $('bronnen').after(fo); }
+  else if (fo.nextElementSibling !== $('dropzone')) $('dropzone').before(fo);
+  if (!pages.some(p => p.uid === focusUid)) focusUid = pages.length ? pages[0].uid : null;
+  const raster = $('raster'), kids = raster.children, n = pages.length;
+  pages.forEach((p, i) => {
+    const t = tegels.get(p.uid) || maakTegel(p);
+    if (kids[i] !== t.li) raster.insertBefore(t.li, kids[i] || null);
+    werkBij(t, p, i, n);
+  });
+  while (raster.children.length > n) { const li = raster.lastElementChild; li.remove(); zicht.delete(li.dataset.uid); }
+  $('leeg-raster').hidden = n > 0;
+  toonBronnen(); toonSelectie(); knoppen(); plan();
+}
+function toonBronnen() {
+  const tel = new Map(); pages.forEach(p => tel.set(p.bron, (tel.get(p.bron) || 0) + 1));
+  const lijst = [...bronnen.values()].filter(b => tel.has(b.id));
+  $('bronnen').hidden = !lijst.length;
+  $('bronnen').replaceChildren(...lijst.map(b => {
+    const li = document.createElement('li'); li.className = 'chip';
+    const l = document.createElement('span'); l.className = 'letter'; l.textContent = b.letter; l.setAttribute('aria-hidden', 'true');
+    l.style.setProperty('--l-bg', b.kleur.bg); l.style.setProperty('--l-fg', b.kleur.fg); if (b.kleur.rand) l.style.setProperty('--l-rand', b.kleur.rand);
+    const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = b.naam; nm.title = b.naam;
+    const c = document.createElement('span'); c.className = 'n'; c.textContent = aantal(tel.get(b.id));
+    const sr = document.createElement('span'); sr.className = 'sr-only'; sr.textContent = `Letter ${b.letter}: `;
+    const x = document.createElement('button'); x.type = 'button'; x.className = 'weg'; x.dataset.weg = b.id;
+    x.setAttribute('aria-label', `${b.naam} weghalen`); x.title = 'Weghalen';
+    x.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+    li.append(sr, l, nm, c, x);
+    return li;
+  }));
+  const nb = lijst.length;
+  $('telling').textContent = pages.length ? `${aantal(pages.length)}${nb > 1 ? ` uit ${nb} bestanden` : ''}` : 'Geen pagina\'s';
+}
+function toonSelectie() {
+  const n = sel.size, alles = n > 0 && n === pages.length;
+  tegels.forEach(t => { const g = sel.has(t.uid); if (t.btn.getAttribute('aria-pressed') !== String(g)) t.btn.setAttribute('aria-pressed', String(g)); });
+  $('alles-btn').textContent = alles ? 'Niets selecteren' : 'Alles selecteren';
+  $('alles-btn').hidden = !pages.length; $('menu-alles-t').textContent = alles ? 'Niets selecteren' : 'Alles selecteren';
+  const balk = $('selbalk'), was = !balk.hidden;
+  balk.hidden = n === 0;
+  document.body.classList.toggle('met-sel', n > 0);
+  if (n) {
+    $('sel-n').textContent = `${aantal(n)} geselecteerd`;
+    balk.querySelector('[data-sel="voren"]').disabled = !kanSchuiven(-1);
+    balk.querySelector('[data-sel="achter"]').disabled = !kanSchuiven(1);
+  }
+  if (was !== !balk.hidden) meetBalk();
+}
+function knoppen() {
+  $('terug-btn').disabled = !undo.length; $('weer-btn').disabled = !redo.length;
+  $('bewaar-btn').disabled = !pages.length; $('splits-btn').disabled = !pages.length;
+  document.querySelector('#menu [data-act="splits"]').disabled = !pages.length;
+  document.querySelector('#menu [data-act="alles"]').disabled = !pages.length;
+}
+const balkRO = 'ResizeObserver' in window ? new ResizeObserver(() => meetBalk()) : null;
+if (balkRO) balkRO.observe($('selbalk'));
+function meetBalk() { const b = $('selbalk'); document.documentElement.style.setProperty('--balk-h', (b.hidden ? 0 : Math.ceil(b.getBoundingClientRect().height)) + 'px'); }
+
+/* ---------- Miniaturen: lui, klein, en wat ver uit beeld is weer opruimen ---------- */
+let planT = 0, tekenend = 0;
+function plan() { if (planT) return; planT = setTimeout(() => { planT = 0; pomp(); }, 30); }
+function nodig(p) { const t = tegels.get(p.uid); return t && !t.bezig && !t.mis && (!t.klaar || t.rot !== p.rot); }
+function pomp() {
+  while (tekenend < 2) {
+    const p = pages.find(x => zicht.has(x.uid) && nodig(x)); if (!p) break;
+    tekenend++;
+    teken(p).finally(() => { tekenend--; plan(); });
+  }
+  if (getekend.size > MAX_GETEKEND) {
+    for (const uid of getekend) {
+      if (getekend.size <= MAX_GETEKEND * 0.8) break;
+      if (zicht.has(uid)) continue;
+      const t = tegels.get(uid); if (!t || t.bezig) continue;
+      const c = t.papier.querySelector('canvas'); if (c) { c.width = 0; c.height = 0; c.remove(); }
+      t.klaar = false; t.rot = null; t.papier.classList.remove('klaar'); getekend.delete(uid);
+    }
+  }
+}
+async function teken(p) {
+  const t = tegels.get(p.uid), b = bronnen.get(p.bron); if (!t || !b) return;
+  t.bezig = true;
+  try {
+    const doc = await b.pdfP;
+    if (!doc || !tegels.has(p.uid)) { if (!doc) geenVoorbeeld(t); return; }
+    const page = await doc.getPage(p.index + 1);
+    // Juiste verhouding volgens de pagina zelf (wat je ziet), ook als die afwijkt van wat het bestand opgeeft
+    const v = page.view, d = b.dims[p.index];
+    const vw = Math.abs(v[2] - v[0]), vh = Math.abs(v[3] - v[1]);
+    if (vw && vh && (Math.abs(vw - d[0]) > 0.5 || Math.abs(vh - d[1]) > 0.5 || norm90(page.rotate) !== d[2])) { b.dims[p.index] = [vw, vh, d[2]]; render(); }
+    const rot = (norm90(page.rotate) + p.rot) % 360;
+    const vp1 = page.getViewport({ scale: 1, rotation: rot });
+    const breed = Math.max(80, t.papier.getBoundingClientRect().width || 150);
+    const schaal = Math.min(2, breed * Math.min(window.devicePixelRatio || 1, 1.5) / vp1.width);
+    const vp = page.getViewport({ scale: schaal, rotation: rot });
+    const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(vp.width)); c.height = Math.max(1, Math.ceil(vp.height));
+    const ctx = c.getContext('2d', { alpha: false }); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    try { page.cleanup(); } catch {}
+    if (!tegels.has(p.uid)) return;
+    const oud = t.papier.querySelector('canvas'); if (oud) { oud.width = 0; oud.remove(); }
+    c.setAttribute('aria-hidden', 'true');
+    t.papier.appendChild(c); t.papier.classList.add('klaar');
+    t.klaar = true; t.rot = p.rot; getekend.add(p.uid);
+  } catch { geenVoorbeeld(t); }
+  finally { t.bezig = false; }
+}
+function geenVoorbeeld(t) {
+  t.mis = true; t.papier.classList.add('klaar');
+  if (!t.papier.querySelector('.geen')) { const s = document.createElement('span'); s.className = 'geen'; s.textContent = 'Geen voorbeeld'; t.papier.appendChild(s); }
+}
+
+/* ---------- Selecteren ---------- */
+function kies(uid, metShift) {
+  if (metShift && anker && idx(anker) >= 0) {
+    const a = idx(anker), b = idx(uid), [x, y] = a < b ? [a, b] : [b, a];
+    for (let i = x; i <= y; i++) sel.add(pages[i].uid);
+  } else { if (sel.has(uid)) sel.delete(uid); else sel.add(uid); anker = uid; }
+  zetFocus(uid, false); toonSelectie();
+}
+function allesOfNiets() {
+  if (sel.size && sel.size === pages.length) sel.clear(); else pages.forEach(p => sel.add(p.uid));
+  toonSelectie();
+}
+function nietsMeer() { if (!sel.size) return false; sel.clear(); toonSelectie(); return true; }
+function zetFocus(uid, echt = true) {
+  const vorig = tegels.get(focusUid); if (vorig) vorig.btn.tabIndex = -1;
+  focusUid = uid; const t = tegels.get(uid); if (!t) return;
+  t.btn.tabIndex = 0; if (echt) { t.btn.focus({ preventScroll: true }); t.li.scrollIntoView({ block: 'nearest' }); }
+}
+
+/* ---------- Acties op de selectie ---------- */
+const live = document.createElement('p'); live.className = 'sr-only'; live.setAttribute('aria-live', 'polite'); document.body.appendChild(live);
+function meld(t) { live.textContent = ''; setTimeout(() => { live.textContent = t; }, 30); }
+function kanSchuiven(d) {
+  if (!sel.size) return false;
+  if (d < 0) { for (let i = 1; i < pages.length; i++) if (sel.has(pages[i].uid) && !sel.has(pages[i - 1].uid)) return true; }
+  else { for (let i = 0; i < pages.length - 1; i++) if (sel.has(pages[i].uid) && !sel.has(pages[i + 1].uid)) return true; }
+  return false;
+}
+function schuif(d) {
+  if (!kanSchuiven(d)) return;
+  const p = pages.slice();
+  if (d < 0) { for (let i = 1; i < p.length; i++) if (sel.has(p[i].uid) && !sel.has(p[i - 1].uid)) [p[i - 1], p[i]] = [p[i], p[i - 1]]; }
+  else { for (let i = p.length - 2; i >= 0; i--) if (sel.has(p[i].uid) && !sel.has(p[i + 1].uid)) [p[i], p[i + 1]] = [p[i + 1], p[i]]; }
+  wijzig(() => { pages = p; });
+  const eerste = pages.findIndex(x => sel.has(x.uid));
+  meld(sel.size === 1 ? `Verschoven naar plaats ${eerste + 1}` : `Verschoven, de selectie begint nu op plaats ${eerste + 1}`);
+  const f = sel.has(focusUid) ? focusUid : pages[eerste].uid; const t = tegels.get(f); if (t) t.li.scrollIntoView({ block: 'nearest' });
+}
+function draai(d) {
+  if (!sel.size) return;
+  wijzig(() => { pages = pages.map(p => sel.has(p.uid) ? { ...p, rot: (p.rot + d + 360) % 360 } : p); });
+  meld(sel.size === 1 ? 'Pagina gedraaid' : `${aantal(sel.size)} gedraaid`);
+}
+function verwijder() {
+  const n = sel.size; if (!n) return;
+  const plek = pages.findIndex(p => sel.has(p.uid));
+  wijzig(() => { pages = pages.filter(p => !sel.has(p.uid)); sel.clear(); });
+  if (pages.length) zetFocus(pages[Math.min(plek, pages.length - 1)].uid, document.activeElement === document.body || !document.activeElement || !!document.activeElement.closest('.selbalk, .raster'));
+  else $('terug-btn').focus();
+  toast(n === 1 ? 'Pagina verwijderd' : `${aantal(n)} verwijderd`, terugAls(versie));
+}
+function haalWeg(id) {
+  const b = bronnen.get(id); if (!b) return;
+  const naam = b.naam;
+  wijzig(() => { pages = pages.filter(p => p.bron !== id); [...sel].forEach(u => { if (!pages.some(p => p.uid === u)) sel.delete(u); }); });
+  toast(`${naam} weggehaald`, terugAls(versie));
+  const x = document.querySelector('#bronnen .weg') || document.querySelector('.kop-l [data-kies]'); if (x && pages.length) x.focus(); else if (!pages.length) $('terug-btn').focus();
+}
+async function leegmaken() {
+  if (!pages.length && !undo.length) return;
+  if (!await ocConfirm('Alles leegmaken?', 'Alle pagina\'s en bestanden gaan uit de Pdf-schaar. Je originele bestanden blijven zoals ze zijn.', 'Alles leegmaken')) return;
+  wisBuffer = { pages, undo, redo, sel: [...sel] };
+  pages = []; undo = []; redo = []; sel = new Set(); versie++; gewijzigd = false; ocSaves++;
+  $('fouten').hidden = true; render();
+  const v = versie;
+  toast('Alles leeggemaakt', () => {
+    if (versie !== v || !wisBuffer) { setTimeout(() => toast('Ongedaan maken kan niet meer: er is intussen iets veranderd'), 60); return; }
+    ({ pages, undo, redo } = wisBuffer); sel = new Set(wisBuffer.sel); wisBuffer = null; versie++; gewijzigd = true; render();
+  }, () => { wisBuffer = null; opruimen(); });   // daarna echt weg uit het geheugen
+  const k = document.querySelector('#leeg [data-kies]'); if (k) k.focus({ preventScroll: true });
+}
+
+/* ---------- Bewaren ---------- */
+async function maakPdf(lijst, voortgang) {
+  const { PDFDocument, degrees } = window.PDFLib;
+  const uit = await PDFDocument.create({ updateMetadata: false });
+  // per bestand de nodige pagina's in één keer kopiëren: gedeelde letters en beelden komen er zo maar één keer in
+  const perBron = new Map();
+  lijst.forEach(p => { if (!perBron.has(p.bron)) perBron.set(p.bron, []); perBron.get(p.bron).push(p.index); });
+  const kopie = new Map(); let klaar = 0;
+  for (const [id, idxs] of perBron) {
+    const b = bronnen.get(id); if (!b || !b.lib) throw new Error('weg');
+    const uniek = [...new Set(idxs)];
+    const pgs = await uit.copyPages(b.lib, uniek);
+    uniek.forEach((ix, j) => kopie.set(id + ':' + ix, pgs[j]));
+    klaar += idxs.length; voortgang && voortgang(0.1 + 0.6 * klaar / lijst.length); await rust();
+  }
+  const gebruikt = new Set();
+  for (const p of lijst) {
+    const sleutel = p.bron + ':' + p.index;
+    let pg = kopie.get(sleutel);
+    if (gebruikt.has(sleutel)) pg = (await uit.copyPages(bronnen.get(p.bron).lib, [p.index]))[0];   // dezelfde pagina twee keer
+    gebruikt.add(sleutel);
+    pg.setRotation(degrees((bronnen.get(p.bron).dims[p.index][2] + p.rot) % 360));
+    uit.addPage(pg);
+  }
+  uit.setProducer('Onder Constructie'); uit.setCreator('Pdf-schaar');
+  const nu = new Date(); uit.setCreationDate(nu); uit.setModificationDate(nu);
+  voortgang && voortgang(0.75); await rust();
+  const bytes = await uit.save({ objectsPerTick: 40 });
+  voortgang && voortgang(1);
+  return bytes;
+}
+function geefBestand(bytes, naam) {
+  const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+  const a = document.createElement('a'); a.href = url; a.download = naam;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+function schoon(s, terug) {
+  let t = String(s || '').normalize('NFC').replace(/\.pdf\s*$/i, '').replace(/[\\/:*?"<>|\u0000-\u001f\u007f]+/g, '-').replace(/\s+/g, ' ').replace(/^[\s.]+|[\s.]+$/g, '').slice(0, 100).trim();
+  return (t || terug || 'document') + '.pdf';
+}
+function basisNaam(lijst) {
+  const ids = [...new Set(lijst.map(p => p.bron))];
+  return ids.length === 1 ? stam(bronnen.get(ids[0]).naam) : 'samengevoegd';
+}
+const standaardNaam = () => { const ids = new Set(pages.map(p => p.bron)); return ids.size === 1 ? basisNaam(pages) + '-bewerkt' : 'samengevoegd'; };
+let gekozenNaam = null, bewaarModus = 'alles', bewaarLijstNu = [];
+function openBewaar(modus) {
+  const lijst = modus === 'sel' ? selLijst() : pages.slice(); if (!lijst.length || druk) return;
+  bewaarModus = modus; bewaarLijstNu = lijst;
+  const nb = new Set(lijst.map(p => p.bron)).size;
+  $('bewaar-h').textContent = modus === 'sel' ? 'Bewaar je selectie als nieuwe pdf' : 'Bewaar als pdf';
+  $('bewaar-intro').textContent = `${aantal(lijst.length)}${nb > 1 ? ` uit ${nb} bestanden` : ''}, in de volgorde van het raster.`;
+  $('bewaar-naam').value = modus === 'sel' ? basisNaam(lijst) + '-selectie' : (gekozenNaam && gekozenNaam.basis === standaardNaam() ? gekozenNaam.naam : standaardNaam());
+  openV('bewaar-v', $('bewaar-naam'));
+  try { $('bewaar-naam').select(); } catch {}
+}
+$('bewaar-f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const lijst = bewaarLijstNu, modus = bewaarModus;
+  const naam = schoon($('bewaar-naam').value, modus === 'sel' ? 'selectie' : standaardNaam());
+  if (modus === 'alles') gekozenNaam = { basis: standaardNaam(), naam: naam.replace(/\.pdf$/, '') };
+  sluitV();
+  await bewaar(lijst, naam, modus === 'alles');
+});
+async function bewaar(lijst, naam, alles) {
+  if (druk) return false;
+  druk = true;
+  bezig.start(`${naam} maken`, aantal(lijst.length));
+  try {
+    await laadLibs();
+    const bytes = await maakPdf(lijst, x => bezig.zet(null, aantal(lijst.length), x));
+    geefBestand(bytes, naam);
+    if (alles) gewijzigd = false;
+    bezig.stop(); toast(`Bewaard als ${naam}`);
+    return true;
+  } catch {
+    bezig.stop(); toast('Bewaren lukte niet. Probeer het nog eens, of met minder pagina\'s.');
+    return false;
+  } finally { druk = false; }
+}
+
+/* ---------- Splitsen ---------- */
+let delenNu = [];
+function reeksen(s, max) {
+  const t = String(s || '').trim();
+  if (!t) return { fout: 'Typ een of meer reeksen, bv. 1-3, 5, 8-10.' };
+  const uit = [];
+  for (const stuk of t.split(/[,;]+/)) {
+    const x = stuk.trim(); if (!x) continue;
+    const m = x.match(/^(\d{1,6})\s*(?:-|–|—|tot)\s*(\d{1,6})$/i) || x.match(/^(\d{1,6})$/);
+    if (!m) return { fout: `"${x}" begrijp ik niet. Schrijf bv. 1-3, 5, 8-10.` };
+    const a = +m[1], b = m[2] ? +m[2] : a;
+    if (a < 1 || b < 1) return { fout: 'Pagina 0 bestaat niet. De eerste pagina is 1.' };
+    if (a > max || b > max) return { fout: `Pagina ${Math.max(a, b)} bestaat niet. Je hebt ${aantal(max)}.` };
+    if (b < a) return { fout: `"${x}" loopt achteruit. Schrijf ${b}-${a}.` };
+    const r = []; for (let i = a; i <= b; i++) r.push(i - 1);
+    uit.push({ r, a, b });
+  }
+  if (!uit.length) return { fout: 'Typ een of meer reeksen, bv. 1-3, 5, 8-10.' };
+  return { delen: uit };
+}
+const manierNu = () => (document.querySelector('#splits-f input[name="manier"]:checked') || {}).value || 'pagina';
+function splitsPlan() {
+  const m = manierNu(), n = pages.length, plan = [];
+  if (m === 'pagina') pages.forEach((_, i) => plan.push({ r: [i], a: i + 1, b: i + 1 }));
+  else if (m === 'aantal') {
+    const k = Number($('m-n').value);
+    if (!Number.isInteger(k) || k < 1) return { fout: 'Kies een aantal van 1 of meer.' };
+    for (let i = 0; i < n; i += k) { const r = []; for (let j = i; j < Math.min(n, i + k); j++) r.push(j); plan.push({ r, a: i + 1, b: i + r.length }); }
+  } else { const x = reeksen($('m-reeks').value, n); if (x.fout) return x; plan.push(...x.delen); }
+  return { delen: plan };
+}
+function toonPlan(nadruk) {
+  const m = manierNu(), x = splitsPlan(), uitk = $('splits-uit');
+  $('m-aantal-in').hidden = m !== 'aantal'; $('m-reeks-in').hidden = m !== 'reeks';
+  const reeksFout = m === 'reeks' && x.fout, getalFout = m === 'aantal' && x.fout;
+  const leegReeks = m === 'reeks' && !$('m-reeks').value.trim();
+  $('m-reeks').classList.toggle('fout', !!reeksFout && (nadruk || !leegReeks)); $('m-reeks').setAttribute('aria-invalid', String(!!reeksFout && (nadruk || !leegReeks)));
+  $('m-n').classList.toggle('fout', !!getalFout); $('m-n').setAttribute('aria-invalid', String(!!getalFout));
+  if (x.fout && (nadruk || !leegReeks)) { uitk.textContent = x.fout; uitk.classList.add('fout'); }
+  else if (x.fout) { uitk.textContent = 'Typ de reeksen die je wil, gescheiden door een komma.'; uitk.classList.remove('fout'); }
+  else { uitk.textContent = x.delen.length === 1 ? 'Je krijgt 1 bestand.' : `Je krijgt ${x.delen.length} bestanden.`; uitk.classList.remove('fout'); }
+  return x;
+}
+function openSplits() {
+  if (!pages.length || druk) return;
+  sluitMenu();
+  const inst = leesInst();
+  document.querySelectorAll('#splits-f input[name="manier"]').forEach(r => { r.checked = r.value === inst.manier; });
+  $('m-n').value = String(Math.min(inst.n, Math.max(1, pages.length))); $('m-n').max = String(pages.length);
+  $('splits-intro').textContent = `Maak van je ${aantal(pages.length)} meer kleinere pdf's. Elk stuk wordt een eigen bestand. Je originele bestanden blijven zoals ze zijn.`;
+  $('m-pagina-s').textContent = `Je krijgt ${pages.length === 1 ? '1 bestand' : pages.length + ' bestanden'} van één pagina.`;
+  $('splits-stap1').hidden = false; $('splits-stap2').hidden = true;
+  toonPlan(false);
+  openV('splits-v', document.querySelector('#splits-f input[name="manier"]:checked'));
+}
+$('splits-f').addEventListener('change', e => { if (e.target.name === 'manier') { toonPlan(false); if (e.target.value === 'reeks') $('m-reeks').focus(); } });
+$('splits-f').addEventListener('input', () => toonPlan(false));
+$('splits-f').addEventListener('click', e => {
+  const s = e.target.closest('[data-stap]'); if (!s) return;
+  e.preventDefault();
+  const v = Math.min(Math.max(1, pages.length), Math.max(1, (parseInt($('m-n').value, 10) || 1) + Number(s.dataset.stap)));
+  $('m-n').value = String(v); toonPlan(false);
+});
+$('splits-f').addEventListener('submit', e => {
+  e.preventDefault();
+  const x = toonPlan(true), m = manierNu();
+  if (x.fout) { (m === 'reeks' ? $('m-reeks') : $('m-n')).focus(); return; }
+  bewaarInst({ manier: m, n: parseInt($('m-n').value, 10) || 2 });
+  const basis = basisNaam(pages), breed = String(pages.length).length, pad = k => String(k).padStart(breed, '0');
+  const namen = new Map();
+  delenNu = x.delen.map((d, k) => {
+    let naam = m === 'pagina' ? `${basis}-pagina-${pad(d.a)}` : m === 'aantal' ? `${basis}-deel-${String(k + 1).padStart(String(x.delen.length).length, '0')}` : d.a === d.b ? `${basis}-pagina-${d.a}` : `${basis}-${d.a}-${d.b}`;
+    const al = namen.get(naam) || 0; namen.set(naam, al + 1); if (al) naam += ` (${al + 1})`;
+    return { naam: schoon(naam), lijst: d.r.map(i => pages[i]), a: d.a, b: d.b };
+  });
+  const ul = $('delen');
+  ul.replaceChildren(...delenNu.map((d, k) => {
+    const li = document.createElement('li'); li.className = 'deel';
+    const t = document.createElement('span'); t.className = 'd-t';
+    const n = document.createElement('span'); n.className = 'd-n'; n.textContent = d.naam;
+    const p = document.createElement('span'); p.className = 'd-p'; p.textContent = d.a === d.b ? `Pagina ${d.a}` : `Pagina ${d.a} tot ${d.b} (${aantal(d.lijst.length)})`;
+    t.append(n, p);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn'; b.dataset.deel = String(k);
+    b.setAttribute('aria-label', `Download ${d.naam}`);
+    b.innerHTML = DL_ICO + '<span>Download</span>';
+    li.append(t, b); return li;
+  }));
+  $('splits-klaar').textContent = delenNu.length === 1 ? 'Klaar: 1 bestand. Download het hieronder.' : `Klaar: ${delenNu.length} bestanden. Download ze een voor een.`;
+  $('splits-stap1').hidden = true; $('splits-stap2').hidden = false;
+  $('splits-klaar').focus();
+});
+const DL_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>';
+const OK_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+$('delen').addEventListener('click', async e => {
+  const b = e.target.closest('[data-deel]'); if (!b || b.disabled || druk) return;
+  const d = delenNu[+b.dataset.deel]; if (!d) return;
+  b.disabled = true; b.querySelector('span').textContent = 'Even geduld';
+  druk = true;
+  try {
+    await laadLibs();
+    const bytes = await maakPdf(d.lijst);
+    geefBestand(bytes, d.naam);
+    b.classList.add('gedaan'); b.innerHTML = OK_ICO + '<span>Gedownload</span>'; b.setAttribute('aria-label', `${d.naam} is gedownload. Nog eens downloaden`);
+  } catch {
+    b.innerHTML = DL_ICO + '<span>Download</span>'; toast('Dit stuk maken lukte niet. Probeer het nog eens.');
+  } finally { b.disabled = false; druk = false; }
+});
+$('splits-terug').addEventListener('click', () => { $('splits-stap2').hidden = true; $('splits-stap1').hidden = false; toonPlan(false); const r = document.querySelector('#splits-f input[name="manier"]:checked'); r && r.focus(); });
+
+/* ---------- Vensters ---------- */
+let venster = null, terugFocus = null;
+function openV(id, focusEl) {
+  sluitMenu();
+  const v = $(id); terugFocus = document.activeElement; v.hidden = false; venster = v;
+  const f = focusEl || v.querySelector('input, button'); if (f) f.focus();
+}
+function sluitV() {
+  if (!venster) return; venster.hidden = true; venster = null;
+  if (terugFocus && terugFocus.isConnected && terugFocus.offsetParent !== null) terugFocus.focus(); terugFocus = null;
+}
+document.querySelectorAll('.venster-achter').forEach(v => {
+  v.addEventListener('click', e => { if (e.target === v || e.target.closest('[data-sluit]')) { e.preventDefault(); sluitV(); } });
+});
+document.addEventListener('keydown', e => {
+  if (!venster || document.querySelector('.ocw-back')) return;
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); sluitV(); return; }
+  if (e.key === 'Tab') {
+    const f = [...venster.querySelectorAll('button, input, a[href], [tabindex="0"]')].filter(x => !x.disabled && x.offsetParent !== null && !(x.type === 'radio' && !x.checked));
+    if (!f.length) return;
+    const i = f.indexOf(document.activeElement);
+    if (e.shiftKey && (i <= 0)) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && (i === f.length - 1 || i < 0)) { e.preventDefault(); f[0].focus(); }
+  }
+}, true);
+
+/* ---------- Bezig (voortgang) ---------- */
+const bezig = (() => {
+  let t = null, detail = '';
+  return {
+    start(titel, d) { $('bezig-t').textContent = titel; detail = d || ''; $('bezig-d').textContent = detail; $('bezig-balk').style.width = '0%'; clearTimeout(t); t = setTimeout(() => { $('bezig').hidden = false; }, 250); },
+    zet(titel, d, x) {
+      if (titel != null) $('bezig-t').textContent = titel;
+      if (d != null) detail = d;
+      const pct = x == null ? null : Math.round(Math.max(0, Math.min(1, x)) * 100);
+      if (pct != null) $('bezig-balk').style.width = pct + '%';
+      $('bezig-d').textContent = [detail, pct != null ? pct + '%' : ''].filter(Boolean).join(' · ');
+    },
+    stop() { clearTimeout(t); $('bezig').hidden = true; },
+  };
+})();
+
+/* ---------- Melding met ongedaan maken ---------- */
+let undoFn = null, eindFn = null, toastTimer = null;
+function toast(msg, undo, eind) {
+  const vorig = eindFn; eindFn = null; if (vorig) vorig();
+  undoFn = undo || null; eindFn = eind || null;
+  $('toast-text').textContent = msg;
+  $('toast-btn').hidden = !undo;
+  $('toast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { $('toast').classList.remove('show'); undoFn = null; const f = eindFn; eindFn = null; if (f) f(); }, undo ? 6000 : (msg.length > 60 ? 4500 : 2600));
+}
+$('toast-btn').addEventListener('click', () => {
+  const f = undoFn; undoFn = null; eindFn = null;
+  $('toast').classList.remove('show');
+  if (f) f();
+});
+
+/* ---------- Menu ---------- */
+function sluitMenu(focus) { $('menu').classList.remove('open'); $('menu-btn').setAttribute('aria-expanded', 'false'); if (focus) $('menu-btn').focus(); }
+const menuItems = () => [...$('menu').querySelectorAll('[role="menuitem"]')].filter(b => !b.hidden && !b.disabled);
+$('menu-btn').addEventListener('click', e => {
+  e.stopPropagation();
+  const open = !$('menu').classList.contains('open');
+  $('menu').classList.toggle('open', open); $('menu-btn').setAttribute('aria-expanded', String(open));
+  if (open && e.detail === 0) { const f = menuItems()[0]; f && f.focus(); }
+});
+document.addEventListener('click', e => { if (!e.target.closest('.menu-wrap')) sluitMenu(); });
+$('menu').addEventListener('keydown', e => {
+  const l = menuItems(), i = l.indexOf(document.activeElement);
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); const n = l[(i + (e.key === 'ArrowDown' ? 1 : -1) + l.length) % l.length]; n && n.focus(); }
+  if (e.key === 'Tab') sluitMenu();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('menu').classList.contains('open')) { e.preventDefault(); sluitMenu($('menu').contains(document.activeElement)); } });
+$('menu').addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  sluitMenu();
+  if (b.dataset.act === 'alles') allesOfNiets();
+  if (b.dataset.act === 'splits') openSplits();
+  if (b.dataset.act === 'wipe') leegmaken();
+});
+
+/* ---------- Knoppen ---------- */
+document.addEventListener('click', e => { const k = e.target.closest('[data-kies]'); if (!k || druk) return; sluitMenu(); $('kies-in').value = ''; $('kies-in').click(); });
+$('kies-in').addEventListener('change', () => { const f = [...($('kies-in').files || [])]; $('kies-in').value = ''; voegToe(f); });
+$('bewaar-btn').addEventListener('click', () => openBewaar('alles'));
+$('splits-btn').addEventListener('click', openSplits);
+$('terug-btn').addEventListener('click', () => { stapTerug(); });
+$('weer-btn').addEventListener('click', () => { stapVooruit(); });
+$('alles-btn').addEventListener('click', allesOfNiets);
+['sel-geen', 'sel-x'].forEach(id => $(id).addEventListener('click', () => { nietsMeer(); const t = tegels.get(focusUid); if (t) t.btn.focus({ preventScroll: true }); }));
+$('bronnen').addEventListener('click', e => { const x = e.target.closest('[data-weg]'); if (x) haalWeg(x.dataset.weg); });
+$('selbalk').addEventListener('click', e => {
+  const b = e.target.closest('[data-sel]'); if (!b || b.disabled) return;
+  ({ links: () => draai(-90), rechts: () => draai(90), voren: () => schuif(-1), achter: () => schuif(1), bewaar: () => openBewaar('sel'), weg: verwijder })[b.dataset.sel]();
+  if (b.disabled && b.isConnected) { const ander = b.dataset.sel === 'voren' ? '[data-sel="achter"]' : '[data-sel="voren"]'; const a = $('selbalk').querySelector(ander); if (a && !a.disabled) a.focus(); }
+});
+
+/* ---------- Raster: klikken en toetsen ---------- */
+let geenKlik = false;
+$('raster').addEventListener('click', e => {
+  const v = e.target.closest('.vel'); if (!v) return;
+  if (geenKlik) { geenKlik = false; e.preventDefault(); return; }
+  kies(v.closest('.blad').dataset.uid, e.shiftKey);
+});
+$('raster').addEventListener('contextmenu', e => { if (e.target.closest('.vel') && (druk2 || sleep)) e.preventDefault(); });
+$('raster').addEventListener('focusin', e => { const v = e.target.closest('.vel'); if (v) zetFocus(v.closest('.blad').dataset.uid, false); });
+function kolommen() { const s = getComputedStyle($('raster')).gridTemplateColumns; return Math.max(1, s.split(' ').filter(Boolean).length); }
+$('raster').addEventListener('keydown', e => {
+  const v = e.target.closest('.vel'); if (!v || e.altKey) return;
+  const uid = v.closest('.blad').dataset.uid, i = idx(uid), n = pages.length, k = kolommen();
+  const naar = { ArrowRight: i + 1, ArrowLeft: i - 1, ArrowDown: i + k, ArrowUp: i - k, Home: 0, End: n - 1 }[e.key];
+  if (naar != null && !e.ctrlKey && !e.metaKey) {
+    e.preventDefault();
+    const j = Math.max(0, Math.min(n - 1, naar)); if (j === i) return;
+    zetFocus(pages[j].uid);
+    if (e.shiftKey) { sel.add(uid); sel.add(pages[j].uid); anker = anker || uid; toonSelectie(); }
+    return;
+  }
+  if ((e.key === ' ' || e.key === 'Enter') && e.shiftKey) { e.preventDefault(); kies(uid, true); return; }
+  if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); if (!sel.size) { sel.add(uid); } verwijder(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') { e.preventDefault(); pages.forEach(p => sel.add(p.uid)); toonSelectie(); }
+});
+
+/* ---------- Herschikken door te slepen: muis meteen, aanraking na even vasthouden ---------- */
+let druk2 = null, sleep = null, scrollRaf = 0;
+$('raster').addEventListener('pointerdown', e => {
+  const v = e.target.closest('.vel'); if (!v || e.button > 0 || venster || sleep) return;
+  druk2 = { uid: v.closest('.blad').dataset.uid, x: e.clientX, y: e.clientY, id: e.pointerId, aanraking: e.pointerType !== 'mouse', timer: 0 };
+  if (druk2.aanraking) druk2.timer = setTimeout(() => { if (druk2 && !sleep) startSleep(); }, 380);
+});
+addEventListener('pointermove', e => {
+  if (!druk2 || e.pointerId !== druk2.id) return;
+  if (sleep) { if (!sleep.aanraking) beweeg(e.clientX, e.clientY); return; }
+  const d = Math.hypot(e.clientX - druk2.x, e.clientY - druk2.y);
+  if (druk2.aanraking) { if (d > 10) { clearTimeout(druk2.timer); druk2 = null; } return; }
+  if (d > 6) { startSleep(); beweeg(e.clientX, e.clientY); }
+}, { passive: true });
+addEventListener('pointerup', e => {
+  if (!druk2 || e.pointerId !== druk2.id) return;
+  clearTimeout(druk2.timer);
+  if (sleep && !sleep.aanraking) { geenKlik = true; setTimeout(() => { geenKlik = false; }, 0); laatLos(); }
+  if (!sleep) druk2 = null;
+});
+addEventListener('pointercancel', e => {
+  if (!druk2 || e.pointerId !== druk2.id) return;
+  clearTimeout(druk2.timer);
+  if (sleep && !sleep.aanraking) stopSleep();
+  if (!sleep) druk2 = null;
+});
+// Aanraking: tijdens het slepen scrolt de pagina niet mee (behalve aan de rand, dat doen we zelf)
+document.addEventListener('touchmove', e => {
+  if (!sleep || !sleep.aanraking) return;
+  e.preventDefault();
+  const t = e.touches[0]; if (t) beweeg(t.clientX, t.clientY);
+}, { passive: false });
+document.addEventListener('touchend', e => {
+  if (!sleep || !sleep.aanraking) return;
+  e.preventDefault();
+  if (!sleep.bewogen) { const uid = sleep.uid; stopSleep(); druk2 = null; kies(uid, false); return; }   // even vasthouden en loslaten = selecteren
+  laatLos(); druk2 = null;
+}, { passive: false });
+document.addEventListener('touchcancel', () => { if (sleep && sleep.aanraking) { stopSleep(); druk2 = null; } });
+
+function startSleep() {
+  if (!druk2) return;
+  const uid = druk2.uid;
+  const mee = sel.has(uid) ? pages.filter(p => sel.has(p.uid)).map(p => p.uid) : [uid];
+  sleep = { uid, mee: new Set(mee), aanraking: druk2.aanraking, x0: druk2.x, y0: druk2.y, bewogen: false, doel: null, x: druk2.x, y: druk2.y };
+  mee.forEach(u => { const t = tegels.get(u); if (t) t.li.classList.add('weg-sleep'); });
+  const sp = document.createElement('div'); sp.className = 'spook'; sp.setAttribute('aria-hidden', 'true');
+  const bc = tegels.get(uid) && tegels.get(uid).papier.querySelector('canvas');
+  if (bc && bc.width) { const c = document.createElement('canvas'); c.width = bc.width; c.height = bc.height; c.getContext('2d').drawImage(bc, 0, 0); sp.appendChild(c); }
+  else { const l = document.createElement('div'); l.className = 'leeg-spook'; sp.appendChild(l); }
+  if (mee.length > 1) { const a = document.createElement('span'); a.className = 'aantal'; a.textContent = String(mee.length); sp.appendChild(a); }
+  document.body.appendChild(sp); sleep.spook = sp;
+  const ind = document.createElement('div'); ind.className = 'invoeg'; ind.hidden = true; $('vol').style.position = 'relative'; $('vol').appendChild(ind); sleep.ind = ind;
+  document.body.classList.add('sleept');
+  if (sleep.aanraking) { try { navigator.vibrate && navigator.vibrate(12); } catch {} }
+  beweeg(druk2.x, druk2.y);
+  rolLus();
+}
+function beweeg(x, y) {
+  if (!sleep) return;
+  sleep.x = x; sleep.y = y;
+  if (Math.hypot(x - sleep.x0, y - sleep.y0) > 10) sleep.bewogen = true;
+  sleep.spook.style.left = x + 'px'; sleep.spook.style.top = y + 'px';
+  zoekDoel();
+}
+function zoekDoel() {
+  const x = sleep.x, y = sleep.y;
+  const rest = pages.filter(p => !sleep.mee.has(p.uid));
+  if (!rest.length) { sleep.doel = 0; sleep.ind.hidden = true; return; }
+  const rij = rest.map(p => ({ p, r: tegels.get(p.uid).li.getBoundingClientRect() }));
+  // eerst de rij waarin de vinger zit, dan de dichtste tegel in die rij
+  let beste = null, bd = Infinity;
+  for (const o of rij) {
+    const dy = y < o.r.top ? o.r.top - y : y > o.r.bottom ? y - o.r.bottom : 0;
+    const dx = x < o.r.left ? o.r.left - x : x > o.r.right ? x - o.r.right : 0;
+    const d = dy * 4 + dx;
+    if (d < bd) { bd = d; beste = o; }
+  }
+  const na = x > beste.r.left + beste.r.width / 2;
+  const k = rest.indexOf(beste.p) + (na ? 1 : 0);
+  sleep.doel = k;
+  const vr = $('vol').getBoundingClientRect(), gap = parseFloat(getComputedStyle($('raster')).columnGap) || 12;
+  const lx = (na ? beste.r.right + gap / 2 : beste.r.left - gap / 2) - vr.left - 2;
+  Object.assign(sleep.ind.style, { left: lx + 'px', top: (beste.r.top - vr.top) + 'px', height: beste.r.height + 'px' });
+  sleep.ind.hidden = false;
+}
+function rolLus() {
+  cancelAnimationFrame(scrollRaf);
+  const stap = () => {
+    if (!sleep) return;
+    const boven = 90, onder = innerHeight - 90 - (document.body.classList.contains('met-sel') ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--balk-h')) || 0 : 0);
+    let v = 0;
+    if (sleep.y < boven) v = -Math.ceil((boven - sleep.y) / 6);
+    else if (sleep.y > onder) v = Math.ceil((sleep.y - onder) / 6);
+    if (v) { scrollBy(0, Math.max(-24, Math.min(24, v))); zoekDoel(); }
+    scrollRaf = requestAnimationFrame(stap);
+  };
+  scrollRaf = requestAnimationFrame(stap);
+}
+function laatLos() {
+  if (!sleep) return;
+  const s = sleep; stopSleep();
+  if (s.doel == null || !s.bewogen) return;
+  const rest = pages.filter(p => !s.mee.has(p.uid)), mee = pages.filter(p => s.mee.has(p.uid));
+  const nieuw = [...rest.slice(0, s.doel), ...mee, ...rest.slice(s.doel)];
+  if (nieuw.every((p, i) => p === pages[i])) return;
+  wijzig(() => { pages = nieuw; });
+  const plek = pages.findIndex(p => s.mee.has(p.uid)) + 1;
+  meld(mee.length === 1 ? `Verschoven naar plaats ${plek}` : `${aantal(mee.length)} verschoven naar plaats ${plek}`);
+}
+function stopSleep() {
+  if (!sleep) return;
+  cancelAnimationFrame(scrollRaf);
+  sleep.mee.forEach(u => { const t = tegels.get(u); if (t) t.li.classList.remove('weg-sleep'); });
+  sleep.spook.remove(); sleep.ind.remove();
+  document.body.classList.remove('sleept');
+  sleep = null;
+}
+
+/* ---------- Bestanden op de pagina slepen ---------- */
+let sleepTel = 0;
+const metBestanden = e => !!(e.dataTransfer && [...(e.dataTransfer.types || [])].includes('Files'));
+addEventListener('dragenter', e => { if (!metBestanden(e)) return; e.preventDefault(); sleepTel++; if (!venster && !druk) document.body.classList.add('sleept-bestand'); });
+addEventListener('dragover', e => { if (!metBestanden(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = venster || druk ? 'none' : 'copy'; });
+addEventListener('dragleave', e => { if (!metBestanden(e)) return; if (--sleepTel <= 0) { sleepTel = 0; document.body.classList.remove('sleept-bestand'); } });
+addEventListener('drop', e => {
+  if (!metBestanden(e)) return;
+  e.preventDefault(); sleepTel = 0; document.body.classList.remove('sleept-bestand');
+  if (venster || druk || document.querySelector('.ocw-back')) return;
+  voegToe(e.dataTransfer.files);
+});
+
+/* ---------- Toetsen voor de hele pagina ---------- */
+const typt = a => a && (a.isContentEditable || /^(TEXTAREA|SELECT)$/.test(a.tagName) || (a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|reset|range|file)$/i.test(a.type)));
+document.addEventListener('keydown', e => {
+  if (e.defaultPrevented || venster || document.querySelector('.ocw-back')) return;
+  if (sleep && e.key === 'Escape') { e.preventDefault(); stopSleep(); druk2 = null; return; }
+  const z = String(e.key).toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && (z === 'z' || z === 'y') && !typt(document.activeElement)) {
+    const opnieuw = z === 'y' || e.shiftKey;
+    if (!opnieuw && !undo.length && undoFn && !$('toast-btn').hidden) { e.preventDefault(); $('toast-btn').click(); return; }   // bv. na Alles leegmaken
+    e.preventDefault(); if (opnieuw) stapVooruit(); else stapTerug();
+    return;
+  }
+  if (e.key === 'Escape' && sel.size && !$('menu').classList.contains('open')) { e.preventDefault(); nietsMeer(); }
+});
+addEventListener('beforeunload', e => { if (pages.length && gewijzigd) { e.preventDefault(); e.returnValue = ''; } });
+
+const zacht = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+render();
+</script>
+<script>
+/* oc-sync: reageert op "Wissen" in de app (ook in andere tabbladen) en geeft Esc door aan de app */
+(function () {
+  if (window.__ocSync) return; window.__ocSync = true;
+  var gewist = false;
+  function wis() {
+    if (gewist) return; gewist = true;
+    try { var orig = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k === 'oc.wis') return orig.call(this, k, v); }; } catch (e) {}
+    try { document.body.innerHTML = '<p role="status" style="font-family:\'DM Sans\',system-ui,sans-serif;padding:3rem 1.5rem;text-align:center;color:#475569;font-size:1.0625rem">Er is iets veranderd op dit toestel. Deze pagina laadt opnieuw…</p>'; } catch (e) {}
+    setTimeout(function () { location.reload(); }, 400);
+  }
+  try { var bc = new BroadcastChannel('oc-sync'); bc.onmessage = function (e) { if (e.data && e.data.type === 'wis') wis(); }; } catch (e) {}
+  addEventListener('storage', function (e) { if (e.key === 'oc.wis' || e.key === null) wis(); });
+  /* Gebruikerstest november 2026, voor alle tools:
+     Ctrl/Cmd+Z doet "Ongedaan" zolang die melding zichtbaar is (in een tekstveld doet de browser zijn eigen ongedaan);
+     een rij keuzeknoppen (role="radiogroup") is één Tab-stop, de pijltjes gaan naar een andere keuze, Spatie of Enter kiest;
+     een naamveld met data-oc-titel ziet eruit als een veld (potloodje, onderlijn bij aanwijzen of typen);
+     een naam getypt in een veld met data-oc-projectnaam wordt de projectnaam van de app, als die nog leeg is. */
+  var STANDAARD = /^((mijn|nieuwe?) )?(project|analyse|lijst|keuze|kaart|ideeënkaart|doelgroep|matrix|plan|groep|team|tabel|informatietabel|log|retro|sprint|scan|proces)( \d+)?$|^naamloos$|^hele organisatie$/i;
+  window.ocStandaardNaam = function (v) { v = String(v || '').trim(); return !v || STANDAARD.test(v); };
+  function typt(a) { return a && (a.isContentEditable || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || (a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|reset|range|color|file)$/i.test(a.type))); }
+  function zichtbaar(x) {
+    if (x.disabled || x.hidden || !x.getClientRects().length) return false;
+    for (var el = x; el && el.nodeType === 1; el = el.parentElement) { var cs = getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < 0.1) return false; }
+    var r = x.getBoundingClientRect(); return r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth;
+  }
+  addEventListener('keydown', function (e) {
+    if (e.defaultPrevented || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey || String(e.key).toLowerCase() !== 'z' || typt(document.activeElement)) return;
+    var b = [].filter.call(document.querySelectorAll('[role="status"] button, [aria-live] button'), function (x) { return /^\s*ongedaan/i.test(x.textContent) && zichtbaar(x); }).pop();
+    if (b) { e.preventDefault(); b.click(); }
+  });
+  function radios(g) { return [].filter.call(g.querySelectorAll('[role="radio"]'), function (x) { return x.closest('[role="radiogroup"]') === g; }); }
+  function bruikbaar(x) { return !x.disabled && x.getAttribute('aria-disabled') !== 'true' && x.getClientRects().length; }
+  // Kiezen met Spatie of Enter laat de tool vaak opnieuw tekenen: de focus blijft dan op de gekozen keuze.
+  var terug = null;
+  document.addEventListener('click', function (e) {
+    var x = e.detail === 0 && e.target && e.target.closest && e.target.closest('[role="radio"]'); if (!x || x.tagName === 'INPUT') return;
+    var s = [].map.call(x.attributes, function (a) { return a.name === 'id' || /^data-/.test(a.name) ? '[' + a.name + '="' + (window.CSS && CSS.escape ? CSS.escape(a.value) : a.value) + '"]' : ''; }).join('');
+    terug = s ? { s: '[role="radio"]' + s, t: Date.now() } : null;
+  }, true);
+  function roving() {
+    var a0 = document.activeElement;
+    if (terug && Date.now() - terug.t < 2000 && (!a0 || a0 === document.body)) { var y = document.querySelector(terug.s); if (y) try { y.focus({ preventScroll: true }); } catch (e) {} terug = null; }
+    [].forEach.call(document.querySelectorAll('[role="radiogroup"]'), function (g) {
+      var r = radios(g); if (!r.length || r.some(function (x) { return x.tagName === 'INPUT'; })) return;
+      var a = document.activeElement, keep = r.indexOf(a) >= 0 ? a : r.filter(function (x) { return x.getAttribute('aria-checked') === 'true' && bruikbaar(x); })[0] || r.filter(bruikbaar)[0] || r[0];
+      r.forEach(function (x) { var t = x === keep ? '0' : '-1'; if (x.getAttribute('tabindex') !== t) x.setAttribute('tabindex', t); });
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    var x = e.target, d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1, Home: -2, End: 2 }[e.key];
+    if (!d || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || !x.getAttribute || x.getAttribute('role') !== 'radio' || x.tagName === 'INPUT') return;
+    var g = x.closest('[role="radiogroup"]'); if (!g) return;
+    var r = radios(g).filter(bruikbaar), i = r.indexOf(x); if (i < 0) return;
+    var n = r[d === -2 ? 0 : d === 2 ? r.length - 1 : (i + d + r.length) % r.length];
+    e.preventDefault(); r.forEach(function (y) { y.setAttribute('tabindex', y === n ? '0' : '-1'); }); n.focus();
+  });
+  var meet = null;
+  function titels() {
+    [].forEach.call(document.querySelectorAll('input[data-oc-titel]'), function (el) {
+      if (!el.offsetParent) return;
+      var cs = getComputedStyle(el), t = el.value || el.placeholder || '';
+      if (!meet) { meet = document.createElement('span'); meet.setAttribute('aria-hidden', 'true'); meet.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;white-space:pre'; document.body.appendChild(meet); }
+      meet.style.font = cs.font; meet.style.letterSpacing = cs.letterSpacing; meet.textContent = t;
+      var w = meet.getBoundingClientRect().width;
+      var px = Math.ceil(w + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth) + 8) + 'px';
+      if (el.style.width !== px) el.style.width = px;
+    });
+  }
+  function opmaak() {
+    if (!document.getElementById('oc-sync-stijl') && document.querySelector('[data-oc-titel]')) {
+      var s = document.createElement('style'); s.id = 'oc-sync-stijl';
+      s.textContent = 'input[data-oc-titel]{flex:0 1 auto!important;max-width:100%;min-width:5.5em;box-sizing:border-box;text-overflow:ellipsis;cursor:text;border-radius:6px 6px 0 0;padding-right:26px!important;'
+        + 'border-bottom:1.5px dashed transparent!important;background-repeat:no-repeat!important;background-position:right 4px center!important;background-size:15px 15px!important;'
+        + 'background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2394a3b8%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M12 20h9%27/%3E%3Cpath d=%27M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z%27/%3E%3C/svg%3E")!important}'
+        + 'input[data-oc-titel]:hover{border-bottom-color:#cbd5e1!important}'
+        + 'input[data-oc-titel]:focus{border-bottom:1.5px solid #047857!important;background-image:none!important}'
+        + 'input[data-oc-titel]::placeholder{color:#64748b;opacity:1}'
+        + 'input[data-oc-titel]+*{margin-left:auto}';
+      document.head.appendChild(s);
+    }
+    titels();
+  }
+  var gepland = false;
+  function later() { if (gepland) return; gepland = true; requestAnimationFrame(function () { gepland = false; roving(); opmaak(); }); }
+  function start() {
+    later();
+    try { new MutationObserver(later).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-checked', 'hidden', 'class'] }); } catch (e) {}
+    document.addEventListener('input', function (e) { if (e.target.hasAttribute && e.target.hasAttribute('data-oc-titel')) titels(); }, true);
+    addEventListener('resize', later);
+    try { document.fonts.ready.then(titels); document.fonts.addEventListener('loadingdone', titels); } catch (e) {}   // de letters komen soms pas later binnen
+    setInterval(function () { if (!document.hidden) titels(); }, 700);   // een tool kan de waarde zetten zonder de pagina te wijzigen
+  }
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
+  var eigenNaam = null, naamT = null;
+  function projectNu() { try { var p = JSON.parse(localStorage.getItem('oc.project')); return p && typeof p.name === 'string' ? p.name.trim() : ''; } catch (e) { return ''; } }
+  function deelNaam(el) {
+    var v = String(el.value || '').trim().slice(0, 80), nu = projectNu();
+    if (ocStandaardNaam(v) || (nu && nu !== eigenNaam)) return;
+    if ([].some.call(document.querySelectorAll('.vb-bar'), function (b) { return b.getClientRects().length; })) return;   // in het voorbeeld niet
+    if (v === nu) return;
+    try { localStorage.setItem('oc.project', JSON.stringify({ name: v, since: Date.now() })); eigenNaam = v; } catch (e) {}
+  }
+  document.addEventListener('input', function (e) { var el = e.target; if (!el.hasAttribute || !el.hasAttribute('data-oc-projectnaam')) return; clearTimeout(naamT); naamT = setTimeout(function () { deelNaam(el); }, 900); }, true);
+  ['change', 'focusout'].forEach(function (ev) { document.addEventListener(ev, function (e) { var el = e.target; if (el.hasAttribute && el.hasAttribute('data-oc-projectnaam')) { clearTimeout(naamT); deelNaam(el); } }, true); });
+  /* oc-terug: kom je uit een andere tool, dan brengt de terugknop linksboven je daar terug ("← Prioriteren").
+     Anders blijft hij naar de groep gaan (Projectmanagement, Zakmes, Reset). In de app regelt de app dit zelf. */
+  (function () {
+    if (window.__ocTerug) return; window.__ocTerug = true;
+    var ss; try { ss = window.sessionStorage; ss.getItem('x'); } catch (e) { return; }
+    var hier = location.pathname, vorige = null;
+    try { vorige = ss.getItem('oc.hier'); ss.setItem('oc.hier', location.href); } catch (e) {}
+    addEventListener('pageshow', function () { try { ss.setItem('oc.hier', location.href); } catch (e) {} });
+    var naam = (document.title || '').split(/\s+[–-]\s+Onder Constructie/)[0].trim();
+    try { if (naam && naam.length < 60) ss.setItem('oc.naam:' + hier, naam); } catch (e) {}
+    if (window.top !== window) return;
+    function zet() {
+      var a = document.querySelector('a.back-link, a.crumb'); if (!a || a.dataset.ocTerug) return;
+      var ref = document.referrer, u; if (!ref) return;
+      try { u = new URL(ref); } catch (e) { return; }
+      if (u.origin !== location.origin || u.pathname === hier) return;
+      try { if (new URL(a.href, location.href).pathname === u.pathname) return; } catch (e) { return; }
+      var bron = null; try { bron = ss.getItem('oc.naam:' + u.pathname); } catch (e) {}
+      if (!bron) return;
+      a.dataset.ocTerug = '1';
+      var sp = a.querySelector('span');
+      if (sp) sp.textContent = bron;
+      else {
+        var eerste = true;
+        [].slice.call(a.childNodes).forEach(function (n) { if (n.nodeType === 3 && n.nodeValue.trim()) { n.nodeValue = eerste ? ' ' + bron + ' ' : ''; eerste = false; } });
+      }
+      a.setAttribute('aria-label', 'Terug naar ' + bron);
+      a.href = ref;
+      var terug = vorige === ref;   // de vorige pagina in dit tabblad is die tool: echt teruggaan, dan staat alles nog zoals je het liet
+      a.addEventListener('click', function (e) {
+        if (!terug || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+        e.preventDefault(); history.back();
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', zet); else zet();
+  }());
+  /* oc-overnemen: de knop "Overnemen uit…" valt op als knop en zegt wat er klaarligt ("5 taken uit Retro en Risicomatrix"). */
+  (function () {
+    var VEEL = { taak: 'taken', actie: 'acties', risico: "risico's", betrokkene: 'betrokkenen', besluit: 'besluiten', doel: 'doelen' };
+    var EEN = { taak: 'taak', actie: 'actie', risico: 'risico', betrokkene: 'betrokkene', besluit: 'besluit', doel: 'doel' };
+    var zelf = '';
+    try { var mt = document.querySelector('meta[name="oc:opslag"]'), mz = mt && /oc\.share\.([\w-]+)/.exec(mt.content); zelf = mz ? mz[1] : ''; } catch (e) {}
+    function esc(v) { return String(v).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function samenvatting(types) {
+      var tools = [], perType = {}, n = 0, al = 0, keys = [], gezien = {}, heeft = {};
+      function norm(v) { return String(v || '').normalize('NFC').toLowerCase().replace(/\s+/g, ' ').trim().replace(/^[\s.,;:!?·-]+|[\s.,;:!?·-]+$/g, ''); }
+      try { for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i)); } catch (e) { return ''; }
+      // Wat de tool al heeft (window.ocHave), telt niet als nieuw
+      try { if (typeof window.ocHave === 'function') (window.ocHave(types) || []).forEach(function (x) { heeft[norm(x)] = 1; }); } catch (e) {}
+      // Zoals de kiezer: elke tekst van elke soort één keer, bij de rijkste bron (notitie, wie, wanneer), dan de grootste lijst, dan de recentste
+      var lijsten = [];
+      keys.forEach(function (k) {
+        if (!k || k.indexOf('oc.share.') !== 0 || k === 'oc.share.' + zelf) return;
+        try { var d = JSON.parse(localStorage.getItem(k)); if (!d || !Array.isArray(d.lists)) return;
+          d.lists.forEach(function (l) {
+            var its = (l && Array.isArray(l.items) ? l.items : []).filter(function (it) { return it && types.indexOf(it.type) >= 0 && typeof it.text === 'string' && it.text.trim(); });
+            if (its.length) lijsten.push({ naam: String(d.tool || d.id || ''), t: +d.updated || 0, items: its });
+          });
+        } catch (e) {}
+      });
+      var best = {};
+      lijsten.forEach(function (l) { l.items.forEach(function (it) {
+        var s = it.type + '|' + norm(it.text), sc = [(it.note ? 2 : 0) + (it.who ? 1 : 0) + (it.when ? 1 : 0), l.items.length, l.t], e = best[s];
+        var beter = !e; for (var i = 0; !beter && e && i < 3; i++) { if (sc[i] !== e.sc[i]) { beter = sc[i] > e.sc[i]; break; } }
+        if (beter) best[s] = { sc: sc, l: l, type: it.type, tekst: it.text };
+      }); });
+      var perTool = {};
+      Object.keys(best).forEach(function (s) {
+        var b = best[s]; if (heeft[norm(b.tekst)]) { al++; return; }
+        n++; perType[b.type] = (perType[b.type] || 0) + 1;
+        var tl = perTool[b.l.naam] || (perTool[b.l.naam] = { naam: b.l.naam, t: 0 }); tl.t = Math.max(tl.t, b.l.t);
+      });
+      tools = Object.keys(perTool).map(function (k) { return perTool[k]; });
+      if (!n) return al ? 'Alles staat er al' : '';
+      tools.sort(function (a, b) { return b.t - a.t; });
+      var nm = tools.map(function (x) { return x.naam; }), soort = Object.keys(perType);
+      var wat = soort.length === 1 && VEEL[soort[0]] ? n + ' ' + (n === 1 ? EEN[soort[0]] : VEEL[soort[0]]) : n + (n === 1 ? ' punt' : ' punten');
+      var uit = nm.length === 1 ? nm[0] : nm.length === 2 ? nm[0] + ' en ' + nm[1] : nm[0] + ', ' + nm[1] + ' en ' + (nm.length - 2) + ' andere';
+      return wat + ' uit ' + uit;
+    }
+    var stijl = false;
+    function css() {
+      if (stijl || document.getElementById('oc-imp-stijl')) return; stijl = true;
+      var s = document.createElement('style'); s.id = 'oc-imp-stijl';
+      s.textContent = 'button.oc-import.oc-imp2{display:inline-flex;align-items:center;gap:.625rem;max-width:100%;min-height:52px;margin:0;padding:.4375rem .75rem .4375rem .4375rem;border:1.5px solid #a7f3d0;border-radius:12px;background:#ecfdf5;color:#065f46;font:inherit;text-align:left;white-space:normal;cursor:pointer;box-shadow:none;transition:background .12s,border-color .12s}'
+        + 'button.oc-import.oc-imp2:hover{background:#d1fae5;border-color:#10b981}button.oc-import.oc-imp2[hidden]{display:none}'
+        + '.oc-imp2 .oc-imp-ico{flex:none;width:34px;height:34px;border-radius:9px;background:#fff;color:#047857;display:grid;place-items:center;box-shadow:inset 0 0 0 1px #a7f3d0}'
+        + '.oc-imp2 .oc-imp-ico svg{width:18px;height:18px}.oc-imp2 .oc-imp-t{display:flex;flex-direction:column;min-width:0;line-height:1.25}'
+        + '.oc-imp2 .oc-imp-t b{font-size:.875rem;font-weight:700;color:#065f46}'
+        + '.oc-imp2 .oc-imp-t small{font-size:.8125rem;font-weight:500;color:#047857;overflow-wrap:anywhere}'
+        + '.oc-imp2 .oc-imp-pijl{flex:none;width:18px;height:18px;margin-left:auto;color:#047857}'
+        + '@media (prefers-reduced-motion:reduce){button.oc-import.oc-imp2{transition:none}}';
+      document.head.appendChild(s);
+    }
+    var ICO = '<span class="oc-imp-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11M7.5 9.5L12 14l4.5-4.5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span>';
+    var PIJL = '<svg class="oc-imp-pijl" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+    function versier() {
+      var bs = document.querySelectorAll('button.oc-import[data-oc-types]'); if (!bs.length) return;
+      css();
+      [].forEach.call(bs, function (b) {
+        var sam = samenvatting(String(b.dataset.ocTypes).split(',').map(function (x) { return x.trim(); }));
+        if (b.dataset.ocSam === sam && b.querySelector('.oc-imp-t')) return;
+        b.dataset.ocSam = sam; b.classList.add('oc-imp2');
+        b.innerHTML = ICO + '<span class="oc-imp-t"><b>Overnemen uit andere tools</b>' + (sam ? '<small>' + esc(sam) + '</small>' : '') + '</span>' + PIJL;
+      });
+    }
+    var gepland = false;
+    function plan() { if (gepland) return; gepland = true; (window.requestAnimationFrame || setTimeout)(function () { gepland = false; versier(); }); }
+    try { new MutationObserver(plan).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) {}
+    addEventListener('storage', plan); addEventListener('focus', plan); addEventListener('pageshow', plan);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', plan); else plan();
+  }());
+  if (window.parent === window) return;
+  addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || e.defaultPrevented) return;
+    var a = document.activeElement;
+    if (a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return;
+    if (document.querySelector('dialog[open], [role="dialog"]:not([hidden]):not([aria-hidden="true"]), [aria-modal="true"]:not([hidden]), [aria-expanded="true"], .open, .show, .active.modal, .is-open')) return;
+    try { parent.postMessage({ type: 'oc-esc' }, location.origin); } catch (err) {}
+  }, true);
+})();
+</script>
+<script>
+/* oc-uitleg v1 begin */
+/* "Hoe werkt dit?": zet de gewone uitleg in <details class="explain"><div class="inner"> om tot een kaart met
+   inleiding, genummerde stappen, tip en verwijzingen naar andere tools. De tekst zelf blijft in de HTML staan,
+   dus zonder JavaScript is alles nog gewoon leesbaar. Sturen per tool kan met data-uitleg op een lijst of alinea:
+   "stappen" (genummerd), "begrippen" (zonder nummers), "lijst" (laten zoals hij is), "tip", "noot", "stil". */
+(function () {
+  var d = document.querySelector('details.explain');
+  if (!d || d.classList.contains('oc-u')) return;
+  var sum = d.querySelector(':scope > summary'), inner = d.querySelector(':scope > .inner');
+  if (!sum || !inner) return;
+  var SLUG = 'hoe-werkt-dit';
+  var SVG = function (b, w) { return '<svg viewBox="0 0 ' + (w || 24) + ' ' + (w || 24) + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + b + '</svg>'; };
+  var ICO = {
+    kaart: '<svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">'
+      + '<circle cx="7" cy="6.5" r="2.25" fill="#047857"/><circle cx="7" cy="14" r="2.25" fill="#10b981"/><circle cx="7" cy="21.5" r="2.25" fill="#10b981"/>'
+      + '<path d="M13 6.5h9.5M13 14h6.5M13 21.5h8" stroke="#10b981" stroke-width="2.25" stroke-linecap="round"/></svg>',
+    pijl: SVG('<path d="M6 9l6 6 6-6"/>'),
+    tip: SVG('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>'),
+    stil: SVG('<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
+    naar: SVG('<path d="M8 16L16 8M9.5 8H16v6.5"/>')
+  };
+  var maak = function (tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+  var tekst = function (e) { return (e.textContent || '').replace(/\s+/g, ' ').trim(); };
+  var soort = function (e) { return (e.getAttribute('data-uitleg') || '').toLowerCase(); };
+
+  // eerste tekst van een stuk DOM netjes laten beginnen: leestekens weg, hoofdletter
+  function netjesBegin(node) {
+    var w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), t;
+    while ((t = w.nextNode())) {
+      var s = t.nodeValue.replace(/^[\s:.,;]+/, '');
+      if (!s) { t.nodeValue = ''; continue; }
+      t.nodeValue = s.charAt(0).toUpperCase() + s.slice(1);
+      return true;
+    }
+    return false;
+  }
+  // toetsen als toets tonen
+  var TOETS = /(^|[^\wÀ-ÿ+])(Shift\+Tab|Alt\+↑|Alt\+↓|Enter|Escape|Esc|Backspace|Delete|F2|Tab)(?![\wÀ-ÿ])/g;
+  function toetsen(root) {
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), lijst = [], t;
+    while ((t = w.nextNode())) { TOETS.lastIndex = 0; if (TOETS.test(t.nodeValue) && !t.parentNode.closest('a, kbd, code')) lijst.push(t); }
+    lijst.forEach(function (t) {
+      var s = t.nodeValue, frag = document.createDocumentFragment(), van = 0, m;
+      TOETS.lastIndex = 0;
+      while ((m = TOETS.exec(s))) {
+        var start = m.index + m[1].length;
+        frag.appendChild(document.createTextNode(s.slice(van, start)));
+        var k = document.createElement('kbd'); k.textContent = m[2]; frag.appendChild(k);
+        van = start + m[2].length;
+      }
+      frag.appendChild(document.createTextNode(s.slice(van)));
+      t.parentNode.replaceChild(frag, t);
+    });
+  }
+  // begint dit lijstitem met een vetgedrukte titel?
+  function kopVan(li) {
+    for (var n = li.firstChild; n; n = n.nextSibling) {
+      if (n.nodeType === 3 && !n.nodeValue.trim()) continue;
+      return n.nodeType === 1 && /^(B|STRONG)$/.test(n.tagName) ? n : null;
+    }
+    return null;
+  }
+
+  var kids = Array.prototype.slice.call(inner.children);
+  var lijsten = kids.filter(function (k) { return /^(UL|OL)$/.test(k.tagName) && soort(k) !== 'lijst'; });
+  var metKop = lijsten.filter(function (l) { var li = l.querySelectorAll(':scope > li'); return li.length > 1 && Array.prototype.every.call(li, kopVan); });
+  // stappen: uitdrukkelijk gevraagd, of de enige lijst waarvan elk item met een vette titel begint
+  var stapLijst = lijsten.filter(function (l) { return soort(l) === 'stappen'; })[0]
+    || (metKop.length === 1 && soort(metKop[0]) !== 'begrippen' ? metKop[0] : null);
+
+  var raam = maak('div', 'oc-u-raam'), lees = maak('div', 'oc-u-lees'), doe = maak('div', 'oc-u-doe'), aantal = 0;
+  kids.forEach(function (k, i) {
+    var s = soort(k), t = tekst(k);
+    if (i === 0 && k.tagName === 'P' && !/^Tip\b/.test(t) && !/^(tip|noot|stil)$/.test(s)) { k.classList.add('oc-u-intro'); lees.appendChild(k); return; }
+    if (k === stapLijst) {
+      var ol = maak('ol', 'oc-u-stappen');
+      Array.prototype.forEach.call(k.querySelectorAll(':scope > li'), function (li) {
+        var b = kopVan(li), stap = maak('li', 'oc-u-stap'), tx = maak('div', 'oc-u-stap-tekst');
+        aantal++;
+        stap.appendChild(maak('span', 'oc-u-nr', String(aantal))).setAttribute('aria-hidden', 'true');
+        var titel = maak('span', 'oc-u-stap-titel'), rest = maak('span', 'oc-u-stap-uitleg');
+        if (b) { titel.innerHTML = b.innerHTML.replace(/\s*[.:]\s*$/, ''); b.remove(); }
+        while (li.firstChild) rest.appendChild(li.firstChild);
+        if (b) tx.appendChild(titel); else rest.classList.add('oc-u-enkel');
+        if (netjesBegin(rest)) tx.appendChild(rest);
+        stap.appendChild(tx); ol.appendChild(stap);
+      });
+      doe.appendChild(ol); k.remove(); return;
+    }
+    if (/^(UL|OL)$/.test(k.tagName) && s !== 'lijst' && (s === 'begrippen' || metKop.indexOf(k) > -1)) {
+      k.className = 'oc-u-begrippen';
+      Array.prototype.forEach.call(k.children, function (li) { var w = maak('span', 'oc-u-begrip-tekst'); while (li.firstChild) w.appendChild(li.firstChild); li.className = 'oc-u-begrip'; li.appendChild(w); });
+      doe.appendChild(k); return;
+    }
+    var tip = k.tagName === 'P' && (s === 'tip' || /^Tip\b[^:.]{0,40}:/.test(t));
+    if (tip) {
+      var kaart = maak('div', 'oc-u-tip'), m = t.match(/^(Tip\b[^:.]{0,40}):/);
+      kaart.setAttribute('role', 'note');
+      kaart.innerHTML = ICO.tip;
+      var tt = maak('div'), tk = maak('span', 'oc-u-tip-titel', m ? m[1] : 'Tip'), tb = maak('span', 'oc-u-tip-tekst');
+      while (k.firstChild) tb.appendChild(k.firstChild);
+      if (m) { // "Tip:" of "Tip voor ...:" weghalen uit de tekst zelf
+        var w = document.createTreeWalker(tb, NodeFilter.SHOW_TEXT), n, weg = m[0].length;
+        while (weg > 0 && (n = w.nextNode())) { var l = n.nodeValue.replace(/^\s+/, '').length, voor = n.nodeValue.length - l; var x = Math.min(weg, l); n.nodeValue = n.nodeValue.slice(voor + x); weg -= x; }
+        netjesBegin(tb);
+      }
+      tt.appendChild(tk); tt.appendChild(tb); kaart.appendChild(tt);
+      doe.appendChild(kaart); k.remove(); return;
+    }
+    if (s === 'stil' || (k.tagName === 'P' && /^Alles blijft op dit toestel/.test(t))) {
+      k.className = 'oc-u-stil'; var sp = maak('span'); while (k.firstChild) sp.appendChild(k.firstChild);
+      k.innerHTML = ICO.stil; k.appendChild(sp); doe.appendChild(k); return;
+    }
+    if (k.tagName === 'P') k.classList.add('oc-u-noot');
+    doe.appendChild(k);
+  });
+
+  // verwijzingen naar andere tools als chips, elk één keer
+  var hier = location.pathname.replace(/index\.html$/, ''), gezien = {}, chips = [];
+  Array.prototype.forEach.call(doe.querySelectorAll('a[href]'), function (a) {
+    var u; try { u = new URL(a.getAttribute('href'), location.href); } catch (e) { return; }
+    var thuis = u.host === location.host || /(^|\.)onderconstructie\.github\.io$/.test(u.host);
+    var pad = u.pathname.replace(/index\.html$/, '');
+    if (!thuis || pad === hier || pad === '/' || gezien[pad] || u.hash) return;
+    gezien[pad] = 1;
+    var c = maak('a', 'oc-u-chip'); c.href = a.getAttribute('href');
+    c.innerHTML = '<span class="oc-u-chip-ico">' + ICO.naar + '</span>';
+    c.appendChild(document.createTextNode(tekst(a)));
+    chips.push(c);
+  });
+  if (lees.firstChild) raam.appendChild(lees); else raam.classList.add('oc-u-zonder-intro');
+  // een lange inleiding krijgt pas naast de stappen plaats op een echt breed scherm
+  if (lees.firstChild && tekst(lees.firstChild).split(' ').length > 50) raam.classList.add('oc-u-lang');
+  raam.appendChild(doe);
+  if (chips.length) {
+    var samen = maak('div', 'oc-u-samen'), id = 'oc-u-samen-' + Math.random().toString(36).slice(2, 7);
+    samen.appendChild(maak('span', 'oc-u-samen-titel', 'Werkt samen met')).id = id;
+    var rij = maak('div', 'oc-u-chips'); rij.setAttribute('role', 'group'); rij.setAttribute('aria-labelledby', id);
+    chips.forEach(function (c) { rij.appendChild(c); });
+    samen.appendChild(rij); raam.appendChild(samen);
+  }
+  toetsen(raam);
+  inner.innerHTML = ''; inner.appendChild(raam);
+
+  // kop: icoon, titel, belofte, pijl
+  var titel = tekst(sum) || 'Hoe werkt dit?';
+  var woorden = tekst(raam).split(' ').length, min = Math.max(1, Math.round(woorden / 180));
+  var belofte = (aantal ? aantal + ' stappen, ' : '') + min + (min === 1 ? ' minuut' : ' minuten') + ' lezen';
+  sum.innerHTML = '<span class="oc-u-ico" aria-hidden="true">' + ICO.kaart + '</span>'
+    + '<span class="oc-u-kop"><span class="oc-u-titel"></span><span class="oc-u-meta"></span></span>'
+    + (aantal > 1 && aantal < 10 ? '<span class="oc-u-route" aria-hidden="true">' + Array.apply(null, Array(aantal)).map(function (x, i) { return '<i>' + (i + 1) + '</i>'; }).join('') + '</span>' : '')
+    + '<span class="oc-u-pijl" aria-hidden="true">' + ICO.pijl + '</span>';
+  sum.querySelector('.oc-u-titel').textContent = titel;
+  sum.querySelector('.oc-u-meta').textContent = belofte;
+  if (!d.id) d.id = SLUG;
+  d.classList.add('oc-u');
+
+  // vloeiend openen en sluiten (niet bij minder beweging)
+  var rustig = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: true };
+  var ease = 'cubic-bezier(0.2, 0.7, 0.2, 1)', loopt = null, staat = d.open;
+  function klaar() { loopt = null; inner.style.overflow = ''; inner.style.height = ''; }
+  function zet(open, vloeiend) {
+    staat = open;
+    if (!vloeiend || rustig.matches || !inner.animate) { if (loopt) loopt.cancel(); klaar(); d.open = open; return; }
+    var nu = d.open ? inner.getBoundingClientRect().height : 0;
+    if (loopt) loopt.cancel();
+    d.open = true; inner.style.overflow = 'hidden';
+    var doel = open ? inner.scrollHeight : 0;
+    loopt = inner.animate([{ height: nu + 'px', opacity: open ? (nu ? 1 : 0) : 1 }, { height: doel + 'px', opacity: open ? 1 : 0 }],
+      { duration: open ? 420 : 260, easing: ease });
+    loopt.onfinish = function () { klaar(); if (!open) d.open = false; };
+    loopt.oncancel = function () { inner.style.overflow = ''; };
+    if (open && !nu) {
+      var stukken = raam.querySelectorAll('.oc-u-intro, .oc-u-stap, .oc-u-begrip, .oc-u-tip, .oc-u-noot, .oc-u-stil, .oc-u-samen');
+      Array.prototype.forEach.call(stukken, function (e, i) {
+        e.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: 80 + Math.min(i, 8) * 55, easing: ease, fill: 'backwards' });
+      });
+      Array.prototype.forEach.call(raam.querySelectorAll('.oc-u-stap'), function (e, i) {
+        try { e.animate([{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], { pseudoElement: '::before', duration: 360, delay: 200 + i * 55, easing: ease, fill: 'backwards' }); } catch (x) {}
+      });
+    }
+  }
+  sum.addEventListener('click', function (e) { e.preventDefault(); zet(!staat, true); });
+  d.addEventListener('toggle', function () { if (!loopt) staat = d.open; });
+
+  // #hoe-werkt-dit opent het blok
+  function vanAdres(vloeiend) {
+    var h = location.hash.slice(1); try { h = decodeURIComponent(h); } catch (x) {}
+    if (h !== SLUG && h !== d.id) return;
+    if (!staat) zet(true, vloeiend);
+    requestAnimationFrame(function () { d.scrollIntoView({ behavior: vloeiend && !rustig.matches ? 'smooth' : 'auto', block: 'start' }); });
+  }
+  window.addEventListener('hashchange', function () { vanAdres(true); });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href="#' + SLUG + '"]');
+    if (a && location.hash === '#' + SLUG) { e.preventDefault(); vanAdres(true); }
+  });
+  vanAdres(false);
+})();
+/* oc-uitleg v1 einde */
+</script>
+</body>
+</html>
