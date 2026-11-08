@@ -869,7 +869,7 @@ details.explain.oc-u .oc-u-noot a, details.explain.oc-u .oc-u-stap-uitleg a, det
   <details class="explain" id="hoe-werkt-dit">
     <summary>Hoe werkt dit?</summary>
     <div class="inner">
-      <p>Met de Klankkast speel je een kort geluidje op het juiste moment: na een goede grap, een flauwe grap, een sterke vraag of een groot besluit.</p>
+      <p>Met de Klankkast speel je een kort geluidje op het juiste moment: na een goede grap, een flauwe grap, een sterke vraag, een stilte die blijft hangen of een groot besluit.</p>
       <p>Het is een knipoog. Gebruik het om samen te lachen, niet om iemand uit te lachen.</p>
       <ul>
         <li><b>Tik op een geluid.</b> Het speelt meteen. Tik nog eens om het te stoppen. Een groene rand toont hoe lang het nog duurt.</li>
@@ -1320,6 +1320,46 @@ function pauk(V, at, f, g, dur = 1.4) {
   toon(V, 'sine', f * 1.99, t, dur, x => 0.2 * op(x, 0.003) * Math.exp(-x * 5), m);
   ruisStoot(V, t, 0.12, 60, 900, x => 0.5 * op(x, 0.001) * Math.exp(-x * 40), m);
 }
+/* Een veldkrekel in de nacht. Elke tjirp is een paar korte pulsjes op een draaggolf van ongeveer 4,7 kHz:
+   een zachte aanzet en uitloop per pulsje, de toon zakt een tikje binnen elk pulsje, en een paar zwakke boventonen.
+   o: f (draaggolf), periode (tussen tjirps), n (pulsjes), P (lengte pulsje), Ts (afstand tussen pulsjes),
+      begin, g (sterkte), pan, lp (verder = doffer), bt (boventonen), sla (kans op een overgeslagen tjirp), minder (kans op een pulsje minder) */
+function krekel(V, D, o) {
+  const r = V.r, t = V.t, puls = [];
+  for (let x = o.begin; x < D - 0.2; ) {
+    if (r() < (o.sla || 0)) { x += o.periode * r.tussen(0.9, 1.3); continue; }   // even op adem komen
+    const n = o.n - (r() < (o.minder || 0) ? 1 : 0), ga = r.tussen(0.93, 1.04), fc = o.f * r.tussen(0.996, 1.004), ts = o.Ts * r.tussen(0.97, 1.03);
+    for (let i = 0; i < n; i++) {
+      const vorm = i === 0 ? 0.72 : i === n - 1 ? 0.88 : 1;   // het eerste pulsje is zachter, het laatste zakt wat
+      puls.push([x + i * ts, o.P * r.tussen(0.94, 1.06), vorm * ga * r.tussen(0.95, 1.03), fc]);
+      V.aanslag(t + x + i * ts);
+    }
+    x += o.periode * r.tussen(0.96, 1.04);
+  }
+  const drift = glij(r, D, 4, -0.002, 0.002);
+  const pulsje = (z, P) => {   // zachte aanzet (3,5 ms) en uitloop (6 ms) met een cosinus, een licht dalende rug
+    if (z <= 0 || z >= P) return 0;
+    const a = 0.0035, u = 0.006;
+    return (z < a ? 0.5 - 0.5 * Math.cos(Math.PI * z / a) : 1) * (z > P - u ? 0.5 + 0.5 * Math.cos(Math.PI * (z - P + u) / u) : 1) * (1 - 0.12 * z / P);
+  };
+  const inUit = x => glad((x - o.begin + 0.35) / 0.9) * (1 - glad((x - (D - 1.7)) / 1.55));   // zacht erin, zacht weg
+  const m = V.gain(o.g, V.pan(o.pan));
+  const e = V.gain(0, o.lp ? V.filt('lowpass', o.lp, 0.6, m) : m);
+  const tonen = [];
+  o.bt.forEach((a, k) => {   // draaggolf en boventonen, allemaal met hetzelfde verloop
+    if (!a || o.f * (k + 1) > V.ctx.sampleRate * 0.45) return;
+    const s = V.osc('sine', (k + 1) * puls[0][3] * 1.009); s.connect(V.gain(a, e)); V.start(s, t, D); tonen.push([s.frequency, k + 1]);
+  });
+  /* Per pulsje een eigen kort verloop (4800 punten per seconde) en een rechte glijlijn voor de toon: één lang verloop
+     voor de hele 5 seconden kost een trage gsm een merkbaar moment voor het geluid begint. Tussen de pulsjes staat alles op 0. */
+  puls.forEach(([x, P, amp, fc]) => {
+    const n = Math.max(24, Math.round(P * 4800)), c = new Float32Array(n), k = amp * inUit(x + P / 2);
+    for (let i = 1; i < n - 1; i++) c[i] = k * pulsje(i / (n - 1) * P, P);
+    e.gain.setValueCurveAtTime(c, t + x, P);
+    tonen.forEach(([f, h]) => { f.setValueAtTime(h * fc * 1.009 * (1 + drift(x)), t + x); f.linearRampToValueAtTime(h * fc * 0.983 * (1 + drift(x + P)), t + x + P); });
+  });
+  if (o.ruw) { const bp = V.filt('bandpass', o.f, 6), n = V.ruis(bp); bp.connect(V.gain(o.ruw, e)); V.start(n, t, D); }   // een vleugje schraapgeluid
+}
 /* Een stemgeluid: een ingebakken mp3, licht gecomprimeerd, op dezelfde luidheid als de rest */
 function stemClip(V) {
   const c = V.K.cache.clip && V.K.cache.clip['stem:' + this.stem];
@@ -1459,6 +1499,14 @@ const ALLE = [
       strijkers(V, 0.55, 277.18, 0.5, { g: 0.8 }); pauk(V, 0.55, 98.0, 0.8, 0.6);
       strijkers(V, 1.1, 130.81, 1.9, { g: 1, trem: 1, zwel: true, uit: 0.6, lp: 1300 }); pauk(V, 1.1, 65.41, 1.1, 1.8); kick(V, 1.1, 0.5, 0.8);
       return 3.0;
+    } },
+  { id: 'krekels', naam: 'Krekels', wanneer: 'Het blijft stil. Niemand reageert.', toets: 'K', niveau: 0.54, galm: 0.12, eigenMaster: true,
+    maak(V) {   // drie veldkrekels, elk met een eigen toon, ritme, plaats en afstand; buiten de compressor, zodat elk pulsje heel blijft
+      const D = 5;
+      krekel(V, D, { f: 4720, periode: 0.4, n: 4, P: 0.02, Ts: 0.034, begin: 0.3, g: 1, pan: 0.1, bt: [1, 0.07, 0.022], ruw: 0.05 });       // dichtbij
+      krekel(V, D, { f: 4540, periode: 0.35, n: 3, P: 0.018, Ts: 0.031, begin: 0.06, g: 0.5, pan: -0.5, lp: 7500, bt: [1, 0.04, 0.01], sla: 0.06, minder: 0.1 });   // wat verder, links
+      krekel(V, D, { f: 4960, periode: 0.46, n: 5, P: 0.016, Ts: 0.029, begin: 0.6, g: 0.32, pan: 0.75, lp: 6200, bt: [1, 0.02], sla: 0.08, minder: 0.15 });   // ver weg, rechts
+      return D;   // geen nachtruis: die zat 46 dB onder de krekels, hielp niet en gaf op een laptop alleen wat geruis
     } },
   { id: 'champagne', naam: 'Champagne', wanneer: 'Een mijlpaal. Dat vieren we.', toets: 'C', alleenClip: true, niveau: 1, galm: 0, maak: klankClip },
   { id: 'orde', naam: 'Orde', wanneer: 'Stilte in de zaal, graag.', toets: 'O', alleenClip: true, niveau: 1, galm: 0, maak: klankClip },
@@ -1607,6 +1655,7 @@ const ICOON = {
   scope: `<path d="M12 21c-3.7 0-6.2-2.5-6.2-5.8 0-3.6 3.1-5.3 3.5-9.2 2.7 1.7 3.6 4 3.3 5.8 1.1-.6 1.9-1.8 2.1-3.2 2.1 1.8 3.5 4.1 3.5 6.6 0 3.3-2.5 5.8-6.2 5.8Z" stroke="${g_}"/><path d="M12 18.5c-1.5 0-2.5-1-2.5-2.3 0-1.4 1.2-2.2 1.5-3.7 1.9 1 3.5 2.4 3.5 3.9 0 1.2-1 2.1-2.5 2.1Z" fill="${l_}" stroke="${a_}"/>`,
   achteruit: `<path d="M10 8.5h10.5v8H10z" stroke="${g_}"/><path d="M10 11.5H6.5L4 14.5v2h6" stroke="${g_}"/><circle cx="7.5" cy="18" r="1.6" stroke="${g_}"/><circle cx="17" cy="18" r="1.6" stroke="${g_}"/><path d="M11 4.5h7M15.5 2l2.5 2.5L15.5 7" stroke="${a_}"/>`,
   treurmars: `<path d="M7 20.5V9.5a5 5 0 0 1 10 0v11" stroke="${g_}"/><path d="M4 20.5h16" stroke="${g_}"/><path d="M10 11h4M10 14h4" stroke="${a_}"/>`,
+  krekels: `<circle cx="4.9" cy="15.3" r="1.9" stroke="${g_}"/><path d="M6.8 14.3c2.6-1.7 7.6-1.9 11-.2 1.3.7 1.3 2 0 2.6-3.4 1.6-8.4 1.5-11 0" stroke="${g_}"/><ellipse cx="15.6" cy="11.7" rx="3.7" ry="1.25" transform="rotate(-32 15.6 11.7)" stroke="${g_}"/><path d="M18.7 9.8l1.8 10M9 16.9l-1.4 3.1M12.2 17.2l.3 2.8" stroke="${g_}"/><path d="M4.2 13.5C4.5 8.6 9.5 5.2 16 5" stroke="${g_}"/><path d="M19 2.8c.9.7.9 1.9 0 2.6M21.4 1.5c1.6 1.4 1.6 3.9 0 5.3" stroke="${a_}"/>`,
   drama: `<path d="M4 5.5h8.5a5 5 0 0 1 0 10H7" stroke="${g_}"/><path d="M10 12.5l-3 3 3 3" stroke="${a_}"/><path d="M19.5 20l-1.5-2.5h2.5L19 15" stroke="${a_}"/>`,
 };
 const STER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.6l2.5 5.2 5.7.7-4.2 3.9 1.1 5.6L12 16.2 6.9 19l1.1-5.6-4.2-3.9 5.7-.7z"/></svg>';
