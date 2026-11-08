@@ -1812,6 +1812,30 @@ const SJ = {
     },
     labels: [{ s: 'Het idee', x: 800, y: 480, fs: 34, al: 'c', vet: 1, c: '#047857' }]
   },
+  productboom: {
+    naam: 'Productboom', uitleg: 'Het eindresultaat bovenaan, de delen die af moeten zijn eronder.',
+    teken(ctx, sc) {
+      const doos = (x, y, w, hh, vol, rand, d) => { rondeRect(ctx, x - w / 2, y, w, hh, 16); ctx.fillStyle = vol; ctx.fill(); ctx.strokeStyle = rand; lw(ctx, d, sc); if (vol === '#fff') ctx.setLineDash([]); ctx.stroke(); };
+      ctx.strokeStyle = LICHT; lw(ctx, 3, sc); ctx.lineCap = 'round';
+      const lijn = (x1, y1, x2, y2) => { const m = (y1 + y2) / 2; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1, m); ctx.lineTo(x2, m); ctx.lineTo(x2, y2); ctx.stroke(); };
+      [330, 800, 1270].forEach(x => { lijn(800, 210, x, 400); [x - 115, x + 115].forEach(x2 => lijn(x, 500, x2, 700)); });
+      doos(800, 90, 440, 120, '#ecfdf5', '#10b981', 3.5);
+      [330, 800, 1270].forEach(x => doos(x, 400, 360, 100, '#fff', GRIJS, 3));
+      [330, 800, 1270].forEach(x => [x - 115, x + 115].forEach(x2 => doos(x2, 700, 200, 84, '#f8fafc', ZACHT, 2.5)));
+    },
+    labels: [{ s: 'Eindresultaat', x: 800, y: 132, fs: 34, al: 'c', vet: 1, c: '#047857' }, { s: 'Deelresultaat', x: 330, y: 432, fs: 27, al: 'c' }, { s: 'Deelresultaat', x: 800, y: 432, fs: 27, al: 'c' }, { s: 'Deelresultaat', x: 1270, y: 432, fs: 27, al: 'c' }, { s: 'Noem resultaten, geen taken', x: 800, y: 880, fs: 22, al: 'c', c: '#64748b' }]
+  },
+  projectkaart: {
+    naam: 'Projectkaart', uitleg: 'Je project in het midden, met elf takken errond.',
+    teken(ctx, sc) {
+      const ends = [[800, 128], [1092, 187], [1291, 345], [1335, 553], [1208, 744], [952, 857], [648, 857], [392, 744], [265, 553], [309, 345], [508, 187]];
+      ctx.strokeStyle = LICHT; lw(ctx, 3, sc); ctx.lineCap = 'round';
+      ends.forEach(([x, y]) => { ctx.beginPath(); ctx.moveTo(800 + (x - 800) * 0.3, 500 + (y - 500) * 0.3); ctx.quadraticCurveTo(800 + (x - 800) * 0.75, 500 + (y - 500) * 0.55, x, y); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.fillStyle = '#10b981'; ctx.fill(); });
+      ctx.beginPath(); ctx.ellipse(800, 500, 190, 86, 0, 0, Math.PI * 2); ctx.fillStyle = '#ecfdf5'; ctx.fill(); ctx.strokeStyle = '#10b981'; lw(ctx, 3.5, sc); ctx.stroke();
+    },
+    labels: [{ s: 'Je project', x: 800, y: 482, fs: 34, al: 'c', vet: 1, c: '#047857' }, { s: "Doel", x: 800, y: 74, fs: 28, al: 'c' }, { s: "Doelgroep", x: 1114, y: 170, fs: 28 }, { s: "Producten", x: 1313, y: 328, fs: 28 }, { s: "Mijlpalen", x: 1357, y: 536, fs: 28 }, { s: "Betrokkenen", x: 1230, y: 727, fs: 28 }, { s: "Communicatie", x: 974, y: 840, fs: 28 }, { s: "Budget", x: 626, y: 840, fs: 28, al: 'r' }, { s: "Risico's", x: 370, y: 727, fs: 28, al: 'r' }, { s: "Afhankelijkheden", x: 243, y: 536, fs: 28, al: 'r' }, { s: "Bezorgdheden", x: 287, y: 328, fs: 28, al: 'r' }, { s: "Bronnen", x: 486, y: 170, fs: 28, al: 'r' }]
+  },
   gsm: {
     naam: 'Gsm-scherm', uitleg: 'Schets een app: twee schermen na elkaar.',
     teken(ctx, sc) {
@@ -1852,7 +1876,7 @@ const SJ = {
     labels: [{ s: '5 meter', x: 180, y: 942, fs: 20, al: 'c' }]
   }
 };
-const SJ_ORDE = ['leeg', 'assen', 'tijdlijn', 'kolommen', 'zes', 'takken', 'gsm', 'laptop', 'plattegrond'];
+const SJ_ORDE = ['leeg', 'assen', 'tijdlijn', 'kolommen', 'zes', 'takken', 'productboom', 'projectkaart', 'gsm', 'laptop', 'plattegrond'];
 function sjabloonLabels(id) {
   return (SJ[id].labels || []).map(l => ({ k: 'tekst', id: uid(), x: l.x, y: l.y, s: l.s, fs: l.fs, c: l.c || '#475569', al: l.al, vet: l.vet, tl: l.vet ? undefined : 1 }));
 }
@@ -2023,6 +2047,8 @@ function sjabloonDemo(id) {
     case 'kolommen': return [B('Planning maken', 110, 200, 380, 160, 0, -2), B('Collega\'s bellen', 110, 400, 380, 160, 2, 1.5), B('Tekst nalezen', 610, 210, 380, 160, 1, 2), B('Uitnodiging', 1110, 200, 380, 160, 3, -1.5)];
     case 'zes': return [H.ellips(290, 220, 40, 40, { w: 7, c: D }), H.lijn(290, 262, 290, 380, { w: 7, c: D }), H.rect(700, 200, 200, 180, { w: 7, c: D }), hand([680, 210, 800, 120, 920, 210], { w: 7, c: G }), ...H.pijl(1110, 280, 1340, 280, { w: 7, c: G, kop: 34 })];
     case 'takken': return [H.golf(120, 175, 160, { w: 7, c: GR }), H.golf(70, 495, 120, { w: 7, c: GR }), H.golf(1340, 175, 160, { w: 7, c: GR }), H.golf(1430, 495, 120, { w: 7, c: GR }), H.golf(1340, 815, 160, { w: 7, c: GR })];
+    case 'productboom': return [H.vink(455, 450, 34, { w: 8, c: G }), H.vink(925, 450, 34, { w: 8, c: G }), H.ster(1395, 450, 34, { w: 7, c: '#ea580c' })];
+    case 'projectkaart': return [H.ellips(800, 60, 120, 48, { w: 7, c: G }), H.ster(1500, 330, 34, { w: 7, c: '#ea580c' }), H.vink(1010, 790, 34, { w: 8, c: G })];
     case 'gsm': return [H.rect(380, 240, 240, 90, { w: 6, c: D }), H.lijn(380, 380, 610, 380, { w: 6, c: GR }), H.lijn(380, 420, 560, 420, { w: 6, c: GR }), H.rect(400, 700, 200, 70, { w: 6, c: G }), H.ellips(1100, 320, 80, 80, { w: 6, c: D }), H.lijn(990, 460, 1210, 460, { w: 6, c: GR }), H.rect(1000, 700, 200, 70, { w: 6, c: G })];
     case 'laptop': return [H.rect(320, 200, 960, 150, { w: 7, c: D }), H.rect(320, 400, 290, 300, { w: 7, c: GR }), H.rect(655, 400, 290, 300, { w: 7, c: GR }), H.rect(990, 400, 290, 300, { w: 7, c: GR }), H.lijn(400, 275, 800, 275, { w: 9, c: G })];
     case 'plattegrond': return [hand([560, 800, 200, 800, 200, 240, 1000, 240, 1000, 800, 700, 800], { w: 8, c: D, beef: 0.4 }), H.ellips(600, 500, 110, 110, { w: 6, c: GR }), H.rect(1160, 360, 240, 280, { w: 7, c: G })];
