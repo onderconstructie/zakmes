@@ -214,6 +214,9 @@ header.top[data-oc-kop] { margin-top:-14px; flex:none; }
 header[data-oc-kop] .lp-titel { display:flex; align-items:center; gap:0.625rem; font-weight:700; color:var(--text); }
 header[data-oc-kop] .lp-titel img { width:36px; height:36px; flex:none; }
 header[data-oc-kop] .lp-titel span { overflow:hidden; text-overflow:ellipsis; }
+/* Geen terugpijl en geen zichtbare titel: alleen de knoppen rechts. De titel blijft voor schermlezers. */
+header[data-oc-kop] .lp-titel.lp-verborgen { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+header.top[data-oc-kop] .oc-kop-acties { margin-left:auto; }
 header[data-oc-kop] .oc-kop-acties .chip.icon { background:none; border-color:transparent; box-shadow:none; border-radius:10px; }
 header[data-oc-kop] .oc-kop-acties .chip.icon:hover { background:var(--glass-2); }
 </style>
@@ -906,8 +909,7 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
 
 <main id="app">
   <header class="top" data-oc-kop data-stand="compact"><script>ocKop.groot(false); (function () { function sb() { document.documentElement.style.setProperty('--oc-sb', Math.max(0, innerWidth - document.body.clientWidth) + 'px'); } sb(); addEventListener('resize', sb); addEventListener('load', sb); try { new ResizeObserver(sb).observe(document.body); } catch (e) {} })();</script>
-    <a class="crumb back-link" href="../" aria-label="Terug naar Zakmes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Zakmes</a>
-    <h1 class="lp-titel"><span>Looplicht</span></h1>
+    <h1 class="lp-titel lp-verborgen"><span>Looplicht</span></h1>
       <div class="oc-kop-acties"><button class="chip" id="installChip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Installeer</button>
     <button class="chip icon" id="infoChip" aria-label="Tips"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button></div>
   </header>
