@@ -3580,6 +3580,8 @@ function toonUitleg(tpl, metVerhaal) {
   el.hidden = false;
   $('sj-uitleg-ok').addEventListener('click', () => { el.hidden = true; $('stage').focus({ preventScroll: true }); });
 }
+// Het tekenvlak mag een klik op het uitlegkaartje niet opvangen (met de muis deed Begrepen anders niets)
+['pointerdown', 'pointerup', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'click', 'dblclick', 'wheel'].forEach(t => $('sj-uitleg').addEventListener(t, e => e.stopPropagation()));
 // Begin je te tekenen of te schrijven, dan gaat de uitleg weg
 document.addEventListener('pointerdown', e => { const el = $('sj-uitleg'); if (el && !el.hidden && e.target.closest('#stage') && !e.target.closest('#sj-uitleg')) el.hidden = true; }, true);
 // Een blad verwijderen kan ongedaan: met de melding, met de knop Ongedaan maken en met Ctrl+Z.
