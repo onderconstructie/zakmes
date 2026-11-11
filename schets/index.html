@@ -122,6 +122,16 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 /* Alleen het bovenste canvas vangt pen en vinger (touch-action:none). De knoppen en vensters op het vlak
    erven dat niet, zodat lijsten en opties gewoon scrollen met vinger, pen, wiel en toetsenbord. */
 #stage{position:relative;flex:1;min-width:0;overflow:hidden;background:var(--wit);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;outline:none}
+/* Uitleg bij een sjabloon uit een stappenplan (Moodbord, Storyboard): bovenaan het tekenvlak, weg met Begrepen of bij de eerste lijn */
+.sj-uitleg{position:absolute;z-index:6;top:12px;left:50%;transform:translateX(-50%);width:min(440px,calc(100% - 24px));padding:14px 16px 12px;border-radius:14px;background:#fff;border:1px solid #a7f3d0;box-shadow:0 10px 30px rgba(15,23,42,.14);-webkit-user-select:text;user-select:text}
+.sj-uitleg[hidden]{display:none}
+.sj-uitleg h2{margin:0 0 6px;font-size:1rem;font-weight:700;color:#1e293b;letter-spacing:-.01em;line-height:1.3}
+.sj-uitleg ul{margin:0;padding:0 0 0 1.1em;font-size:.9375rem;line-height:1.5;color:#475569}
+.sj-uitleg li+li{margin-top:4px}
+.sj-uitleg-rij{display:flex;justify-content:flex-end;margin-top:10px}
+.sj-uitleg-rij button{min-height:44px;padding:0 16px;border:0;border-radius:10px;background:#ecfdf5;box-shadow:inset 0 0 0 1px #a7f3d0;color:#047857;font:inherit;font-size:.9375rem;font-weight:600;cursor:pointer}
+.sj-uitleg-rij button:hover{background:#d1fae5}
+.sj-uitleg-rij button:focus-visible{outline:2px solid #047857;outline-offset:2px}
 #stage > canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block;pointer-events:none}
 #stage > #c-live{pointer-events:auto;touch-action:none}
 #c-ink{transform-origin:0 0;will-change:transform}
@@ -970,6 +980,7 @@ input::placeholder, textarea::placeholder { color:#64748b; opacity:1; }
     <div class="strip-scrim" id="strip-scrim"></div>
 
     <div id="stage" tabindex="0" role="application" aria-roledescription="tekenvlak" aria-label="Tekenvlak" aria-describedby="stage-hulp">
+      <div class="sj-uitleg" id="sj-uitleg" role="note" aria-labelledby="sj-uitleg-h" hidden></div>
       <canvas id="c-bg" aria-hidden="true"></canvas>
       <canvas id="c-ink" aria-hidden="true"></canvas>
       <canvas id="c-live" aria-hidden="true"></canvas>
@@ -3534,7 +3545,7 @@ function inRegels(t, max, n) {
 }
 function openSjabloon(tpl) {
   const al = boek.bladen.filter(b => b.tpl === tpl && !b.vb).pop();
-  if (al) { gaNaar(al.id); toonStart(false); return; }
+  if (al) { gaNaar(al.id); toonStart(false); toonUitleg(tpl, false); return; }
   nieuwBlad(tpl);
   const sh = blad(), o = tpl === 'storyboard' && verhaalOnderschriften();
   if (o) {
@@ -3542,9 +3553,31 @@ function openSjabloon(tpl) {
     // twee regels, elk op een hulplijn van het sjabloon
     o.forEach((t, i) => { if (t) inRegels(t, 37, 2).split('\n').forEach((r, k) => sh.items.push({ k: 'tekst', id: uid(), s: r, x: xs[i % 3] + 12, y: ys[Math.floor(i / 3)] + 290 + k * 40, fs: 20, c: '#334155' })); });
     sh.n0 = sh.items.length; bewaar(sh.id); vraag('alles');
-    toast('Je verhaal staat onder de beelden. Teken nu wat erbij hoort.');
   }
+  toonUitleg(tpl, !!o);
 }
+const SJ_UITLEG = {
+  moodbord: { h: 'Moodbord: welke sfeer heeft je verhaal?', p: [
+    'Vul de vakken met wat je publiek moet voelen: een schets, een paar woorden, een briefje.',
+    'Kies kleuren die passen. Rustig, warm of dringend?',
+    'Hou het los. Het gaat om de sfeer, niet om de details.'] },
+  storyboard: { h: 'Storyboard: zie je verhaal in zes beelden', p: [
+    'Onder elk beeld staat al een stuk van je verhaal: je begin, je waarom, je drie gedachten en je clou.',
+    'Teken in elk vak wat je publiek moet zien. Stokpoppetjes zijn genoeg.',
+    'Lukt een beeld niet? Dan is dat stuk van je verhaal nog niet concreet genoeg.'] }
+};
+function toonUitleg(tpl, metVerhaal) {
+  const u = SJ_UITLEG[tpl], el = $('sj-uitleg'); if (!u || !el) return;
+  const p = u.p.slice();
+  if (tpl === 'storyboard' && !metVerhaal && !blad().items.some(i => i.k === 'tekst' && !i.tl && !i.vet)) p[0] = 'Schrijf onder elk beeld in één zin wat er gebeurt. Of vul eerst de Verhaalkaart in: dan staat je verhaal er al.';
+  el.innerHTML = '<h2 id="sj-uitleg-h"></h2><ul></ul><div class="sj-uitleg-rij"><button type="button" id="sj-uitleg-ok">Begrepen</button></div>';
+  el.querySelector('h2').textContent = u.h;
+  p.forEach(t => { const li = document.createElement('li'); li.textContent = t; el.querySelector('ul').appendChild(li); });
+  el.hidden = false;
+  $('sj-uitleg-ok').addEventListener('click', () => { el.hidden = true; $('stage').focus({ preventScroll: true }); });
+}
+// Begin je te tekenen of te schrijven, dan gaat de uitleg weg
+document.addEventListener('pointerdown', e => { const el = $('sj-uitleg'); if (el && !el.hidden && e.target.closest('#stage') && !e.target.closest('#sj-uitleg')) el.hidden = true; }, true);
 // Een blad verwijderen kan ongedaan: met de melding, met de knop Ongedaan maken en met Ctrl+Z.
 function verwijderBlad(id, stil) {
   const i = boek.bladen.findIndex(b => b.id === id); if (i < 0) return;
