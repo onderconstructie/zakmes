@@ -1188,7 +1188,7 @@ const ocExport = (() => {
     links.style.cssText = 'display:flex;align-items:center;gap:8px;min-width:0;color:#64748b;';
     if (icoon) { const im = new Image(); im.alt = ''; im.src = icoon; im.style.cssText = 'width:18px;height:18px;flex:none;'; links.appendChild(im); }
     const bl = document.createElement('span'); bl.textContent = (q && q.textContent.trim()) || 'Onder Constructie'; links.appendChild(bl);
-    const rechts = document.createElement('span'); rechts.style.cssText = 'white-space:nowrap;flex:none;'; rechts.textContent = 'onderconstructie.github.io';
+    const rechts = document.createElement('span'); rechts.style.cssText = 'white-space:nowrap;flex:none;'; rechts.textContent = 'onderconstructie.app';
     foot.append(links, rechts);
     wrap.append(head, content, foot);
     document.body.appendChild(wrap);
@@ -3921,7 +3921,7 @@ function paginaCanvas(sh, i, n, PW, PH, K) {
   x.fillStyle = '#10b981'; x.fillRect(40, 96, PW - 80, 2);
   x.fillStyle = '#e2e8f0'; x.fillRect(40, PH - 46, PW - 80, 1);
   x.fillStyle = '#94a3b8'; x.font = `400 11px ${FONT}`; x.fillText('Onder Constructie', 40, PH - 26);
-  x.textAlign = 'right'; x.fillText('onderconstructie.github.io', PW - 40, PH - 26); x.textAlign = 'left';
+  x.textAlign = 'right'; x.fillText('onderconstructie.app', PW - 40, PH - 26); x.textAlign = 'left';
   tekenBlad(x, sh, { x: 40 * K, y: 114 * K, w: (PW - 80) * K, h: (PH - 46 - 16 - 114) * K }, { wr: kader(sh, true), dichtheid: K });
   return c;
 }

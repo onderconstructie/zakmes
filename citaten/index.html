@@ -1517,7 +1517,7 @@ const ocExport = (() => {
     links.style.cssText = 'display:flex;align-items:center;gap:8px;min-width:0;color:#64748b;';
     if (icoon) { const im = new Image(); im.alt = ''; im.src = icoon; im.style.cssText = 'width:18px;height:18px;flex:none;'; links.appendChild(im); }
     const bl = document.createElement('span'); bl.textContent = (q && q.textContent.trim()) || 'Onder Constructie'; links.appendChild(bl);
-    const rechts = document.createElement('span'); rechts.style.cssText = 'white-space:nowrap;flex:none;'; rechts.textContent = 'onderconstructie.github.io';
+    const rechts = document.createElement('span'); rechts.style.cssText = 'white-space:nowrap;flex:none;'; rechts.textContent = 'onderconstructie.app';
     foot.append(links, rechts);
     wrap.append(head, content, foot);
     document.body.appendChild(wrap);
@@ -2090,7 +2090,7 @@ async function deelKaart(c) {
   if (ic) { try { x.drawImage(ic, P, H - 112, 52, 52); lx = P + 70; } catch (e) {} }
   const q = document.querySelector('footer .quote');
   x.fillStyle = '#047857'; x.font = '400 28px ' + SANS; x.fillText((q && q.textContent.trim()) || 'Citaten', lx, H - 76);
-  x.fillStyle = '#94a3b8'; x.font = '400 24px ' + SANS; x.textAlign = 'right'; x.fillText('onderconstructie.github.io', W - P, H - 76); x.textAlign = 'left';
+  x.fillStyle = '#94a3b8'; x.font = '400 24px ' + SANS; x.textAlign = 'right'; x.fillText('onderconstructie.app', W - P, H - 76); x.textAlign = 'left';
   const naam = 'citaat-' + (zacht(c.auteur || 'citaat').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'citaat') + '.png';
   const blob = await new Promise(ok => cv.toBlob(ok, 'image/png'));
   if (!blob) { toast('De afbeelding maken lukte niet.'); return; }
