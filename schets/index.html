@@ -2168,7 +2168,8 @@ function geldigBlad(s) {
     // zonder eigen naam heet een blad naar zijn plaats ("Blad 2"); oude automatische namen tellen niet als naam
     id: s.id, naam: typeof s.naam === 'string' && !/^\s*Blad( \d+)?\s*$/.test(s.naam) ? s.naam.trim().slice(0, 60) : '',
     bg: BGS.includes(s.bg) ? s.bg : 'blanco', tpl: SJ[s.tpl] ? s.tpl : 'leeg',
-    items: s.items.map(geldigItem).filter(Boolean), vb: s.vb ? 1 : undefined, t: isNum(s.t) ? s.t : 0
+    items: s.items.map(geldigItem).filter(Boolean), vb: s.vb ? 1 : undefined, t: isNum(s.t) ? s.t : 0,
+    n0: Number.isInteger(s.n0) && s.n0 > 0 ? s.n0 : undefined   // hoeveel items er bij het begin stonden (sjabloon en onderschriften)
   };
 }
 function geldigeUi(u) {
@@ -2190,7 +2191,7 @@ function geldigeUi(u) {
   return o;
 }
 const blad = () => boek.bladen.find(b => b.id === boek.cur) || boek.bladen[0];
-const leegBlad = (tpl, bg) => ({ id: uid(), naam: '', bg: bg || (tpl && SJ[tpl].bg) || 'blanco', tpl: tpl || 'leeg', items: tpl ? sjabloonLabels(tpl) : [], t: Date.now() });
+const leegBlad = (tpl, bg) => { const items = tpl ? sjabloonLabels(tpl) : []; return { id: uid(), naam: '', bg: bg || (tpl && SJ[tpl].bg) || 'blanco', tpl: tpl || 'leeg', items, n0: items.length || undefined, t: Date.now() }; };
 // De naam die je ziet: de eigen naam, of anders "Blad 2"
 function bladNaam(b) { return (b && b.naam) || 'Blad ' + (boek.bladen.indexOf(b) + 1 || 1); }
 function heeftWerk() { return boek.bladen.length > 1 || boek.bladen.some(b => b.items.length || b.tpl !== 'leeg' || b.bg !== 'blanco' || b.naam); }
@@ -2200,7 +2201,7 @@ let bewaarT = null, ankerT = null, opslagFout = false, ankerKapot = false;
 function schrijfAnker() {
   if (!heeftWerk() && ankerKapot) return;   // een onleesbaar anker blijft staan tot je echt iets tekent
   // mislukt het, dan meldt de opslaglaag het (met Bewaar als bestand, ook de tekeningen: window.ocBewaarBestand)
-  ocSchrijf(KEY, heeftWerk() ? JSON.stringify({ v: 1, orde: boek.bladen.map(b => b.id), cur: boek.cur, ui, opslag, bewaard: new Date().toISOString() }) : null);
+  ocSchrijf(KEY, heeftWerk() ? JSON.stringify({ v: 1, orde: boek.bladen.map(b => b.id), cur: boek.cur, ui, opslag, bewaard: new Date().toISOString(), bl: boek.bladen.filter(b => !b.vb).map(b => [b.id === boek.cur ? 1 : 0, b.tpl, b.items.length, b.n0 || 0]) }) : null);
 }
 // Elke wijziging: tellen (voor Ongedaan bij wissen), het anker meteen, de tekeningen kort daarna.
 function bewaar(id) {
@@ -2210,7 +2211,7 @@ function bewaar(id) {
   clearTimeout(bewaarT); bewaarT = setTimeout(flush, 450);
 }
 function bewaarAlles() { boek.bladen.forEach(b => vuil.add(b.id)); bewaar(); }
-const kaal = b => ({ id: b.id, naam: b.naam, bg: b.bg, tpl: b.tpl, items: b.items, vb: b.vb, t: b.t });
+const kaal = b => ({ id: b.id, naam: b.naam, bg: b.bg, tpl: b.tpl, items: b.items, vb: b.vb, t: b.t, n0: b.n0 });
 async function flush() {
   clearTimeout(bewaarT); clearTimeout(ankerT); bewaarT = 0;
   schrijfAnker();
@@ -3508,6 +3509,42 @@ function nieuwBlad(tpl, bg) {
   bewaar(nb.id); bouwStrip(); gaNaar(nb.id, true); toonStart(false);
   if (tpl === 'leeg') zetTool(ui.tool === 'kies' ? 'pen' : ui.tool);
 }
+/* Openen vanuit een link: het laatste blad met dit sjabloon, of een nieuw. Een nieuw storyboard krijgt de onderschriften
+   uit de Verhaalkaart van het actieve project (oc.share.verhaal): begin, waarom, drie gedachten en de clou. */
+function verhaalOnderschriften() {
+  try {
+    const p = JSON.parse(localStorage.getItem('oc.project') || 'null'), naam = p && typeof p.name === 'string' ? p.name.replace(/\s+/g, ' ').trim().toLowerCase() : '';
+    const d = JSON.parse(localStorage.getItem('oc.share.verhaal') || 'null'), L = d && Array.isArray(d.lists) ? d.lists : [];
+    const l = naam ? L.find(x => x && String(x.name || '').replace(/\s+/g, ' ').trim().toLowerCase() === naam) : L.length === 1 ? L[0] : null;
+    if (!l || !Array.isArray(l.items)) return null;
+    const tk = n => { const i = l.items.find(x => x && x.note === n && typeof x.text === 'string'); return i ? i.text : ''; };
+    const S = [tk('begin'), tk('waarom'), tk('gedachte 1'), tk('gedachte 2'), tk('gedachte 3'), tk('de clou')];
+    return S.some(Boolean) ? S : null;
+  } catch (e) { return null; }
+}
+// Tekst in regels van hoogstens max tekens; wat niet in n regels past, eindigt op …
+function inRegels(t, max, n) {
+  const L = [''];
+  for (const w of String(t).replace(/\s+/g, ' ').trim().split(' ')) {
+    const k = L.length - 1;
+    if (L[k] && (L[k] + ' ' + w).length > max) { if (L.length === n) { L[k] = L[k].replace(/[\s.,;:]+$/, '') + '…'; return L.join('\n'); } L.push(w); }
+    else L[k] = L[k] ? L[k] + ' ' + w : w;
+  }
+  return L.join('\n');
+}
+function openSjabloon(tpl) {
+  const al = boek.bladen.filter(b => b.tpl === tpl && !b.vb).pop();
+  if (al) { gaNaar(al.id); toonStart(false); return; }
+  nieuwBlad(tpl);
+  const sh = blad(), o = tpl === 'storyboard' && verhaalOnderschriften();
+  if (o) {
+    const xs = [140, 600, 1060], ys = [110, 560];
+    // twee regels, elk op een hulplijn van het sjabloon
+    o.forEach((t, i) => { if (t) inRegels(t, 37, 2).split('\n').forEach((r, k) => sh.items.push({ k: 'tekst', id: uid(), s: r, x: xs[i % 3] + 12, y: ys[Math.floor(i / 3)] + 290 + k * 40, fs: 20, c: '#334155' })); });
+    sh.n0 = sh.items.length; bewaar(sh.id); vraag('alles');
+    toast('Je verhaal staat onder de beelden. Teken nu wat erbij hoort.');
+  }
+}
 // Een blad verwijderen kan ongedaan: met de melding, met de knop Ongedaan maken en met Ctrl+Z.
 function verwijderBlad(id, stil) {
   const i = boek.bladen.findIndex(b => b.id === id); if (i < 0) return;
@@ -4145,6 +4182,8 @@ addEventListener('storage', e => {
   if (opslag === 'geen') toast('Bewaren kan niet in dit venster. Kies Bewaar als bestand om je werk te houden.');
   zetStrip(breed() ? ui.strip !== false : false);
   bouwStrip(); zetTool(ui.tool); gaNaar(boek.cur);
+  // Een link met ?sjabloon=moodbord (bv. uit een stappenplan): dat blad openen, of het maken
+  { const sj = new URLSearchParams(location.search).get('sjabloon'); if (sj && SJ[sj] && sj !== 'leeg') openSjabloon(sj); }
   toonStart(!heeftWerk());
   lettersKlaar().then(() => { geoVer++; vraag('alles'); duimenBijwerken(true); plaatsSelbar(); pasKop(); });
   if (location.hash === '#hoe-werkt-dit') openInfo();
