@@ -181,6 +181,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .pop .hint{font-size:.8125rem;line-height:1.4;color:var(--slate-500);margin:2px 4px 2px}
 .pop .row.kl8{display:grid;grid-template-columns:repeat(8, 44px);gap:4px}
 @media (max-width:430px){ .pop .row.kl8{grid-template-columns:repeat(4, 44px);column-gap:12px} }
+.pop .row.kl12{display:grid;grid-template-columns:repeat(6, 44px);gap:4px}
 .pop .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}
 
 /* Pas in beeld en zoom */
@@ -1389,8 +1390,13 @@ const FONT = "'DM Sans', system-ui, -apple-system, sans-serif";
 const r2 = v => Math.round(v * 100) / 100;
 
 /* ---------- Kleuren en diktes ---------- */
-const INKT = [['#1e293b', 'Zwart'], ['#64748b', 'Grijs'], ['#047857', 'Groen'], ['#2563eb', 'Blauw'], ['#dc2626', 'Rood'], ['#ea580c', 'Oranje']];
-const STIFT = [['#fde047', 'Geel'], ['#6ee7b7', 'Groen'], ['#93c5fd', 'Blauw'], ['#fdba74', 'Oranje']];
+const INKT = [['#1e293b', 'Zwart'], ['#64748b', 'Grijs'], ['#047857', 'Groen'], ['#2563eb', 'Blauw'], ['#dc2626', 'Rood'], ['#ea580c', 'Oranje'],
+  ['#92400e', 'Bruin'], ['#db2777', 'Roze'], ['#a16207', 'Oker'], ['#0f766e', 'Petrol'], ['#4338ca', 'Indigo'], ['#9333ea', 'Paars']];
+// Volgorde in de kiezer: van donker en warm naar koel. Elke inkt haalt op wit minstens 4,5:1.
+const INKT_ORDE = [0, 1, 6, 4, 7, 5, 8, 2, 9, 3, 10, 11];
+const STIFT = [['#fde047', 'Geel'], ['#6ee7b7', 'Groen'], ['#93c5fd', 'Blauw'], ['#fdba74', 'Oranje'],
+  ['#f9a8d4', 'Roze'], ['#c4b5fd', 'Lila'], ['#fca5a5', 'Koraal'], ['#5eead4', 'Turkoois']];
+const STIFT_ORDE = [0, 3, 6, 4, 5, 2, 7, 1];
 // Plakbriefjes: [papier, kleefstrook, naam]. De volgorde van de nummers blijft vast (oude tekeningen);
 // BRIEF_ORDE is de volgorde in de kleurkeuze. Tekst #334155 haalt op elke kleur minstens 6,9:1.
 const BRIEF = [['#fdf0a6', '#f3dc6b', 'Geel'], ['#cdf3e0', '#9fe3c3', 'Groen'], ['#d8e8fd', '#a9cbf7', 'Blauw'], ['#eef1f5', '#d5dce5', 'Grijs'],
@@ -1871,7 +1877,7 @@ const SJ = {
       const vak = (x, y, w, hh) => { rondeRect(ctx, x, y, w, hh, 18); ctx.fillStyle = '#f8fafc'; ctx.fill(); ctx.setLineDash([14, 12]); ctx.strokeStyle = ZACHT; lw(ctx, 2.5, sc); ctx.stroke(); ctx.setLineDash([]); };
       vak(80, 80, 620, 480); vak(740, 80, 380, 230); vak(1160, 80, 360, 480); vak(740, 340, 380, 220);
       vak(80, 600, 380, 320); vak(500, 600, 620, 320); vak(1160, 600, 360, 320);
-      [0, 1, 2, 3, 4].forEach(i => { ctx.beginPath(); ctx.arc(1216 + i * 62, 780, 26, 0, Math.PI * 2); ctx.fillStyle = ['#ecfdf5', '#a7f3d0', '#10b981', '#047857', '#e2e8f0'][i]; ctx.fill(); ctx.strokeStyle = ZACHT; lw(ctx, 2, sc); ctx.stroke(); });
+      [0, 1, 2, 3, 4].forEach(i => { ctx.beginPath(); ctx.arc(1216 + i * 62, 780, 26, 0, Math.PI * 2); ctx.fillStyle = ['#ef8a6b', '#f2c14e', '#8fbf9f', '#4f86a6', '#6b4e71'][i]; ctx.fill(); ctx.strokeStyle = ZACHT; lw(ctx, 2, sc); ctx.stroke(); });
     },
     labels: [{ s: 'Beeld', x: 390, y: 330, fs: 30, al: 'c', c: '#94a3b8' }, { s: 'Beeld', x: 930, y: 205, fs: 26, al: 'c', c: '#94a3b8' }, { s: 'Beeld', x: 1340, y: 330, fs: 30, al: 'c', c: '#94a3b8' }, { s: 'Detail', x: 930, y: 460, fs: 26, al: 'c', c: '#94a3b8' }, { s: 'Woorden', x: 270, y: 650, fs: 28, al: 'c', vet: 1, c: '#047857' }, { s: 'Sfeer', x: 810, y: 650, fs: 28, al: 'c', vet: 1, c: '#047857' }, { s: 'Kleuren', x: 1340, y: 650, fs: 28, al: 'c', vet: 1, c: '#047857' }]
   },
@@ -3277,7 +3283,7 @@ const VINK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 function licht(hex) { const v = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)); return v[0] * 0.299 + v[1] * 0.587 + v[2] * 0.114 > 150; }
 function kleurKnoppen(lijst, actief, groep, orde, label) {
   const idx = orde || lijst.map((_, i) => i);
-  return `<div class="row${idx.length > 6 ? ' kl8' : ''}" role="group" aria-label="${label || 'Kleur'}">${idx.map(i => { const k = lijst[i], naam = k[k.length - 1]; return `<button type="button" class="kleur" data-k="${groep}" data-i="${i}" aria-pressed="${i === actief}" aria-label="${naam}" title="${naam}"><i style="background:${k[0]};color:${licht(k[0]) ? '#334155' : '#fff'}">${i === actief ? VINK : ''}</i></button>`; }).join('')}</div>`;
+  return `<div class="row${idx.length > 8 ? ' kl12' : idx.length > 6 ? ' kl8' : ''}" role="group" aria-label="${label || 'Kleur'}">${idx.map(i => { const k = lijst[i], naam = k[k.length - 1]; return `<button type="button" class="kleur" data-k="${groep}" data-i="${i}" aria-pressed="${i === actief}" aria-label="${naam}" title="${naam}"><i style="background:${k[0]};color:${licht(k[0]) ? '#334155' : '#fff'}">${i === actief ? VINK : ''}</i></button>`; }).join('')}</div>`;
 }
 const briefLijst = () => BRIEF.map(b => [b[0], b[2]]);
 function dikteKnoppen(lijst, actief, groep, kleur, schaal) {
@@ -3287,21 +3293,21 @@ function bouwPop() {
   const t = ui.tool, p = $('pop');
   let h = '';
   if (t === 'pen') {
-    h = `<h3>Kleur</h3>${kleurKnoppen(INKT, ui.pen[0], 'pen-k')}<h3>Dikte</h3>${dikteKnoppen(PEN_W, ui.pen[1], 'pen-w', '', [4, 7, 11])}`;
+    h = `<h3>Kleur</h3>${kleurKnoppen(INKT, ui.pen[0], 'pen-k', INKT_ORDE)}<h3>Dikte</h3>${dikteKnoppen(PEN_W, ui.pen[1], 'pen-w', '', [4, 7, 11])}`;
     if (ui.penGezien) h += `<h3>Je vinger</h3><div class="row seg"><button type="button" class="keuze" data-k="vinger" data-v="schuif" aria-pressed="${ui.vinger === 'schuif'}">Schuift het blad</button><button type="button" class="keuze" data-k="vinger" data-v="teken" aria-pressed="${ui.vinger === 'teken'}">Tekent ook</button></div>`;
     else h += `<p class="hint">Houd even stil aan het einde van een lijn: hij wordt dan netjes recht.</p>`;
   } else if (t === 'stift') {
-    h = `<h3>Kleur</h3>${kleurKnoppen(STIFT, ui.stift[0], 'stift-k')}<h3>Breedte</h3>${dikteKnoppen(STIFT_W, ui.stift[1], 'stift-w', '', [7, 11, 16])}`;
+    h = `<h3>Kleur</h3>${kleurKnoppen(STIFT, ui.stift[0], 'stift-k', STIFT_ORDE)}<h3>Breedte</h3>${dikteKnoppen(STIFT_W, ui.stift[1], 'stift-w', '', [7, 11, 16])}`;
   } else if (t === 'gum') {
     h = `<h3>Gum</h3><div class="row seg"><button type="button" class="keuze" data-k="gumstuk" data-v="0" aria-pressed="${!ui.gumStuk}">Hele lijn</button><button type="button" class="keuze" data-k="gumstuk" data-v="1" aria-pressed="${ui.gumStuk}">Een stukje</button></div>`;
     if (ui.gumStuk) h += dikteKnoppen(GUM_R, ui.gum, 'gum-w', '', [8, 14]);
     else h += `<p class="hint">Veeg over een lijn, tekst of briefje: het verdwijnt in zijn geheel.</p>`;
   } else if (t === 'vorm') {
     h = `<h3>Vorm: ${VORM_NAAM[ui.vorm].toLowerCase()}</h3><div class="row" role="group" aria-label="Vorm">${Object.keys(VORM_ICO).map(v => `<button type="button" class="keuze" data-k="vorm" data-v="${v}" aria-pressed="${ui.vorm === v}" aria-label="${VORM_NAAM[v]}" title="${VORM_NAAM[v]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${VORM_ICO[v]}</svg></button>`).join('')}</div>`
-      + `<h3>Kleur</h3>${kleurKnoppen(INKT, ui.vormStijl[0], 'vorm-k')}<h3>Dikte</h3>${dikteKnoppen(PEN_W, ui.vormStijl[1], 'vorm-w', '', [4, 7, 11])}`
+      + `<h3>Kleur</h3>${kleurKnoppen(INKT, ui.vormStijl[0], 'vorm-k', INKT_ORDE)}<h3>Dikte</h3>${dikteKnoppen(PEN_W, ui.vormStijl[1], 'vorm-w', '', [4, 7, 11])}`
       + (ui.vorm === 'vpijl' ? `<p class="hint">De pijl volgt je hand. De punt komt vanzelf aan het einde.</p>` : `<p class="hint">Houd Shift ingedrukt voor een vierkant, cirkel of rechte hoek.</p>`);
   } else if (t === 'tekst') {
-    h = `<h3>Kleur</h3>${kleurKnoppen(INKT, ui.tekst[0], 'tekst-k')}<h3>Grootte</h3><div class="row">${TEKST_FS.map((k, i) => `<button type="button" class="keuze" data-k="tekst-w" data-i="${i}" aria-pressed="${ui.tekst[1] === i}" style="font-size:${[13, 15, 18][i]}px">${k[1]}</button>`).join('')}</div>`;
+    h = `<h3>Kleur</h3>${kleurKnoppen(INKT, ui.tekst[0], 'tekst-k', INKT_ORDE)}<h3>Grootte</h3><div class="row">${TEKST_FS.map((k, i) => `<button type="button" class="keuze" data-k="tekst-w" data-i="${i}" aria-pressed="${ui.tekst[1] === i}" style="font-size:${[13, 15, 18][i]}px">${k[1]}</button>`).join('')}</div>`;
   } else if (t === 'briefje') {
     h = `<h3>Kleur van het briefje: ${BRIEF[ui.brief][2].toLowerCase()}</h3>${kleurKnoppen(briefLijst(), ui.brief, 'brief-k', BRIEF_ORDE, 'Kleur van het briefje')}<p class="hint">Tik op het blad voor een nieuw briefje. Een briefje dat er al staat, geef je een andere kleur met Kies.</p>`;
   } else if (t === 'kies') {
@@ -3310,7 +3316,7 @@ function bouwPop() {
     else {
       const een = (lst, f) => { const v = [...new Set(lst.map(f))]; return v.length === 1 ? v[0] : -1; };
       const ink = l.filter(i => i.k !== 'brief'), br = l.filter(i => i.k === 'brief');
-      if (ink.length) h += `<h3>Kleur</h3>${kleurKnoppen(INKT, een(ink, i => INKT.findIndex(k => k[0] === i.c)), 'sel-k')}`;
+      if (ink.length) h += `<h3>Kleur</h3>${kleurKnoppen(INKT, een(ink, i => INKT.findIndex(k => k[0] === i.c)), 'sel-k', INKT_ORDE)}`;
       if (br.length) { const kb = een(br, i => i.kl); h += `<h3>Kleur van het briefje${kb >= 0 ? ': ' + BRIEF[kb][2].toLowerCase() : ''}</h3>${kleurKnoppen(briefLijst(), kb, 'sel-b', BRIEF_ORDE, 'Kleur van het briefje')}`; }
     }
   }

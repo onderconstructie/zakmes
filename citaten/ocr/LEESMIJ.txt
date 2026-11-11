@@ -1,0 +1,29 @@
+Lezer voor foto's in Citaten (Onder Constructie)
+================================================
+
+Deze map laat Citaten de tekst op een foto lezen, op het toestel zelf.
+Er gaat geen foto en geen tekst naar een server. De pagina laadt deze
+bestanden pas als iemand een foto kiest.
+
+Wat hier staat, en waar het vandaan komt (ongewijzigd overgenomen):
+
+  tesseract.min.js, worker.min.js
+      tesseract.js 7.0.0 (npm: tesseract.js), Apache License 2.0
+      Zie LICENSE-tesseract.js.txt. Het werkerbestand bevat ook kleine
+      onderdelen onder de MIT- en BSD-licentie: zie
+      LICENSE-worker-onderdelen.txt.
+
+  tesseract-core-simd-lstm.js en .wasm, tesseract-core-lstm.js en .wasm
+      tesseract.js-core 7.0.0 (npm: tesseract.js-core), Apache License 2.0
+      Zie LICENSE-tesseract.js-core.txt. Gebouwd op Tesseract OCR,
+      ook onder de Apache License 2.0.
+
+  nld.traineddata.gz, eng.traineddata.gz
+      Taaldata uit tessdata_fast (github.com/tesseract-ocr/tessdata_fast,
+      tak main), Apache License 2.0. Zie LICENSE-tessdata_fast.txt.
+      Alleen gezipt (gzip -9), de inhoud is niet gewijzigd.
+      sha256 van de uitgepakte bestanden:
+        nld.traineddata  ced0e5e046a84c908a6aa7accbef9a232c4a5d9a8276691b81c6ee64d02963f6
+        eng.traineddata  7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2
+
+De eigen code van Citaten valt onder de licentie van de rest van de site.
