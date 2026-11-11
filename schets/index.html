@@ -1852,6 +1852,29 @@ const SJ = {
     },
     labels: [{ s: 'Je project', x: 800, y: 482, fs: 34, al: 'c', vet: 1, c: '#047857' }, { s: "Doel", x: 800, y: 74, fs: 28, al: 'c' }, { s: "Doelgroep", x: 1114, y: 170, fs: 28 }, { s: "Producten", x: 1313, y: 328, fs: 28 }, { s: "Mijlpalen", x: 1357, y: 536, fs: 28 }, { s: "Betrokkenen", x: 1230, y: 727, fs: 28 }, { s: "Communicatie", x: 974, y: 840, fs: 28 }, { s: "Budget", x: 626, y: 840, fs: 28, al: 'r' }, { s: "Risico's", x: 370, y: 727, fs: 28, al: 'r' }, { s: "Afhankelijkheden", x: 243, y: 536, fs: 28, al: 'r' }, { s: "Bezorgdheden", x: 287, y: 328, fs: 28, al: 'r' }, { s: "Bronnen", x: 486, y: 170, fs: 28, al: 'r' }]
   },
+  storyboard: {
+    naam: 'Storyboard', uitleg: 'Zes beelden na elkaar, met een regel tekst onder elk beeld.',
+    teken(ctx, sc) {
+      const W = 400, H = 260, xs = [140, 600, 1060], ys = [110, 560];
+      ys.forEach((y, r) => xs.forEach((x, k) => {
+        rondeRect(ctx, x, y, W, H, 14); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = GRIJS; lw(ctx, 3, sc); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x + 30, y + 30, 18, 0, Math.PI * 2); ctx.fillStyle = '#ecfdf5'; ctx.fill(); ctx.strokeStyle = '#10b981'; lw(ctx, 2.5, sc); ctx.stroke();
+        ctx.strokeStyle = LICHT; lw(ctx, 2.5, sc); ctx.lineCap = 'round';
+        [y + H + 50, y + H + 90].forEach(ly => { ctx.beginPath(); ctx.moveTo(x + 10, ly); ctx.lineTo(x + W - 10, ly); ctx.stroke(); });
+      }));
+    },
+    labels: [1, 2, 3, 4, 5, 6].map((n, i) => ({ s: String(n), x: [140, 600, 1060][i % 3] + 30, y: [110, 560][Math.floor(i / 3)] + 17, fs: 24, al: 'c', vet: 1, c: '#047857' }))
+  },
+  moodbord: {
+    naam: 'Moodbord', uitleg: 'Vakken voor beelden, kleuren en woorden die de sfeer tonen.',
+    teken(ctx, sc) {
+      const vak = (x, y, w, hh) => { rondeRect(ctx, x, y, w, hh, 18); ctx.fillStyle = '#f8fafc'; ctx.fill(); ctx.setLineDash([14, 12]); ctx.strokeStyle = ZACHT; lw(ctx, 2.5, sc); ctx.stroke(); ctx.setLineDash([]); };
+      vak(80, 80, 620, 480); vak(740, 80, 380, 230); vak(1160, 80, 360, 480); vak(740, 340, 380, 220);
+      vak(80, 600, 380, 320); vak(500, 600, 620, 320); vak(1160, 600, 360, 320);
+      [0, 1, 2, 3, 4].forEach(i => { ctx.beginPath(); ctx.arc(1216 + i * 62, 780, 26, 0, Math.PI * 2); ctx.fillStyle = ['#ecfdf5', '#a7f3d0', '#10b981', '#047857', '#e2e8f0'][i]; ctx.fill(); ctx.strokeStyle = ZACHT; lw(ctx, 2, sc); ctx.stroke(); });
+    },
+    labels: [{ s: 'Beeld', x: 390, y: 330, fs: 30, al: 'c', c: '#94a3b8' }, { s: 'Beeld', x: 930, y: 205, fs: 26, al: 'c', c: '#94a3b8' }, { s: 'Beeld', x: 1340, y: 330, fs: 30, al: 'c', c: '#94a3b8' }, { s: 'Detail', x: 930, y: 460, fs: 26, al: 'c', c: '#94a3b8' }, { s: 'Woorden', x: 270, y: 650, fs: 28, al: 'c', vet: 1, c: '#047857' }, { s: 'Sfeer', x: 810, y: 650, fs: 28, al: 'c', vet: 1, c: '#047857' }, { s: 'Kleuren', x: 1340, y: 650, fs: 28, al: 'c', vet: 1, c: '#047857' }]
+  },
   gsm: {
     naam: 'Gsm-scherm', uitleg: 'Schets een app: twee schermen na elkaar.',
     teken(ctx, sc) {
@@ -1892,7 +1915,7 @@ const SJ = {
     labels: [{ s: '5 meter', x: 180, y: 942, fs: 20, al: 'c' }]
   }
 };
-const SJ_ORDE = ['leeg', 'assen', 'tijdlijn', 'kolommen', 'zes', 'takken', 'productboom', 'projectkaart', 'gsm', 'laptop', 'plattegrond'];
+const SJ_ORDE = ['leeg', 'assen', 'tijdlijn', 'kolommen', 'zes', 'takken', 'productboom', 'projectkaart', 'storyboard', 'moodbord', 'gsm', 'laptop', 'plattegrond'];
 function sjabloonLabels(id) {
   return (SJ[id].labels || []).map(l => ({ k: 'tekst', id: uid(), x: l.x, y: l.y, s: l.s, fs: l.fs, c: l.c || '#475569', al: l.al, vet: l.vet, tl: l.vet ? undefined : 1 }));
 }
