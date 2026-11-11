@@ -62,7 +62,7 @@
   .brand img{width:32px;height:32px;flex-shrink:0}
   .brand span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   @media (max-width:479px){ .back{padding:0 4px 0 0} }
-  @media (max-width:399px){ #installChip .lbl{display:none} #installChip{width:44px;padding:0;justify-content:center} .brand img{display:none} }
+  @media (max-width:399px){ .brand img{display:none} }
   .top .sp{flex:1}
   @media (min-width:600px){ #app{max-width:560px} }
   .chip{display:flex;align-items:center;gap:7px;height:44px;padding:0 13px;flex-shrink:0;border-radius:999px;font-size:.84rem;font-weight:600;
@@ -172,15 +172,15 @@
   .setup:hover{background:var(--mint-2)}
   .setup svg{width:18px;height:18px}
   .setup.on{display:inline-flex}
-  .dock{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 10px}
+  .dock{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;column-gap:28px;padding:6px 0 0}
   .side{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--muted);
     box-shadow:var(--sh-2);transition:opacity .3s var(--ease), transform .4s var(--spring), background .25s, visibility .3s}
   .side svg{width:22px;height:22px}
   .side:active{transform:scale(.92)}
   .side.hide{opacity:0;pointer-events:none;transform:scale(.7);visibility:hidden}
-  #clearBtn{justify-self:start}
+  #clearBtn{justify-self:end}
   #clearBtn:hover{color:var(--text);border-color:var(--line-2)}
-  #sendBtn{justify-self:end;color:var(--line-2)}
+  #sendBtn{justify-self:start;color:var(--line-2)}
   #sendBtn.ready{background:#0c8660;border-color:transparent;color:#fff;
     box-shadow:0 10px 24px -8px rgba(4,120,87,.55);animation:pop .5s var(--spring)}
   @keyframes pop{0%{transform:scale(.85)}100%{transform:scale(1)}}
@@ -301,6 +301,7 @@ button:not(:disabled):active, summary:active, [role="button"]:active { filter: b
 dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscroll-behavior: contain; }
   /* Wissen valt op als iets anders dan Bewaren (rood als signaal) */
   #wipeAll{color:#b91c1c;margin-top:.5rem}
+  #hulpBtn{margin-top:.5rem}
 
   /* Gebruikerstest november 2026 */
   /* Wat niet op het scherm staat, krijgt ook geen toetsenbordfocus en wordt niet voorgelezen */
@@ -316,8 +317,20 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
   .field input[aria-invalid="true"]{border-color:#d97706}
   /* Lage schermen (liggende gsm, ingezoomd): de memo blijft groot genoeg om te lezen; de pagina scrollt */
   @media (max-height:560px){ #app{height:auto;min-height:100dvh} .card{flex:none;height:220px} }
+  /* In balans: de microfoon en zijn gloed passen altijd op het eerste scherm, met ademruimte onderaan.
+     Het tekstvak krimpt mee. Wissen en verzenden staan dicht bij de microfoon, op dezelfde as. */
+  #app{padding-bottom:calc(30px + env(safe-area-inset-bottom))}
+  @media (min-width:600px){ #app{padding-bottom:calc(44px + env(safe-area-inset-bottom))} }
+  .side{width:56px;height:56px}
+  /* Op een hoog scherm wordt het tekstvak niet eindeloos hoog: de rust gaat naar boven de bediening */
+  .card{max-height:26rem}
+  .status{margin-top:auto}
+  #installChip{margin-top:.5rem}
   /* Hoe werkt dit? Onder de app, de pagina scrollt ernaartoe. Zonder JavaScript een gewone uitklapper. */
-  .mm-uitleg{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:4px 16px calc(24px + env(safe-area-inset-bottom))}
+  .mm-uitleg{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:4px 16px 24px}
+  /* Voet met de baseline, zoals in de andere tools van het Zakmes */
+  .footer{position:relative;z-index:1;text-align:center;padding:2rem 2rem calc(2rem + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
+  .footer .quote{font-size:.8125rem;line-height:1.5;color:var(--acc-d)}
   @media (min-width:600px){ .mm-uitleg{max-width:560px} }
   .explain { background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; }
   .explain summary { min-height:44px; padding:0.875rem 1.125rem; font-weight:600; color:#334155; cursor:pointer; }
@@ -1054,9 +1067,74 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
     vooraf: function (o) {
       var s = document.currentScript, k = (s && s.closest && s.closest('header[data-oc-kop]')) || document.querySelector('header[data-oc-kop]');
       if (!k || !o) return;
+      opties = o;
       try { k.setAttribute('data-stand', voorspel(o) ? 'groot' : 'compact'); } catch (e) {}
-    }
+    },
+    heeftWerk: heeftWerk,
+    wisZicht: wisZicht
   };
+  /* "Alles wissen" alleen als er iets te wissen is. Gaat het menu in .oc-kop-acties open, dan vraagt het blok ocKop.heeftWerk():
+     1. window.ocHeeftWerk() als de tool die aanbiedt (true als er eigen werk bewaard is);
+     2. anders de gegevens van ocKop.vooraf: is er een project of lijst die geen voorbeeld is en niet leeg (leeg(u, d) van de tool)?
+     3. anders true: het menu blijft zoals het was.
+     Een voorbeeld (voorbeeld: true) telt niet als eigen werk. Zonder werk staat "Alles wissen" niet in het menu, en ook de
+     scheidingslijn ervoor niet. Ongedaan staat in de melding na het wissen, niet in het menu: dat blijft werken. */
+  var opties = null;
+  function zonderVb(x) {
+    if (Array.isArray(x)) return x.filter(function (y) { return !(y && typeof y === 'object' && y.voorbeeld === true); }).map(zonderVb);
+    if (x && typeof x === 'object') { var r = {}; Object.keys(x).forEach(function (k) { if (k !== 'voorbeeld') r[k] = zonderVb(x[k]); }); return r; }
+    return x;
+  }
+  function heeftWerk() {
+    if (typeof window.ocHeeftWerk === 'function') { try { return !!window.ocHeeftWerk(); } catch (e) { return true; } }
+    var o = opties; if (!o || !o.sleutel || typeof o.leeg !== 'function') return true;
+    try {
+      var d = lees(o.sleutel);
+      if (d === null) return true;   // onleesbaar: laat wissen toe
+      if (d === undefined) return !voorspel(o);   // niets bewaard (een oude naam telt mee)
+      d = zonderVb(d);
+      if (!o.lijst) return !o.leeg(d, d);
+      return (Array.isArray(d[o.lijst]) ? d[o.lijst] : []).some(function (u) { return u && typeof u === 'object' && !o.leeg(u, d); });
+    } catch (e) { return true; }
+  }
+  function isWis(b) { for (var k in b.dataset) if (b.dataset[k] === 'wipe') return true; return false; }
+  function zichtbaar(e) { return !e.hidden && !e.hasAttribute('data-oc-weg') && getComputedStyle(e).display !== 'none'; }
+  function weg(e, w) {
+    if (w) { e.setAttribute('data-oc-weg', ''); e.hidden = true; e.style.setProperty('display', 'none', 'important'); }
+    else if (e.hasAttribute('data-oc-weg')) { e.removeAttribute('data-oc-weg'); e.hidden = false; e.style.removeProperty('display'); }
+  }
+  function wisZicht() {
+    var a = document.querySelector('header[data-oc-kop] .oc-kop-acties'); if (!a) return;
+    var W = [].filter.call(a.querySelectorAll('button'), isWis); if (!W.length) return;
+    var werk = heeftWerk();
+    W.forEach(function (b) {
+      weg(b, !werk);
+      var m = b.parentNode; [].forEach.call(m.children, function (e) { if (/(^|\s)(oc[a-z]*-)?sep(\s|$)/.test(e.className) || e.getAttribute('role') === 'separator') weg(e, false); });
+      var L = [].filter.call(m.children, zichtbaar), sep = function (e) { return /(^|\s)(oc[a-z]*-)?sep(\s|$)/.test(e.className) || e.getAttribute('role') === 'separator'; };
+      L.forEach(function (e, i) { if (sep(e) && (i === 0 || i === L.length - 1 || sep(L[i + 1]))) weg(e, true); });
+    });
+  }
+  /* voor de tool het menu opent (klik, Enter, spatie of een pijl op de knop) */
+  function menuKnop(t) { var a = t && t.closest && t.closest('header[data-oc-kop] .oc-kop-acties'); return a && t.closest('button[aria-haspopup], button[aria-expanded]') && !t.closest('[role="menu"]') ? a : null; }
+  document.addEventListener('click', function (e) { if (menuKnop(e.target)) try { wisZicht(); } catch (x) {} }, true);
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (/^(Arrow(Up|Down)|Enter| )$/.test(e.key) && menuKnop(t)) {
+      try { wisZicht(); } catch (x) {}
+      if (e.key === 'ArrowUp') setTimeout(function () {   // de tool zet de focus op het laatste item: misschien net het verborgen
+        var m = t.closest('.oc-kop-acties').querySelector('[role="menu"]'), L = m ? [].filter.call(m.querySelectorAll('[role="menuitem"]'), function (b) { return b.getClientRects().length; }) : [];
+        if (document.activeElement === t && t.getAttribute('aria-expanded') === 'true' && L.length) L[L.length - 1].focus();
+      }, 0);
+      return;
+    }
+    /* pijlen in het menu slaan een verborgen item over */
+    var m = t && t.closest && t.closest('header[data-oc-kop] .oc-kop-acties [role="menu"]');
+    if (!m || !m.querySelector('[data-oc-weg]') || !/^(Arrow(Up|Down)|Home|End)$/.test(e.key)) return;
+    var L = [].filter.call(m.querySelectorAll('[role="menuitem"]'), function (b) { return b.getClientRects().length; }); if (!L.length) return;
+    var i = L.indexOf(document.activeElement), n = L.length;
+    var j = e.key === 'Home' ? 0 : e.key === 'End' ? n - 1 : (i + (e.key === 'ArrowDown' ? 1 : -1) + n) % n;
+    e.preventDefault(); e.stopImmediatePropagation(); L[j].focus();
+  }, true);
   /* de terugknop is een pijltje: bij de muis toont een tip waar hij naartoe gaat (de naam staat in aria-label, die oc-terug kan wijzigen) */
   document.addEventListener('pointerover', function (e) {
     var a = e.target && e.target.closest && e.target.closest('header[data-oc-kop] a.back-link'); if (!a) return;
@@ -1079,8 +1157,7 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
   <header class="top" data-oc-kop data-stand="compact"><script>ocKop.groot(false); (function () { function sb() { document.documentElement.style.setProperty('--oc-sb', Math.max(0, innerWidth - document.body.clientWidth) + 'px'); } sb(); addEventListener('resize', sb); addEventListener('load', sb); try { new ResizeObserver(sb).observe(document.body); } catch (e) {} })();</script>
     <a class="back back-link" href="../" aria-label="Terug naar Zakmes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Zakmes</span></a>
     <h1 class="brand"><img src="icon.svg" alt=""><span>MemoMiles</span></h1>
-      <div class="oc-kop-acties"><button class="chip acc" id="installChip" aria-label="Installeer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg><span class="lbl">Installeer</span></button>
-    <button class="chip icon" id="histBtn" aria-label="Geschiedenis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></button>
+      <div class="oc-kop-acties"><button class="chip icon" id="histBtn" aria-label="Geschiedenis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></button>
     <button class="chip icon" id="setBtn" aria-label="Instellingen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></div>
   </header>
 
@@ -1146,6 +1223,9 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
     </div>
   </details>
 </div>
+<footer class="footer oc-footer">
+  <p class="quote oc-quote">Wat je meteen noteert, hoef je niet te onthouden.</p>
+</footer>
 <div class="scrim" id="scrim"></div>
 
 <section class="sheet" id="setSheet" role="dialog" aria-labelledby="setTitle">
@@ -1164,6 +1244,8 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
     <label class="toggle"><span><b>Sluiter verstuurt meteen</b><small>Foto trekken of opname stoppen is ook meteen versturen. Een bijschrift zeg of typ je vooraf.</small></span><input type="checkbox" id="fQuick"><i></i></label>
   </div>
   <button class="btn primary" id="saveSet">Bewaren</button>
+  <button class="btn ghost" id="installChip" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg>Zet MemoMiles op je beginscherm</button>
+  <button class="btn ghost" id="hulpBtn" type="button">Hoe werkt dit?</button>
   <button class="btn ghost" id="wipeAll">Alles wissen op dit toestel</button>
   <p class="fine">Dicteren gebeurt via de spraakherkenning van je browser of telefoon. Daarvoor gaat je stem meestal naar de maker van je browser of besturingssysteem. Dicteer dus geen vertrouwelijke werkinformatie. MemoMiles zelf heeft geen server. Je adres en de tekst van je laatste memo's (Geschiedenis) blijven enkel op dit toestel.</p>
 </section>
@@ -1757,6 +1839,9 @@ function openSheet(k) {
     $('#setTitle').textContent = cfg.addr ? 'Instellingen' : 'Waar moet het heen?';
     $('#setLead').textContent = cfg.addr ? 'Je memo\'s gaan naar dit adres.' : 'Eén adres, en je memo\'s landen daar. Zet het één keer goed.';
     $('#fAddrHelp').classList.remove('fout'); validate(false);
+    // Alles wissen alleen als er iets bewaard is
+    let iets = false; try { iets = Object.keys(localStorage).some(x => x.startsWith('oc.memomiles.')); } catch (e) { iets = true; }
+    $('#wipeAll').style.display = iets ? '' : 'none';
   }
   if (k === 'hist') renderHist();
   Object.values(sheets).forEach(s => s.classList.remove('on'));
@@ -1781,6 +1866,14 @@ $('#wipeAll').addEventListener('click', () => {
   closeSheets(); render(); toast('Alles gewist op dit toestel.');
 });
 $('#histBtn').addEventListener('click', () => openSheet('hist'));
+// Hoe werkt dit? (in Instellingen: de kop krijgt geen extra knop): sluit het blad en open de uitleg onderaan
+$('#hulpBtn').addEventListener('click', () => {
+  closeSheets();
+  const d = document.querySelector('details.explain'), s = d && d.querySelector(':scope > summary'); if (!s) return;
+  if (!d.open) s.click();
+  d.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  s.focus({ preventScroll: true });
+});
 $('#iosOk').addEventListener('click', closeSheets);
 // Veeg een blad naar beneden om het te sluiten
 Object.values(sheets).forEach(sh => {

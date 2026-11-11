@@ -3999,14 +3999,24 @@ function vbHoud() {
 
 /* ---------- Menu en klikken ---------- */
 function sluitMenu() { $('menu').classList.remove('open'); $('menu-btn').setAttribute('aria-expanded', 'false'); }
+// "Alles wissen" alleen als er eigen werk is: een voorbeeldblad telt niet. Ook de lijn ervoor verdwijnt dan.
+const eigenWerk = () => { const B = boek.bladen.filter(b => !b.vb); return B.length > 1 || B.some(b => b.items.length || b.tpl !== 'leeg' || b.bg !== 'blanco' || b.naam); };
+function wisZicht() {
+  const w = $('menu').querySelector('[data-act="wipe"]'), s = w && w.previousElementSibling, weg = !eigenWerk();
+  if (!w) return;
+  w.style.display = weg ? 'none' : ''; w.hidden = weg;
+  if (s && s.classList.contains('sep')) s.style.display = weg ? 'none' : '';
+}
+const menuItems = () => [...$('menu').querySelectorAll('button')].filter(b => b.getClientRects().length);
 $('menu-btn').addEventListener('click', e => {
   e.stopPropagation(); sluitPop();
   const open = !$('menu').classList.contains('open');
+  if (open) wisZicht();
   $('menu').classList.toggle('open', open); $('menu-btn').setAttribute('aria-expanded', String(open));
-  if (open) setTimeout(() => $('menu').querySelector('button').focus({ preventScroll: true }), 0);
+  if (open) setTimeout(() => { const f = menuItems()[0]; f && f.focus({ preventScroll: true }); }, 0);
 });
 $('menu').addEventListener('keydown', e => {
-  const items = [...$('menu').querySelectorAll('button')], k = items.indexOf(document.activeElement);
+  const items = menuItems(), k = items.indexOf(document.activeElement);
   if (e.key === 'ArrowDown') { e.preventDefault(); items[(k + 1) % items.length].focus(); }
   else if (e.key === 'ArrowUp') { e.preventDefault(); items[(k - 1 + items.length) % items.length].focus(); }
   else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); sluitMenu(); $('menu-btn').focus(); }
