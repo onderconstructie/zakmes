@@ -77,6 +77,13 @@ dialog.bib[open] { display:flex; }
 dialog.bib::backdrop { background:rgba(15,23,42,0.35); }
 .bib-kop { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; padding:1.25rem 1.25rem 0.5rem 1.5rem; }
 .bib-kop h2 { margin:0 0 0.25rem; font-size:1.375rem; }
+.bib-zoek { padding:0 1.5rem 0.75rem; }
+.bib-lijstk { margin-left:auto; }
+.bib-lijstk svg { width:18px; height:18px; }
+@media (max-width:600px) { .bib-zoek { padding:0 1rem 0.75rem; }
+  dialog.bib .bib-pillen { display:grid; grid-template-columns:1fr 1fr; gap:0.375rem; }
+  dialog.bib .bib-pillen button { justify-content:space-between; padding:0 0.75rem; font-size:0.875rem; text-align:left; }
+  .bib-kop .fijn { display:none; } }
 .bib-pillen { display:flex; flex-wrap:wrap; gap:0.5rem; padding:0.25rem 1.5rem 0.75rem; }
 .bib-pillen button { display:inline-flex; align-items:center; gap:0.375rem; min-height:44px; padding:0 0.875rem; border-radius:999px; border:1.5px solid var(--slate-200); background:#fff; color:var(--slate-700, #334155); font-weight:600; font-size:0.9375rem; }
 .bib-pillen button span { font-weight:500; color:var(--slate-500); font-size:0.8125rem; }
@@ -106,6 +113,28 @@ dialog.bib::backdrop { background:rgba(15,23,42,0.35); }
 .c-praktijk strong, .k-praktijk strong { font-weight:600; }
 .c-praktijk svg, .k-praktijk svg { width:16px; height:16px; flex:none; }
 .c-praktijk:hover strong, .k-praktijk:hover strong { text-decoration:underline; text-underline-offset:3px; }
+/* Foto: kiezen tussen nemen en kiezen; op de laptop een eigen cameravenster */
+.kaart-kop { position:relative; }
+.foto-menu { position:absolute; right:0; top:calc(100% + 4px); z-index:40; min-width:220px; padding:0.375rem; border:1px solid var(--slate-200); border-radius:12px; background:#fff; box-shadow:0 12px 32px rgba(15,23,42,0.14); display:grid; }
+.foto-menu[hidden] { display:none; }
+.foto-menu button { display:flex; align-items:center; gap:0.625rem; min-height:44px; padding:0 0.75rem; border-radius:8px; font-weight:600; font-size:0.9375rem; color:var(--slate-800); text-align:left; }
+.foto-menu button:hover, .foto-menu button:focus-visible { background:#ecfdf5; color:#047857; }
+.foto-menu svg { width:20px; height:20px; color:#047857; flex:none; }
+dialog.cam { width:min(720px, calc(100% - 2rem)); padding:0; border:0; border-radius:18px; background:#0f172a; overflow:hidden; }
+dialog.cam::backdrop { background:rgba(15,23,42,0.55); }
+#cam-video { display:block; width:100%; max-height:70vh; object-fit:contain; background:#0f172a; }
+.cam-knoppen { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:1rem; padding:0.875rem 1rem; background:#0f172a; }
+.cam-knoppen .btn { justify-self:start; }
+.cam-sluiter { width:64px; height:64px; border-radius:50%; background:#fff; border:4px solid #a7f3d0; box-shadow:0 0 0 2px #0c8660; }
+.cam-sluiter:hover { background:#ecfdf5; }
+.cam-sluiter:focus-visible { outline:3px solid #a7f3d0; outline-offset:3px; }
+.ocr-velden { margin:0.5rem 0 0.75rem; }
+.ocr-velden-kop { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.5rem; font-size:0.8125rem; color:var(--slate-500); }
+.ocr-chips { display:flex; flex-wrap:wrap; gap:0.375rem; margin-top:0.5rem; }
+.ocr-chips button { min-height:44px; max-width:100%; padding:0 0.75rem; border-radius:999px; border:1.5px solid var(--slate-200); background:#fff; color:var(--slate-700, #334155); font-size:0.875rem; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ocr-chips button:hover { border-color:#a7f3d0; background:#ecfdf5; color:#047857; }
+.ocr-chips button[aria-pressed="true"] { border-color:#a7f3d0; background:#ecfdf5; color:#047857; }
+#ocr-blz { margin:0.375rem 0 0; }
 .icon-btn { width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:10px; color:var(--slate-500); flex-shrink:0; }
 .icon-btn:hover { background:var(--slate-100); color:var(--slate-700); }
 .icon-btn svg { width:20px; height:20px; }
@@ -1249,6 +1278,8 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
           <h2 id="nw-h">Nieuw citaat</h2>
           <button type="button" class="btn licht foto-knop" id="foto-knop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.4-2h5l1.4 2h1.6A2.5 2.5 0 0 1 20 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.5"/></svg>Foto van een bladzijde</button>
           <input type="file" id="foto-in" accept="image/*" capture="environment" hidden>
+          <input type="file" id="foto-kies" accept="image/*" hidden>
+          <div class="foto-menu" id="foto-menu" role="menu" aria-labelledby="foto-knop" hidden><button type="button" role="menuitem" id="foto-neem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.4-2h5l1.4 2h1.6A2.5 2.5 0 0 1 20 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg>Neem een foto</button><button type="button" role="menuitem" id="foto-kiesk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.75"/><path d="m21 16-5-5L5 20"/></svg>Kies een foto</button></div>
         </div>
         <div class="kaart-in">
           <div class="ocr" id="ocr" hidden>
@@ -1273,6 +1304,11 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
               <label for="ocr-tekst">Herkende tekst</label>
               <p class="fijn" id="ocr-hint">Selecteer het stuk dat je wil bewaren, of maak de tekst korter. Verbeter wat fout gelezen is.</p>
               <textarea class="input ocr-tekst" id="ocr-tekst" aria-describedby="ocr-hint" spellcheck="true"></textarea>
+              <div class="ocr-velden" id="ocr-velden" hidden>
+                <div class="ocr-velden-kop"><span id="ocr-velden-l">Uit je foto, tik om in te vullen als</span><div class="keuze klein" id="ocr-veld" role="radiogroup" aria-labelledby="ocr-velden-l"><button type="button" role="radio" aria-checked="true" data-veld="q-bron">Boek</button><button type="button" role="radio" aria-checked="false" data-veld="q-auteur">Auteur</button></div></div>
+                <div class="ocr-chips" id="ocr-chips"></div>
+                <p class="fijn" id="ocr-blz" hidden></p>
+              </div>
               <div class="ocr-knoppen"><button type="button" class="btn primary" id="ocr-neem">Gebruik deze tekst</button></div>
             </div>
             <div class="ocr-fout" id="ocr-fout" role="alert" hidden>
@@ -1314,6 +1350,7 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
     <section class="card lijst-card" id="lijst-card" aria-labelledby="lijst-h" hidden>
       <div class="lijst-kop">
         <h2 id="lijst-h">Je citaten<span class="n" id="lijst-n"></span></h2>
+        <button type="button" class="btn licht bib-lijstk" id="bib-lijst-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/></svg>Bibliotheek</button>
         <div class="zoek"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input class="input" id="zoek" type="search" placeholder="Zoek in je citaten" aria-label="Zoek in je citaten" autocomplete="off" enterkeyhint="search"></div>
       </div>
       <div class="filters" id="filters"></div>
@@ -1355,10 +1392,12 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
     <div class="inner">
       <p>Met Citaten bewaar je zinnen uit de boeken die je leest. Daarna oefen je ze met kaartjes, zodat ze echt blijven hangen.</p>
       <ul>
-        <li><b>Bewaar een citaat.</b> Typ of plak de zin, of neem een foto van de bladzijde. Je toestel leest de tekst. Kies daarna het stuk dat je wil houden. Voeg de auteur, het boek en tags toe.</li>
+        <li><b>Bewaar een citaat.</b> Typ of plak de zin, of neem of kies een foto van de bladzijde. Je toestel leest de tekst. Kies daarna het stuk dat je wil houden. Een los paginanummer vult zich vanzelf in, en een titel of naam zet je met één tik bij het boek of de auteur. Voeg de auteur, het boek en tags toe.</li>
         <li><b>Oefen met gaten.</b> Op elk kaartje vallen een paar woorden weg. Typ ze, of tik op Toon. Met de schuif Moeilijkheid kies je meer of minder gaten. Bij Kies gaten zet je zelf woorden aan of uit.</li>
         <li><b>Zeg eerlijk of je het wist.</b> Wist je het zeker, dan komt het kaartje pas later terug: na 1, 3, 7, 16 en dan 35 dagen. Gegokt, dan komt het sneller terug. Nog niet, dan zie je het straks nog eens en morgen weer.</li>
         <li><b>Zoek en filter.</b> Tik op een auteur, een boek of een tag om alleen die citaten te zien.</li>
+              <li><b>Kies uit de bibliotheek.</b> Meer dan 200 vrije citaten, op thema: tijd en focus, moed, leren, samenwerken, rust en karakter. Zoek ook op een woord of een auteur.</li>
+              <li><b>Zet het in de praktijk.</b> Onder een citaat staat een link naar een tool van Onder Constructie die erbij past. Een citaat over focus brengt je naar Focus, over zorgen naar de Risicomatrix. De link volgt uit de tags, ook bij je eigen citaten.</li>
       </ul>
       <ul data-uitleg="begrippen">
         <li><b>Zelf ophalen.</b> Je onthoudt beter als je een zin zelf uit je geheugen haalt, dan als je hem opnieuw leest.</li>
@@ -1382,11 +1421,17 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
     <div><h2 id="bib-h">Bibliotheek</h2><p class="fijn" id="bib-uitleg">Citaten uit het publieke domein.</p></div>
     <button type="button" class="icon-btn" id="bib-x" aria-label="Sluit de bibliotheek"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
+  <div class="bib-zoek"><label class="sr-only" for="bib-zoek">Zoek in de bibliotheek</label><input class="input" type="search" id="bib-zoek" placeholder="Zoek een woord, auteur of thema" autocomplete="off"></div>
   <div class="bib-pillen" id="bib-pillen" role="group" aria-label="Verzamelingen"></div>
   <div class="bib-sub"><p class="fijn" id="bib-v-uitleg"></p><button type="button" class="btn licht" id="bib-alle" hidden>Voeg alle toe</button></div>
   <p class="bib-meld" id="bib-meld" role="status" aria-live="polite"></p>
   <p class="bib-laad fijn" id="bib-laad" hidden>Bibliotheek laden…</p>
   <ul class="bib-lijst" id="bib-lijst"></ul>
+</dialog>
+<dialog class="cam" id="cam" aria-labelledby="cam-h">
+  <h2 id="cam-h" class="sr-only">Neem een foto</h2>
+  <video id="cam-video" playsinline muted autoplay></video>
+  <div class="cam-knoppen"><button type="button" class="btn" id="cam-stop">Annuleer</button><button type="button" class="cam-sluiter" id="cam-klik" aria-label="Neem de foto"></button><span class="cam-plek" aria-hidden="true"></span></div>
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-text"></span><button id="toast-btn" type="button" hidden>Ongedaan</button></div>
 
@@ -2172,12 +2217,12 @@ async function herkenNu(beurt) {
   try {
     const w = await ocrWerker(st.instel.taal);
     if (beurt !== ocr.beurt) return;
-    const { data } = await w.recognize(ocr.beeld);
+    const { data } = await w.recognize(ocr.beeld, {}, { text:true, blocks:true });
     if (beurt !== ocr.beurt) return;
     window.__ocrTijd = Math.round(performance.now() - t0);
     const tekst = schoonOcr(data && data.text);
     if (!tekst || tekst.replace(/[^\p{L}]/gu, '').length < 3) { ocrFout('Geen leesbare tekst gevonden.', 'Probeer een scherpere foto met meer licht, of typ de zin zelf.'); return; }
-    $('ocr-tekst').value = tekst; ocrToon('klaar'); neemLabel();
+    $('ocr-tekst').value = tekst; ocrToon('klaar'); neemLabel(); tekenVelden(data);
     meld('Tekst gelezen. Selecteer het stuk dat je wil bewaren.');
     $('ocr-tekst').focus({ preventScroll:true });
   } catch (e) {
@@ -2469,8 +2514,8 @@ function openUitleg() {
 /* ---------- Bediening ---------- */
 $('voorbeeld').addEventListener('click', laadVoorbeeld);
 /* ---------- Bibliotheek: citaten uit het publieke domein, telkens nagekeken in twee uitgaven ---------- */
-let BIB = null, bibV = 'stoa', bibLaatst = null;
-const BIB_TAG = { stoa:'stoïcijnen', romeinen:'romeinen', shakespeare:'shakespeare', engels:'engelse klassiekers', frans:'maximes', duits:'faust' };
+let BIB = null, bibV = 'tijd', bibLaatst = null;   // de bibliotheek staat op thema: het inzicht eerst, de auteur hoort erbij
+const BIB_TAG = { erasmus:'erasmus', stoa:'stoïcijnen', romeinen:'romeinen', shakespeare:'shakespeare', engels:'engelse klassiekers', frans:'maximes', duits:'faust' };
 function laadBib() {
   if (BIB) return Promise.resolve(BIB);
   return fetch('bibliotheek.json').then(r => { if (!r.ok) throw new Error('bib'); return r.json(); }).then(j => (BIB = j));
@@ -2485,15 +2530,17 @@ function openBib() {
 function bibIn(it) { return bestaatAl(it.tekst); }
 function tekenBib(eerst) {
   const vs = BIB.verzamelingen, v = vs.find(x => x.id === bibV) || vs[0]; bibV = v.id;
+  const q = vgl($('bib-zoek').value), zoekt = q.length >= 2;
   const n = vs.reduce((s, x) => s + x.items.length, 0);
   $('bib-uitleg').textContent = n + ' citaten uit het publieke domein. Elke zin staat woord voor woord in twee uitgaven van het werk zelf.';
   const p = $('bib-pillen'); p.textContent = '';
-  vs.forEach(x => { const b = el('button', null, x.naam); b.type = 'button'; b.dataset.v = x.id; b.setAttribute('aria-pressed', String(x.id === v.id)); b.appendChild(el('span', null, String(x.items.length))); p.appendChild(b); });
-  $('bib-v-uitleg').textContent = v.uitleg;
-  const rest = v.items.filter(it => !bibIn(it)).length, alle = $('bib-alle');
+  vs.forEach(x => { const b = el('button', null, x.naam); b.type = 'button'; b.dataset.v = x.id; b.setAttribute('aria-pressed', String(!zoekt && x.id === v.id)); b.appendChild(el('span', null, String(x.items.length))); p.appendChild(b); });
+  const lijst = zoekt ? vs.flatMap(x => x.items.filter(it => vgl(it.tekst + ' ' + it.auteur + ' ' + it.bron + ' ' + it.tags.join(' ') + ' ' + it.noot).includes(q)).map(it => Object.assign({ v:x.id }, it))) : v.items;
+  $('bib-v-uitleg').textContent = zoekt ? (lijst.length ? lijst.length + (lijst.length === 1 ? ' citaat' : ' citaten') + ' gevonden.' : 'Niets gevonden. Probeer een ander woord.') : v.uitleg;
+  const rest = zoekt ? 0 : v.items.filter(it => !bibIn(it)).length, alle = $('bib-alle');
   alle.hidden = !rest; alle.textContent = rest === v.items.length ? 'Voeg alle ' + rest + ' toe' : 'Voeg de andere ' + rest + ' toe';
   const L = $('bib-lijst'); L.textContent = '';
-  v.items.forEach(it => {
+  lijst.forEach(it => {
     const li = el('li'), q = el('q', null, it.tekst), m = el('span', 'meta');
     m.appendChild(el('b', null, it.auteur)); m.appendChild(document.createTextNode(' · ' + it.bron));
     const ja = bibIn(it), b = knop('', ja ? 'In je lijst' : 'Voeg toe', ja ? 'vink' : null); b.dataset.i = it.id; b.setAttribute('aria-pressed', String(ja));
@@ -2503,8 +2550,8 @@ function tekenBib(eerst) {
   if (eerst) L.scrollTop = 0;
 }
 function bibToe(items) {
-  const v = BIB.verzamelingen.find(x => x.id === bibV), nieuw = [];
-  items.forEach(it => { if (bibIn(it) || st.citaten.length >= MAX.aantal) return; const c = schoon({ tekst:it.tekst, auteur:it.auteur, bron:it.bron, tags:it.tags.concat(BIB_TAG[v.id] || []), noot:it.noot, gemaakt:Date.now() + nieuw.length }); if (c) { st.citaten.push(c); nieuw.push(c); } });
+  const nieuw = [];
+  items.forEach(it => { if (bibIn(it) || st.citaten.length >= MAX.aantal) return; const c = schoon({ tekst:it.tekst, auteur:it.auteur, bron:it.bron, tags:it.tags.concat(BIB_TAG[it.v || bibV] || []), noot:it.noot, gemaakt:Date.now() + nieuw.length }); if (c) { st.citaten.push(c); nieuw.push(c); } });
   if (!nieuw.length) return;
   save(); renderAlles(); tekenBib();
   $('bib-meld').textContent = nieuw.length === 1 ? 'Toegevoegd aan je citaten.' : nieuw.length + ' citaten toegevoegd aan je citaten.';
@@ -2514,14 +2561,15 @@ function bibWeg(it) {
   st.citaten = st.citaten.filter(x => x !== c); save(); renderAlles(); tekenBib();
   $('bib-meld').textContent = 'Weggehaald uit je citaten.';
 }
-['bib-open', 'bib-start'].forEach(id => $(id).addEventListener('click', openBib));
+['bib-open', 'bib-start', 'bib-lijst-k'].forEach(id => $(id).addEventListener('click', openBib));
+$('bib-zoek').addEventListener('input', () => { if (BIB) { $('bib-meld').textContent = ''; tekenBib(true); } });
 $('bib-x').addEventListener('click', () => $('bib').close());
 $('bib').addEventListener('click', e => { if (e.target === $('bib')) $('bib').close(); });
 $('bib').addEventListener('close', () => { if (bibLaatst && document.contains(bibLaatst) && bibLaatst.offsetParent) bibLaatst.focus(); });
-$('bib-pillen').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; bibV = b.dataset.v; $('bib-meld').textContent = ''; tekenBib(true); $('bib-pillen').querySelector(`[data-v="${bibV}"]`).focus(); });
+$('bib-pillen').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; bibV = b.dataset.v; $('bib-zoek').value = ''; $('bib-meld').textContent = ''; tekenBib(true); $('bib-pillen').querySelector(`[data-v="${bibV}"]`).focus(); });
 $('bib-lijst').addEventListener('click', e => {
   const b = e.target.closest('[data-i]'); if (!b) return;
-  const v = BIB.verzamelingen.find(x => x.id === bibV), it = v.items.find(x => x.id === b.dataset.i);
+  const it = BIB.verzamelingen.flatMap(x => x.items.map(y => Object.assign({ v:x.id }, y))).find(x => x.id === b.dataset.i);
   if (bibIn(it)) bibWeg(it); else bibToe([it]);
   const nb = $('bib-lijst').querySelector(`[data-i="${it.id}"]`); if (nb) nb.focus();
 });
@@ -2536,7 +2584,61 @@ $('q-bewaar').addEventListener('click', bewaarNieuw);
 $('q-tekst').addEventListener('input', () => { if ($('q-sug').hidden === !!$('q-tekst').value.trim()) renderSug(); if (!$('q-fout').hidden && $('q-tekst').value.trim()) toonFout('q-fout', $('q-tekst'), ''); });
 $('q-tags').addEventListener('input', () => renderSug());
 $('nieuw').addEventListener('click', e => { const b = e.target.closest('#q-sug [data-tag]'); if (!b) return; voegTagToe($('q-tags'), b.dataset.tag); renderSug(); const n = $('q-sug').querySelector('[data-tag]'); (n || $('q-tags')).focus(); });
-$('foto-knop').addEventListener('click', () => { $('foto-in').value = ''; $('foto-in').click(); });
+/* Foto: nemen of kiezen. Op een aanraakscherm opent "Neem een foto" de camera van het toestel, elders een eigen cameravenster. */
+function fotoMenu(open) { $('foto-menu').hidden = !open; $('foto-knop').setAttribute('aria-expanded', String(open)); if (open) $('foto-neem').focus(); }
+$('foto-knop').setAttribute('aria-haspopup', 'menu'); $('foto-knop').setAttribute('aria-expanded', 'false');
+$('foto-knop').addEventListener('click', e => { e.stopPropagation(); fotoMenu($('foto-menu').hidden); });
+document.addEventListener('click', e => { if (!$('foto-menu').hidden && !e.target.closest('#foto-menu')) fotoMenu(false); });
+$('foto-menu').addEventListener('keydown', e => {
+  const L = [$('foto-neem'), $('foto-kiesk')], i = L.indexOf(document.activeElement);
+  if (e.key === 'Escape') { e.preventDefault(); fotoMenu(false); $('foto-knop').focus(); }
+  else if (/^Arrow(Down|Up)$/.test(e.key)) { e.preventDefault(); L[(i + (e.key === 'ArrowDown' ? 1 : L.length - 1)) % L.length].focus(); }
+});
+$('foto-kiesk').addEventListener('click', () => { fotoMenu(false); $('foto-kies').value = ''; $('foto-kies').click(); });
+$('foto-kies').addEventListener('change', () => { const f = $('foto-kies').files && $('foto-kies').files[0]; $('foto-kies').value = ''; if (f) leesFoto(f); });
+let camStroom = null;
+$('foto-neem').addEventListener('click', async () => {
+  fotoMenu(false);
+  const aanraak = matchMedia('(pointer:coarse)').matches;
+  if (aanraak || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) { $('foto-in').value = ''; $('foto-in').click(); return; }
+  try {
+    camStroom = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment', width:{ ideal:1920 }, height:{ ideal:1080 } }, audio:false });
+    $('cam-video').srcObject = camStroom; $('cam').showModal(); $('cam-klik').focus();
+  } catch (e) { camUit(); $('foto-in').value = ''; $('foto-in').click(); }   // geen camera of geen toestemming: dan gewoon een foto kiezen
+});
+function camUit() { if (camStroom) camStroom.getTracks().forEach(t => t.stop()); camStroom = null; $('cam-video').srcObject = null; }
+$('cam').addEventListener('close', () => { camUit(); $('foto-knop').focus(); });
+$('cam-stop').addEventListener('click', () => $('cam').close());
+$('cam-klik').addEventListener('click', () => {
+  const v = $('cam-video'); if (!v.videoWidth) return;
+  const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0);
+  c.toBlob(b => { $('cam').close(); if (b) leesFoto(new File([b], 'foto.jpg', { type:'image/jpeg' })); }, 'image/jpeg', 0.92);
+});
+/* Velden uit de foto: korte regels worden knopjes (een tik zet ze als boek of auteur), een los getal is de bladzijde. Niets wordt geraden. */
+function fotoRegels(data) {
+  const uit = [];
+  ((data && data.blocks) || []).forEach(b => (b.paragraphs || []).forEach(p => (p.lines || []).forEach(l => uit.push({ t:String(l.text || '').replace(/\s+/g, ' ').trim(), h:l.bbox ? l.bbox.y1 - l.bbox.y0 : 0, c:l.confidence || 0 }))));
+  return uit.filter(l => l.t);
+}
+function tekenVelden(data) {
+  const L = fotoRegels(data), chips = $('ocr-chips'); chips.textContent = '';
+  const getal = L.map(l => l.t.match(/^[\s\-–—.·]*(\d{1,4})[\s\-–—.·]*$/)).filter(Boolean);
+  const blz = getal.length === 1 ? getal[0][1] : '';
+  if (blz && !$('q-blz').value.trim()) { $('q-blz').value = blz; $('ocr-blz').textContent = 'Bladzijde ' + blz + ' staat al ingevuld.'; $('ocr-blz').hidden = false; } else $('ocr-blz').hidden = true;
+  const kort = L.filter(l => l.c >= 55 && l.t.length >= 3 && l.t.length <= 60 && l.t.split(' ').length <= 8 && !/^[\s\-–—.·\d]*$/.test(l.t) && (l.t.match(/\p{L}/gu) || []).length >= 3 && !/[.,;:]$/.test(l.t))
+    .sort((a, b) => b.h - a.h).map(l => l.t).filter((t, i, a) => a.indexOf(t) === i).slice(0, 6);
+  kort.forEach(t => { const b = el('button', null, t.length > 40 ? t.slice(0, 39) + '…' : t); b.type = 'button'; b.dataset.t = t; b.title = t; b.setAttribute('aria-pressed', 'false'); chips.appendChild(b); });
+  $('ocr-velden').hidden = !kort.length;
+}
+$('ocr-veld').addEventListener('click', e => { const b = e.target.closest('[data-veld]'); if (!b) return; $('ocr-veld').querySelectorAll('[data-veld]').forEach(x => x.setAttribute('aria-checked', String(x === b))); });
+$('ocr-chips').addEventListener('click', e => {
+  const b = e.target.closest('[data-t]'); if (!b) return;
+  const keuze = $('ocr-veld').querySelector('[aria-checked="true"]'), veld = keuze ? keuze.dataset.veld : 'q-bron';
+  $(veld).value = b.dataset.t; b.setAttribute('aria-pressed', 'true');
+  if (typeof zetMeer === 'function') zetMeer();
+  meld((veld === 'q-bron' ? 'Boek' : 'Auteur') + ': ' + b.dataset.t);
+  if (veld === 'q-bron') { const a = $('ocr-veld').querySelector('[data-veld="q-auteur"]'); $('ocr-veld').querySelectorAll('[data-veld]').forEach(x => x.setAttribute('aria-checked', String(x === a))); }
+});
 $('foto-in').addEventListener('change', () => { const f = $('foto-in').files && $('foto-in').files[0]; $('foto-in').value = ''; if (f) leesFoto(f); });   // leeg: dezelfde foto nog eens kiezen kan
 $('ocr-x').addEventListener('click', () => sluitOcr($('foto-knop')));
 $('ocr-zelf').addEventListener('click', () => sluitOcr($('q-tekst')));

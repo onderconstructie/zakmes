@@ -1286,7 +1286,7 @@ function maakKetting(ctx) {
   const lucht = f('highshelf', 8500, 3);                   // lucht boven 8 kHz
   K.comp = comp(-20, 8, 2.5, 0.012, 0.22);                 // buscompressor: lijm en punch
   K.lim = comp(-6, 0, 20, 0.001, 0.06);                    // limiter
-  K.voor = ctx.createGain(); K.voor.gain.value = 0.5;
+  K.voor = ctx.createGain(); K.voor.gain.value = 0.62;   // iets meer kracht; het zachte plafond vangt de pieken op
   K.plafond = ctx.createWaveShaper(); K.plafond.curve = plafondCurve(); K.plafond.oversample = '2x';
   K.vol = ctx.createGain();
   [K.bus, dc, warmte, modder, lucht, K.comp, K.lim, K.voor, K.plafond, K.vol, ctx.destination].reduce((a, b) => (a.connect(b), b));
@@ -1842,7 +1842,7 @@ async function renderOffline(id, sr = 48000, volume = 1, seed = 1, stopOp = null
    ========================================================================== */
 let K = null;
 const bezig = new Map(), wacht = new Set();   // id -> stem; stemgeluiden die nog gedecodeerd worden
-function volGain(v) { return Math.pow(v / 100, 2); }
+function volGain(v) { return Math.min(1, Math.pow(v / 100, 0.6)); }   // op 80%: 0,88 (was 0,64). Luider, en toch nog fijn te regelen
 function audio() {
   if (!K) {
     const AC = window.AudioContext || window.webkitAudioContext;
