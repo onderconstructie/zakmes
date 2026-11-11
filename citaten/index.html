@@ -101,6 +101,11 @@ dialog.bib::backdrop { background:rgba(15,23,42,0.35); }
   .bib-lijst li { grid-template-columns:1fr; }
   .bib-lijst button { grid-column:1; grid-row:auto; justify-self:start; }
 }
+/* Van citaat naar praktijk: een rustige link naar de tool die erbij past */
+.c-praktijk, .k-praktijk { display:inline-flex; align-items:center; gap:0.375rem; min-height:44px; margin-top:0.25rem; font-size:0.875rem; color:#047857; text-decoration:none; }
+.c-praktijk strong, .k-praktijk strong { font-weight:600; }
+.c-praktijk svg, .k-praktijk svg { width:16px; height:16px; flex:none; }
+.c-praktijk:hover strong, .k-praktijk:hover strong { text-decoration:underline; text-underline-offset:3px; }
 .icon-btn { width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:10px; color:var(--slate-500); flex-shrink:0; }
 .icon-btn:hover { background:var(--slate-100); color:var(--slate-700); }
 .icon-btn svg { width:20px; height:20px; }
@@ -1896,6 +1901,35 @@ function renderLijst() {
   $('leeg-lijst').hidden = !!L.length; $('leeg-lijst').textContent = L.length ? '' : 'Geen citaten gevonden. Probeer een ander woord of toon alle citaten.';
   L.forEach(c => ol.appendChild(c.id === bewerkId ? bewerkItem(c) : item(c)));
 }
+/* ---------- Van citaat naar praktijk: een tag wijst naar de tool waarmee je er iets mee doet ---------- */
+const PRAKTIJK = [
+  [['focus', 'uitstel'], 'Focus', '/focus/', 'Werk er één taak mee af in'],
+  [['tijd', 'kiezen'], 'Prioriteren', '/prioriteit/', 'Kies wat echt telt met'],
+  [['zorgen', 'angst', 'toekomst', 'controle'], 'Risicomatrix', '/risico/', 'Zet je zorgen op een rij in de'],
+  [['moed', 'twijfel', 'kansen'], 'Beslisscore', '/beslisscore/', 'Hak de knoop door met de'],
+  [['leren', 'fouten', 'groei', 'oefenen', 'kennis', 'theorie', 'praktijk'], 'Leerpuntenlog', '/leerpunten/', 'Noteer wat je leerde in het'],
+  [['doen', 'werk', 'discipline', 'orde', 'plannen'], 'Takenbord', '/kanban/', 'Maak er een taak van op het'],
+  [['vriendschap', 'samen', 'mensen', 'vertrouwen', 'delen', 'menselijkheid', 'gelijkheid'], 'Betrokkenenradar', '/stakeholders/', 'Kijk wie je nodig hebt met de'],
+  [['verantwoordelijkheid', 'rol', 'plicht'], 'RACI-matrix', '/raci/', 'Maak de rollen duidelijk met de'],
+  [['spreken', 'luisteren'], 'Check-in', '/check-in/', 'Geef iedereen het woord met een'],
+  [['advies', 'kritiek', 'lof', 'eerlijkheid', 'waarheid'], 'Retro', '/retro/', 'Bespreek het eerlijk in een'],
+  [['beloftes', 'motieven'], 'Beslissingslog', '/beslissingen/', 'Leg afspraken vast in het'],
+  [['gewoonte', 'verandering'], 'Gedragsverandering', '/gedrag/', 'Werk aan een nieuwe gewoonte met'],
+  [['conflict'], 'Weerstand', '/weerstand/', 'Ga beter om met tegenwind met'],
+  [['denken', 'nederigheid', 'zelfkennis', 'karakter', 'echtheid', 'schijn', 'zelfbeeld'], 'Strategiekaartjes', '/kaartjes/', 'Stel de vraag erachter met de'],
+  [['rust', 'oordeel', 'woede', 'aanvaarden', 'loslaten', 'veerkracht', 'innerlijke kracht', 'nu', 'troost', 'tegenslag'], 'Adem', '/adem/', 'Neem even afstand met'],
+];
+function praktijk(c) {
+  for (const t of c.tags) { const p = PRAKTIJK.find(x => x[0].includes(t)); if (p) return { naam:p[1], pad:p[2], zin:p[3] }; }
+  return null;
+}
+function praktijkLink(c, cls) {
+  const p = praktijk(c); if (!p) return null;
+  const a = el('a', cls); a.href = p.pad;
+  a.appendChild(ico('verder')); a.appendChild(document.createTextNode(p.zin + ' '));
+  a.appendChild(el('strong', null, p.naam));
+  return a;
+}
 function item(c) {
   const li = el('li', 'citaat'); li.dataset.id = c.id;
   const q = el('blockquote', 'c-tekst', c.tekst); q.id = 'ct-' + c.id; li.appendChild(q);
@@ -1911,6 +1945,7 @@ function item(c) {
     li.appendChild(ul);
   }
   if (c.noot.trim()) li.appendChild(el('p', 'c-noot', c.noot.trim()));
+  const pk = praktijkLink(c, 'c-praktijk'); if (pk) li.appendChild(pk);
   const voet = el('div', 'c-voet');
   voet.appendChild(el('span', 'c-stand', standTekst(c)));
   const ac = el('span', 'c-acties'), k = kort(c.tekst, 40);
@@ -2305,6 +2340,7 @@ function controleer(viaToon) {
   } else u.appendChild(document.createTextNode(meld = 'Wist je het?'));
   a.appendChild(u);
   if (c.noot.trim()) a.appendChild(el('p', 'k-noot', c.noot.trim()));
+  const pk = praktijkLink(c, 'k-praktijk'); if (pk) a.appendChild(pk);
   if (kaart.verbind) {
     const v = el('div', 'verbind'), l = el('label', null, 'Waar zie je dit in je eigen werk?'); l.htmlFor = 'verbind-in';
     const t = el('textarea', 'input'); t.id = 'verbind-in'; t.rows = 2; t.maxLength = 500; t.placeholder = 'Een korte zin is genoeg. Niet verplicht.';
