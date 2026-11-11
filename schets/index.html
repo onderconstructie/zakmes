@@ -3526,7 +3526,9 @@ function verhaalOnderschriften() {
   try {
     const p = JSON.parse(localStorage.getItem('oc.project') || 'null'), naam = p && typeof p.name === 'string' ? p.name.replace(/\s+/g, ' ').trim().toLowerCase() : '';
     const d = JSON.parse(localStorage.getItem('oc.share.verhaal') || 'null'), L = d && Array.isArray(d.lists) ? d.lists : [];
-    const l = naam ? L.find(x => x && String(x.name || '').replace(/\s+/g, ' ').trim().toLowerCase() === naam) : L.length === 1 ? L[0] : null;
+    // Het verhaal van het actieve project; staat dat er niet, dan het verhaal waaraan je het laatst werkte
+    const zelfde = naam && L.find(x => x && String(x.name || '').replace(/\s+/g, ' ').trim().toLowerCase() === naam);
+    const l = zelfde || L.filter(x => x && Array.isArray(x.items)).sort((a, b) => (b.ch || 0) - (a.ch || 0))[0];
     if (!l || !Array.isArray(l.items)) return null;
     const tk = n => { const i = l.items.find(x => x && x.note === n && typeof x.text === 'string'); return i ? i.text : ''; };
     const S = [tk('begin'), tk('waarom'), tk('gedachte 1'), tk('gedachte 2'), tk('gedachte 3'), tk('de clou')];
@@ -3545,9 +3547,11 @@ function inRegels(t, max, n) {
 }
 function openSjabloon(tpl) {
   const al = boek.bladen.filter(b => b.tpl === tpl && !b.vb).pop();
-  if (al) { gaNaar(al.id); toonStart(false); toonUitleg(tpl, false); return; }
-  nieuwBlad(tpl);
-  const sh = blad(), o = tpl === 'storyboard' && verhaalOnderschriften();
+  if (al) gaNaar(al.id); else nieuwBlad(tpl);
+  toonStart(false);
+  // Onderschriften: in een nieuw storyboard, en in een bestaand dat nog geen eigen tekst heeft (bv. leeg geopend voor je verhaal klaar was)
+  const sh = blad(), leegTekst = !sh.items.some(i => i.k === 'tekst' && !i.tl && !i.vet);
+  const o = tpl === 'storyboard' && leegTekst && verhaalOnderschriften();
   if (o) {
     const xs = [140, 600, 1060], ys = [110, 560];
     // twee regels, elk op een hulplijn van het sjabloon
