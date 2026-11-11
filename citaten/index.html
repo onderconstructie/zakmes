@@ -72,41 +72,69 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 .bib-link { display:inline-flex; align-items:center; gap:0.5rem; min-height:44px; padding:0 0.25rem; color:#047857; font-weight:600; font-size:0.9375rem; }
 .bib-link svg { width:18px; height:18px; flex:none; }
 .bib-link:hover { text-decoration:underline; text-underline-offset:3px; }
-dialog.bib { width:min(760px, calc(100% - 2rem)); max-height:min(88vh, 960px); padding:0; border:0; border-radius:18px; background:#fff; color:var(--slate-800); box-shadow:0 24px 60px rgba(15,23,42,0.22); display:none; flex-direction:column; overflow:hidden; }
+/* Startknoppen: even breed onder elkaar; de bibliotheek als uitnodigende tegel */
+.oc-start-btns .oc-begin, .oc-start-btns .oc-vb { flex:1 1 12rem; max-width:16rem; }
+.bib-tegel { flex:1 1 100%; max-width:32.5rem; display:flex; align-items:center; gap:0.75rem; min-height:64px; margin-top:0.25rem; padding:0.625rem 0.875rem 0.625rem 0.625rem; border:0; border-radius:14px; background:linear-gradient(135deg,#ffffff 0%,#f0fdf4 100%); box-shadow:inset 0 0 0 1.5px #6ee7b7, 0 4px 14px -8px rgba(4,120,87,0.35); color:#1e293b; font:inherit; text-align:left; cursor:pointer; transition:box-shadow .15s, transform .15s; }
+.bib-tegel:hover { box-shadow:inset 0 0 0 1.5px #10b981, 0 6px 18px -8px rgba(4,120,87,0.45); transform:translateY(-1px); }
+.bib-tegel:focus-visible { outline:3px solid #047857; outline-offset:2px; }
+.bib-tegel-ico { flex:none; display:grid; place-items:center; width:44px; height:44px; border-radius:50%; background:#d1fae5; color:#047857; }
+.bib-tegel-ico svg { width:22px; height:22px; }
+.bib-tegel-t { flex:1; display:flex; flex-direction:column; gap:0.125rem; min-width:0; }
+.bib-tegel-t b { font-weight:700; font-size:1rem; line-height:1.3; }
+.bib-tegel-t small { color:#475569; font-size:0.875rem; line-height:1.35; }
+.bib-tegel-pijl { flex:none; width:20px; height:20px; color:#047857; }
+@media (max-width: 480px) { .oc-start-btns { flex-direction:column; align-items:stretch; max-width:22rem; margin-left:auto; margin-right:auto; } .oc-start-btns .oc-begin, .oc-start-btns .oc-vb, .bib-tegel { max-width:none; flex:none; width:100%; } }
+@media (prefers-reduced-motion: reduce) { .bib-tegel, .bib-tegel:hover { transition:none; transform:none; } }
+dialog.bib { width:min(760px, calc(100% - 2rem)); max-height:min(88vh, 960px); padding:0; border:0; border-radius:20px; background:#f8fafc; color:var(--slate-800); box-shadow:0 24px 60px rgba(15,23,42,0.24); display:none; flex-direction:column; overflow-y:auto; overscroll-behavior:contain; }
 dialog.bib[open] { display:flex; }
-dialog.bib::backdrop { background:rgba(15,23,42,0.35); }
+dialog.bib::backdrop { background:rgba(15,23,42,0.4); }
+/* Bovenaan blijft staan: titel, zoeken en de thema's */
+.bib-top { position:sticky; top:0; z-index:2; background:#fff; box-shadow:0 1px 0 #e2e8f0, 0 8px 16px -12px rgba(15,23,42,0.25); }
 .bib-kop { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; padding:1.25rem 1.25rem 0.5rem 1.5rem; }
 .bib-kop h2 { margin:0 0 0.25rem; font-size:1.375rem; }
 .bib-zoek { padding:0 1.5rem 0.75rem; }
 .bib-lijstk { margin-left:auto; }
 .bib-lijstk svg { width:18px; height:18px; }
-@media (max-width:600px) { .bib-zoek { padding:0 1rem 0.75rem; }
-  dialog.bib .bib-pillen { display:grid; grid-template-columns:1fr 1fr; gap:0.375rem; }
-  dialog.bib .bib-pillen button { justify-content:space-between; padding:0 0.75rem; font-size:0.875rem; text-align:left; }
-  .bib-kop .fijn { display:none; } }
-.bib-pillen { display:flex; flex-wrap:wrap; gap:0.5rem; padding:0.25rem 1.5rem 0.75rem; }
-.bib-pillen button { display:inline-flex; align-items:center; gap:0.375rem; min-height:44px; padding:0 0.875rem; border-radius:999px; border:1.5px solid var(--slate-200); background:#fff; color:var(--slate-700, #334155); font-weight:600; font-size:0.9375rem; }
-.bib-pillen button span { font-weight:500; color:var(--slate-500); font-size:0.8125rem; }
-.bib-pillen button[aria-pressed="true"] { background:#ecfdf5; border-color:#a7f3d0; color:#047857; }
-.bib-sub { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; padding:0 1.5rem 0.75rem; border-bottom:1px solid var(--slate-200); }
-.bib-sub .fijn { margin:0; flex:1 1 16rem; }
+.bib-pillen { display:flex; flex-wrap:wrap; gap:0.5rem; padding:0.125rem 1.5rem 0.875rem; }
+.bib-pillen button { flex:none; display:inline-flex; align-items:center; gap:0.375rem; min-height:44px; padding:0 0.875rem; border-radius:999px; border:1.5px solid var(--slate-200); background:#fff; color:#334155; font:inherit; font-weight:600; font-size:0.9375rem; white-space:nowrap; cursor:pointer; box-shadow:0 1px 2px rgba(15,23,42,0.06); }
+.bib-pillen button:hover { border-color:#a7f3d0; }
+.bib-pillen button span { font-weight:600; font-size:0.75rem; min-width:1.5rem; padding:0.0625rem 0.375rem; border-radius:999px; background:#f1f5f9; color:#475569; text-align:center; }
+.bib-pillen button[aria-pressed="true"] { background:#047857; border-color:#047857; color:#fff; box-shadow:0 4px 10px -4px rgba(4,120,87,0.55); }
+.bib-pillen button[aria-pressed="true"] span { background:rgba(255,255,255,0.22); color:#fff; }
+/* Uitleg van het thema en alles in één keer */
+.bib-sub { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; padding:1rem 1.5rem 0.25rem; }
+.bib-sub .fijn { margin:0; flex:1 1 16rem; color:#475569; }
+.bib-sub .fijn:empty { display:none; }
 .bib-meld { margin:0; padding:0 1.5rem; font-size:0.875rem; color:#047857; font-weight:600; }
 .bib-meld:empty { display:none; }
 .bib-meld:not(:empty) { padding-top:0.625rem; }
 .bib-laad { padding:1rem 1.5rem; margin:0; }
-.bib-lijst { list-style:none; margin:0; padding:0 1.5rem 1.5rem; overflow:auto; overscroll-behavior:contain; }
-.bib-lijst li { display:grid; grid-template-columns:1fr auto; gap:0.5rem 1rem; align-items:center; padding:1rem 0; border-bottom:1px solid #f1f5f9; }
-.bib-lijst q { quotes:none; font-family:var(--serif); font-size:1.0625rem; line-height:1.5; color:var(--slate-800); }
-.bib-lijst .meta { grid-column:1; font-size:0.8125rem; color:var(--slate-500); }
-.bib-lijst .meta b { font-weight:600; color:var(--slate-700, #334155); }
-.bib-lijst button { grid-column:2; grid-row:1 / span 2; min-height:44px; padding:0 0.875rem; border-radius:10px; border:1.5px solid #a7f3d0; background:#ecfdf5; color:#047857; font-weight:600; font-size:0.875rem; white-space:nowrap; display:inline-flex; align-items:center; gap:0.375rem; }
-.bib-lijst button[aria-pressed="true"] { background:#fff; border-color:var(--slate-200); color:var(--slate-500); }
-.bib-lijst button svg { width:16px; height:16px; }
+/* Elk citaat een kaartje met wat reliëf */
+.bib-lijst { list-style:none; margin:0; padding:0.75rem 1.5rem 1.5rem; display:grid; gap:0.75rem; }
+.bib-lijst li { position:relative; display:grid; grid-template-columns:1fr auto; gap:0.75rem 1rem; align-items:end; padding:1.125rem 1.125rem 0.875rem 1.125rem; border-radius:16px; background:#fff; border:1px solid #e2e8f0; box-shadow:0 1px 2px rgba(15,23,42,0.05), 0 6px 16px -10px rgba(15,23,42,0.22); }
+.bib-lijst li::before { content:"\201C"; position:absolute; top:0.125rem; left:0.75rem; font-family:var(--serif); font-size:2.75rem; line-height:1; color:#a7f3d0; pointer-events:none; }
+.bib-lijst q { grid-column:1 / -1; position:relative; padding:0.75rem 0 0 0; quotes:none; font-family:var(--serif); font-size:1.125rem; line-height:1.5; color:var(--slate-800); }
+.bib-lijst .meta { grid-column:1; align-self:center; font-size:0.8125rem; line-height:1.4; color:#475569; }
+.bib-lijst .meta b { display:block; font-weight:700; font-size:0.875rem; color:#334155; }
+.bib-lijst button { grid-column:2; min-height:44px; padding:0 0.875rem 0 0.75rem; border-radius:999px; border:0; background:#fff; color:#047857; font:inherit; font-weight:600; font-size:0.875rem; white-space:nowrap; display:inline-flex; align-items:center; gap:0.375rem; cursor:pointer; box-shadow:inset 0 0 0 1.5px #6ee7b7, 0 3px 8px -4px rgba(4,120,87,0.4); }
+.bib-lijst button:hover { background:#ecfdf5; box-shadow:inset 0 0 0 1.5px #10b981, 0 4px 10px -4px rgba(4,120,87,0.5); }
+.bib-lijst button[aria-pressed="true"] { background:#ecfdf5; color:#047857; box-shadow:inset 0 0 0 1.5px #a7f3d0; }
+.bib-lijst li:has(button[aria-pressed="true"]) { border-color:#a7f3d0; background:linear-gradient(180deg,#fff 0%,#f0fdf4 100%); }
+.bib-lijst button svg { width:18px; height:18px; }
 @media (max-width:600px) {
   dialog.bib { width:100%; max-width:100%; height:100%; max-height:100%; margin:0; border-radius:0; }
-  .bib-kop, .bib-pillen, .bib-sub, .bib-lijst, .bib-meld { padding-left:1rem; padding-right:1rem; }
-  .bib-lijst li { grid-template-columns:1fr; }
-  .bib-lijst button { grid-column:1; grid-row:auto; justify-self:start; }
+  .bib-kop { padding:0.75rem 0.5rem 0.25rem 1rem; align-items:center; }
+  .bib-kop .fijn { display:none; }
+  .bib-kop h2 { margin:0; }
+  .bib-zoek { padding:0 1rem 0.625rem; }
+  /* thema's op één rij om te vegen */
+  .bib-pillen { flex-wrap:nowrap; overflow-x:auto; scroll-snap-type:x proximity; scroll-padding:0 1rem; scrollbar-width:none; padding:0.125rem 1rem 0.75rem; -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent); mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent); }
+  .bib-pillen::-webkit-scrollbar { display:none; }
+  .bib-pillen button { scroll-snap-align:start; font-size:0.875rem; padding:0 0.75rem; }
+  .bib-sub, .bib-lijst, .bib-meld { padding-left:0.75rem; padding-right:0.75rem; }
+  .bib-sub { padding-top:0.875rem; }
+  .bib-lijst { padding-bottom:calc(1.5rem + env(safe-area-inset-bottom)); }
+  .bib-lijst li { padding:1rem 0.875rem 0.75rem 1rem; }
 }
 /* Van citaat naar praktijk: een rustige link naar de tool die erbij past */
 .c-praktijk, .k-praktijk { display:inline-flex; align-items:center; gap:0.375rem; min-height:44px; margin-top:0.25rem; font-size:0.875rem; color:#047857; text-decoration:none; }
@@ -1247,7 +1275,7 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
   <div class="empty oc-start" id="ocStart" hidden>
     <strong>Bewaar de zinnen die je willen bijblijven</strong>
     <p class="start-tekst">Typ of plak een zin uit een boek, of neem een foto van de bladzijde. Daarna oefen je met kaartjes, zodat je de zin echt onthoudt.</p>
-    <div class="oc-start-btns"><button type="button" class="oc-begin" data-oc-begin="#q-tekst">Begin met een citaat</button><button type="button" class="oc-vb" id="voorbeeld">Bekijk een voorbeeld</button><button type="button" class="oc-vb" id="bib-start">Kies uit de bibliotheek</button></div>
+    <div class="oc-start-btns"><button type="button" class="oc-begin" data-oc-begin="#q-tekst">Begin met een citaat</button><button type="button" class="oc-vb" id="voorbeeld">Bekijk een voorbeeld</button><button type="button" class="bib-tegel" id="bib-start"><span class="bib-tegel-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/></svg></span><span class="bib-tegel-t"><b>Inspiratie uit de bibliotheek</b><small>Meer dan 200 vrije citaten</small></span><svg class="bib-tegel-pijl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
     <p class="oc-open-row"><button type="button" class="oc-open-link" data-bestand="open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10v6M9 13l3-3 3 3"/></svg>Open bestand</button></p>
   </div>
 
@@ -1321,7 +1349,7 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
             <label for="q-tekst">Citaat</label>
             <textarea class="input q-tekst" id="q-tekst" rows="3" maxlength="2000" placeholder="Typ of plak een zin uit je boek" aria-describedby="q-uitleg" enterkeyhint="done"></textarea>
           </div>
-          <p class="bib-rij"><button type="button" class="bib-link" id="bib-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/></svg>Of kies uit de bibliotheek</button></p>
+          <p class="bib-rij"><button type="button" class="bib-link" id="bib-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/></svg>Of zoek inspiratie in de bibliotheek</button></p>
           <div class="meer" id="q-meer">
           <div class="rij2">
             <div class="veld"><label for="q-auteur">Auteur</label><input class="input" id="q-auteur" type="text" list="dl-auteurs" maxlength="120" autocomplete="off" enterkeyhint="done"></div>
@@ -1417,12 +1445,14 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
 </footer>
 
 <dialog class="bib" id="bib" aria-labelledby="bib-h">
+  <div class="bib-top">
   <div class="bib-kop">
     <div><h2 id="bib-h">Bibliotheek</h2><p class="fijn" id="bib-uitleg">Citaten uit het publieke domein.</p></div>
     <button type="button" class="icon-btn" id="bib-x" aria-label="Sluit de bibliotheek"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
   <div class="bib-zoek"><label class="sr-only" for="bib-zoek">Zoek in de bibliotheek</label><input class="input" type="search" id="bib-zoek" placeholder="Zoek een woord, auteur of thema" autocomplete="off"></div>
-  <div class="bib-pillen" id="bib-pillen" role="group" aria-label="Verzamelingen"></div>
+  <div class="bib-pillen" id="bib-pillen" role="group" aria-label="Thema's"></div>
+  </div>
   <div class="bib-sub"><p class="fijn" id="bib-v-uitleg"></p><button type="button" class="btn licht" id="bib-alle" hidden>Voeg alle toe</button></div>
   <p class="bib-meld" id="bib-meld" role="status" aria-live="polite"></p>
   <p class="bib-laad fijn" id="bib-laad" hidden>Bibliotheek laden…</p>
@@ -1688,6 +1718,7 @@ const SVG = {
   kopie: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
   weg: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/>',
   vink: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
   oog: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   gaten: '<path d="M4 7h4M11 7h9M4 12h9M16 12h4M4 17h6M13 17h7"/>',
   verder: '<path d="M5 12h14M13 6l6 6-6 6"/>'
@@ -2550,12 +2581,12 @@ function tekenBib(eerst) {
   const L = $('bib-lijst'); L.textContent = '';
   lijst.forEach(it => {
     const li = el('li'), q = el('q', null, it.tekst), m = el('span', 'meta');
-    m.appendChild(el('b', null, it.auteur)); m.appendChild(document.createTextNode(' · ' + it.bron));
-    const ja = bibIn(it), b = knop('', ja ? 'In je lijst' : 'Voeg toe', ja ? 'vink' : null); b.dataset.i = it.id; b.setAttribute('aria-pressed', String(ja));
+    m.appendChild(el('b', null, it.auteur)); m.appendChild(document.createTextNode(it.bron));
+    const ja = bibIn(it), b = knop('', ja ? 'In je lijst' : 'Voeg toe', ja ? 'vink' : 'plus'); b.dataset.i = it.id; b.setAttribute('aria-pressed', String(ja));
     b.setAttribute('aria-label', (ja ? 'Haal weg uit je lijst: ' : 'Voeg toe aan je lijst: ') + kort(it.tekst, 60));
     li.appendChild(q); li.appendChild(m); li.appendChild(b); L.appendChild(li);
   });
-  if (eerst) L.scrollTop = 0;
+  if (eerst) { $('bib').scrollTop = 0; const ak = p.querySelector('[aria-pressed="true"]'); if (ak) ak.scrollIntoView({ block:'nearest', inline:'nearest' }); }
 }
 function bibToe(items) {
   const nieuw = [];
