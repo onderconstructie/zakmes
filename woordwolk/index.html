@@ -3,6 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:; frame-src 'self' blob: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<!-- oc-delen -->
+<link rel="canonical" href="https://onderconstructie.app/zakmes/woordwolk/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Onder Constructie">
+<meta property="og:locale" content="nl_BE">
+<meta property="og:title" content="Woordwolk · Onder Constructie">
+<meta property="og:description" content="Plak open antwoorden of open een tekst- of CSV-bestand. Zie welke woorden vaak terugkomen, met woordparen zoals niet duidelijk, en lees meteen wat mensen erover schreven. Alles blijft op je toestel.">
+<meta property="og:url" content="https://onderconstructie.app/zakmes/woordwolk/">
+<meta property="og:image" content="https://onderconstructie.app/og/woordwolk.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Woordwolk. Welke woorden komen het vaakst terug in een tekst?">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /oc-delen -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Woordwolk – Onder Constructie</title>
 <meta name="description" content="Plak open antwoorden of open een tekst- of CSV-bestand. Zie welke woorden vaak terugkomen, met woordparen zoals niet duidelijk, en lees meteen wat mensen erover schreven. Alles blijft op je toestel.">
@@ -62,7 +76,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 
 .main { flex:1 0 auto; width:100%; max-width:1240px; margin:0 auto; padding:1.25rem clamp(1rem, 2.5vw, 2.5rem) 3rem; }
 .card { background:var(--wit); border:1px solid var(--slate-200); border-radius:16px; box-shadow:0 1px 2px rgba(15,23,42,0.04); min-width:0; }
-.label { font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--slate-500); }
+.label { font-size:0.8125rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--slate-500); }
 .fijn { font-size:0.8125rem; color:var(--slate-500); line-height:1.45; }
 
 /* Indeling: links tekst en resultaat, rechts (op een breed scherm) wat er staat en de weggelaten woorden */
@@ -118,7 +132,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 .kol b { font-size:0.9375rem; font-weight:600; color:var(--slate-800); overflow-wrap:anywhere; }
 .kol small { font-size:0.8125rem; color:var(--slate-600); overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow-wrap:anywhere; }
 .kol em { font-style:normal; font-size:0.8125rem; color:var(--slate-500); }
-.kol .tip { display:inline-block; margin-left:0.375rem; padding:0 0.375rem; border-radius:999px; background:var(--accent-light); color:#065f46; font-size:0.75rem; font-weight:600; vertical-align:1px; }
+.kol .tip { display:inline-block; margin-left:0.375rem; padding:0 0.375rem; border-radius:999px; background:var(--accent-light); color:#065f46; font-size:0.8125rem; font-weight:600; vertical-align:1px; }
 
 /* Keuzes */
 .keuzes { display:grid; grid-template-columns:repeat(auto-fit, minmax(15rem, 1fr)); gap:0 1rem; padding:0 1.25rem 1rem; }
@@ -218,7 +232,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 .ctx-acties .btn { font-size:0.875rem; padding:0.5rem 0.75rem; }
 .ctx-lijst { list-style:none; padding:0.5rem 1.25rem 0; }
 .ctx-lijst li { padding:0.625rem 0; border-top:1px solid var(--slate-100); }
-.ctx-lijst .wie { display:block; font-size:0.75rem; color:var(--slate-500); margin-bottom:0.125rem; font-variant-numeric:tabular-nums; }
+.ctx-lijst .wie { display:block; font-size:0.8125rem; color:var(--slate-500); margin-bottom:0.125rem; font-variant-numeric:tabular-nums; }
 .ctx-lijst p { font-size:0.9375rem; color:var(--slate-700); line-height:1.5; overflow-wrap:anywhere; white-space:pre-line; }
 .ctx-lijst mark { background:var(--accent-light); color:#065f46; font-weight:600; border-radius:3px; padding:0 2px; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
 .ctx-voet { padding:0.5rem 1.25rem 1.25rem; }
@@ -384,7 +398,7 @@ details.explain.oc-u[open] .oc-u-pijl { transform:rotate(180deg); background:var
 
 /* op brede schermen: de stappen als kleine route, die plaats maakt voor de echte stappen bij openen */
 details.explain.oc-u .oc-u-route { display:none; align-items:center; flex-shrink:0; margin-right:0.75rem; transition:opacity 0.25s, visibility 0.25s; }
-details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.75rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
+details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.8125rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
 details.explain.oc-u .oc-u-route i:first-child { margin-left:0; }
 details.explain.oc-u .oc-u-route i + i::before { content:''; position:absolute; right:calc(100% + 1.5px); top:calc(50% - 0.75px); width:16px; height:1.5px; background:var(--u-licht); }
 details.explain.oc-u > summary:hover .oc-u-route i { border-color:var(--u-groen); }

@@ -3,6 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:; frame-src 'self' blob: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<!-- oc-delen -->
+<link rel="canonical" href="https://onderconstructie.app/zakmes/schets/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Onder Constructie">
+<meta property="og:locale" content="nl_BE">
+<meta property="og:title" content="Schetsboek · Onder Constructie">
+<meta property="og:description" content="Een rustig schetsboekje voor een idee, een schema of een plannetje. Teken met je vinger, pen of muis, kies een sjabloon en toon het op groot scherm.">
+<meta property="og:url" content="https://onderconstructie.app/zakmes/schets/">
+<meta property="og:image" content="https://onderconstructie.app/og/schets.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Schetsboek. Teken snel een idee, een schema of een plannetje.">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /oc-delen -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Schetsboek – Onder Constructie</title>
 <meta name="description" content="Een rustig schetsboekje voor een idee, een schema of een plannetje. Teken met je vinger, pen of muis, kies een sjabloon en toon het op groot scherm.">
@@ -91,7 +105,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
   .top .sp{display:none} .naamveld{flex:1 1 auto;padding:0 8px;margin-right:auto} .naamveld::placeholder{font-size:15px}
   /* de teller als klein label op de knop, zo krijgt de naam de ruimte */
   #bladen-btn{width:44px;padding:0;position:relative}
-  #bladen-btn .n{position:absolute;right:-4px;top:-4px;min-width:22px;height:18px;padding:0 4px;border-radius:9px;background:var(--wit);border:1px solid var(--line-2);font-size:12px;line-height:16px;font-weight:600;color:var(--slate-600);text-align:center}
+  #bladen-btn .n{position:absolute;right:-4px;top:-4px;min-width:22px;height:18px;padding:0 4px;border-radius:9px;background:var(--wit);border:1px solid var(--line-2);font-size:0.8125rem;line-height:16px;font-weight:600;color:var(--slate-600);text-align:center}
 }
 /* heel smal: geen plaats voor het naamveld, de naam geef je dan in de lijst van de bladen */
 @media (max-width:389px){ .naamveld{padding:0 6px} .naamveld::placeholder{font-size:14px} }
@@ -151,7 +165,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 @supports (backdrop-filter:blur(8px)){ .tray{background:rgba(255,255,255,.88);backdrop-filter:blur(10px) saturate(1.2);-webkit-backdrop-filter:blur(10px) saturate(1.2)} }
 .tool{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:44px;height:44px;border-radius:13px;color:var(--slate-500);transition:background .15s,color .15s}
 .tool svg{width:22px;height:22px}
-.tool .lbl{display:none;font-size:.75rem;font-weight:600;line-height:1}
+.tool .lbl{display:none;font-size:0.8125rem;font-weight:600;line-height:1}
 .tool:hover{color:var(--slate-700);background:var(--soft)}
 .tool[aria-pressed="true"]{background:var(--mint);color:var(--acc-d)}
 .tool[aria-pressed="true"]::after{content:"";position:absolute;bottom:3px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--acc)}
@@ -176,7 +190,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
   opacity:0;visibility:hidden;translate:0 6px;transition:opacity .16s,translate .2s var(--ease),visibility 0s .2s}
 .pop.open{opacity:1;visibility:visible;translate:0 0;transition:opacity .16s,translate .2s var(--ease)}
 @media (min-width:760px){ .pop{bottom:calc(92px + var(--bottom));max-height:calc(100% - 100px - var(--bottom))} }
-.pop h3{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--slate-500);margin:2px 4px 6px}
+.pop h3{font-size:0.8125rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--slate-500);margin:2px 4px 6px}
 .pop .row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
 .pop .row:last-child{margin-bottom:0}
 .kleur{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center}
@@ -258,7 +272,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .strip{flex:none;width:216px;display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--line);z-index:22;min-height:0}
 .strip[hidden]{display:none}
 .strip-top{display:flex;align-items:center;gap:6px;padding:10px 8px 6px 14px}
-.strip-top h2{flex:1;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-500)}
+.strip-top h2{flex:1;font-size:0.8125rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-500)}
 .strip-top .ib{width:44px;height:44px;min-width:44px}
 #strip-x{display:none}
 .thumbs{flex:1;min-height:0;overflow:auto;padding:4px 12px 12px;display:flex;flex-direction:column;gap:12px;list-style:none;overscroll-behavior:contain;scrollbar-width:thin}
@@ -269,7 +283,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .thumb.cur .tb{border-color:var(--acc);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
 .thumb .cap{display:flex;align-items:center;gap:6px;margin-top:2px;padding:0 2px 0 4px;min-height:44px}
 .thumb .cap span{line-height:24px}
-.thumb .cap b{font-size:.75rem;font-weight:700;color:var(--slate-500);font-variant-numeric:tabular-nums;min-width:1.2em}
+.thumb .cap b{font-size:0.8125rem;font-weight:700;color:var(--slate-500);font-variant-numeric:tabular-nums;min-width:1.2em}
 .thumb .cap span{flex:1;min-width:0;font-size:.8125rem;color:var(--slate-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:text;padding:6px 4px;border-radius:7px}
 .thumb .cap span:hover{background:#fff;box-shadow:inset 0 0 0 1px var(--line-2)}
 .thumb .cap span.geen{color:var(--slate-500)}
@@ -277,7 +291,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .thumb .more{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--slate-500);flex:none}
 .thumb .more:hover{background:var(--soft);color:var(--slate-700)}
 .thumb .more svg{width:18px;height:18px}
-.thumb .vb{position:absolute;top:8px;left:8px;font-size:.75rem;font-weight:700;font-style:normal;color:#92400e;background:#fef3c7;border:1px solid #fde68a;border-radius:999px;padding:1px 7px;pointer-events:none}
+.thumb .vb{position:absolute;top:8px;left:8px;font-size:0.8125rem;font-weight:700;font-style:normal;color:#92400e;background:#fef3c7;border:1px solid #fde68a;border-radius:999px;padding:1px 7px;pointer-events:none}
 .thumb.drag{opacity:.35}
 .thumb-ghost{position:fixed;z-index:120;pointer-events:none;width:180px;border-radius:12px;box-shadow:0 18px 40px -10px rgba(15,23,42,.35);transform:rotate(-2deg) scale(1.03);background:#fff;border:1.5px solid var(--acc);overflow:hidden}
 .thumb-ghost canvas{display:block;width:100%;height:auto}
@@ -288,7 +302,7 @@ dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscr
 .bgkeuze button{height:44px;border-radius:10px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;color:var(--slate-500)}
 .bgkeuze button svg{width:22px;height:22px}
 .bgkeuze button[aria-pressed="true"]{border-color:var(--acc);background:var(--mint);color:var(--acc-d)}
-.strip-foot .lab{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--slate-500);margin:0 2px -4px}
+.strip-foot .lab{font-size:0.8125rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--slate-500);margin:0 2px -4px}
 .tmenu{position:fixed;z-index:130;min-width:200px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.16);padding:.375rem}
 .tmenu button{width:100%;display:flex;align-items:center;gap:.625rem;min-height:44px;padding:0 .625rem;border-radius:8px;font-size:.9375rem;color:var(--slate-700);text-align:left}
 .tmenu button:hover{background:var(--soft)}
@@ -409,7 +423,7 @@ details.explain.oc-u[open] .oc-u-pijl { transform:rotate(180deg); background:var
 
 /* op brede schermen: de stappen als kleine route, die plaats maakt voor de echte stappen bij openen */
 details.explain.oc-u .oc-u-route { display:none; align-items:center; flex-shrink:0; margin-right:0.75rem; transition:opacity 0.25s, visibility 0.25s; }
-details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.75rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
+details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.8125rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
 details.explain.oc-u .oc-u-route i:first-child { margin-left:0; }
 details.explain.oc-u .oc-u-route i + i::before { content:''; position:absolute; right:calc(100% + 1.5px); top:calc(50% - 0.75px); width:16px; height:1.5px; background:var(--u-licht); }
 details.explain.oc-u > summary:hover .oc-u-route i { border-color:var(--u-groen); }
@@ -1151,7 +1165,7 @@ function ocUndoable(restore) {
 const ocExport = (() => {
   const LIBS = {
     h2c: '/lib/html2canvas-1.4.1.min.js',
-    pdf: '/lib/jspdf-2.5.1.umd.min.js'
+    pdf: '/lib/jspdf-4.2.1.umd.min.js'
   };
   const A4 = { w: 210, h: 297 }, MARGIN = 10;   // mm
   // Grenzen van een canvas: iPad en iPhone ongeveer 16 miljoen pixels; Chrome en Edge tot 65.535 px hoog of breed; andere browsers 32.767 px.
@@ -3989,7 +4003,7 @@ async function downloadAfbeelding() {
     toast('Afbeelding gedownload');
   }, 'image/png');
 }
-const PDF_LIB = '/lib/jspdf-2.5.1.umd.min.js';
+const PDF_LIB = '/lib/jspdf-4.2.1.umd.min.js';
 let pdfLaden = null;
 function laadPdf() {
   if (window.jspdf) return Promise.resolve();

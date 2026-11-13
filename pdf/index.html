@@ -3,6 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:; frame-src 'self' blob: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<!-- oc-delen -->
+<link rel="canonical" href="https://onderconstructie.app/zakmes/pdf/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Onder Constructie">
+<meta property="og:locale" content="nl_BE">
+<meta property="og:title" content="Pdf-schaar · Onder Constructie">
+<meta property="og:description" content="Voeg pdf&#x27;s samen, haal pagina&#x27;s eruit, draai en herschik ze, en splits een pdf in stukken. Alles gebeurt op je eigen toestel: je bestanden verlaten je toestel niet.">
+<meta property="og:url" content="https://onderconstructie.app/zakmes/pdf/">
+<meta property="og:image" content="https://onderconstructie.app/og/pdf.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Pdf-schaar. Pdf&#x27;s samenvoegen, pagina&#x27;s eruit halen, draaien en herschikken">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /oc-delen -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pdf-schaar – Onder Constructie</title>
 <meta name="description" content="Voeg pdf's samen, haal pagina's eruit, draai en herschik ze, en splits een pdf in stukken. Alles gebeurt op je eigen toestel: je bestanden verlaten je toestel niet.">
@@ -127,7 +141,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 .chip .weg { width:44px; height:44px; border-radius:0 999px 999px 0; display:grid; place-items:center; color:var(--slate-500); flex:none; }
 .chip .weg:hover { background:var(--slate-100); color:var(--slate-700); }
 .chip .weg svg { width:16px; height:16px; }
-.letter { flex:none; display:inline-grid; place-items:center; min-width:24px; height:24px; padding:0 0.25rem; border-radius:999px; font-size:0.75rem; font-weight:700; line-height:1; background:var(--l-bg); color:var(--l-fg); box-shadow:inset 0 0 0 1px var(--l-rand, transparent); font-variant-numeric:tabular-nums; }
+.letter { flex:none; display:inline-grid; place-items:center; min-width:24px; height:24px; padding:0 0.25rem; border-radius:999px; font-size:0.8125rem; font-weight:700; line-height:1; background:var(--l-bg); color:var(--l-fg); box-shadow:inset 0 0 0 1px var(--l-rand, transparent); font-variant-numeric:tabular-nums; }
 
 /* Meldingen bij openen */
 .fouten { margin:0.875rem 1rem 0; padding:0.625rem 0.5rem 0.625rem 0.875rem; display:flex; gap:0.625rem; align-items:flex-start; background:#fffbeb; border:1px solid #fde68a; border-radius:12px; color:#78350f; font-size:0.875rem; line-height:1.45; }
@@ -167,13 +181,13 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 .papier::before { content:''; position:absolute; left:14%; right:14%; top:14%; height:40%; background:repeating-linear-gradient(to bottom, var(--slate-100) 0 6%, transparent 6% 16%); }
 .papier.klaar::before { display:none; }
 .papier canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
-.papier .geen { position:absolute; inset:0; display:grid; place-items:center; padding:0.25rem; font-size:0.75rem; color:var(--slate-500); text-align:center; line-height:1.3; }
+.papier .geen { position:absolute; inset:0; display:grid; place-items:center; padding:0.25rem; font-size:0.8125rem; color:var(--slate-500); text-align:center; line-height:1.3; }
 .vink { flex:none; width:22px; height:22px; border-radius:50%; display:grid; place-items:center; background:var(--wit); box-shadow:inset 0 0 0 1.5px var(--slate-400); color:transparent; transition:background 0.12s, box-shadow 0.12s; }
 .vink svg { width:14px; height:14px; }
 .blad-voet { display:flex; align-items:center; gap:0.4375rem; min-height:26px; padding:0 0.125rem; }
 .nr { font-size:0.9375rem; font-weight:700; color:var(--slate-800); font-variant-numeric:tabular-nums; line-height:1.2; }
 .blad-voet .letter { margin-left:auto; }
-.tip { position:absolute; left:0.375rem; right:0.375rem; bottom:2.375rem; z-index:2; padding:0.3125rem 0.5rem; border-radius:8px; background:var(--slate-800); color:#fff; font-size:0.75rem; line-height:1.35; overflow-wrap:anywhere; opacity:0; visibility:hidden; transition:opacity 0.12s, visibility 0s 0.12s; pointer-events:none; }
+.tip { position:absolute; left:0.375rem; right:0.375rem; bottom:2.375rem; z-index:2; padding:0.3125rem 0.5rem; border-radius:8px; background:var(--slate-800); color:#fff; font-size:0.8125rem; line-height:1.35; overflow-wrap:anywhere; opacity:0; visibility:hidden; transition:opacity 0.12s, visibility 0s 0.12s; pointer-events:none; }
 @media (hover:hover) { .vel:hover .tip { opacity:1; visibility:visible; transition-delay:0.35s, 0.35s; } }
 .vel:focus-visible .tip { opacity:1; visibility:visible; transition:opacity 0.12s; }
 .vel[aria-pressed="true"] { border-color:var(--accent); background:var(--accent-50); box-shadow:0 0 0 1px var(--accent); }
@@ -218,7 +232,7 @@ body.met-sel .toast { bottom:calc(var(--bottom) + var(--balk-h) + 1.5rem); }
   .sel-info { justify-content:space-between; padding-left:0.625rem; }
   .sel-acties { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:0.125rem; margin:0; }
   .sel-acties .sep { display:none; }
-  .sel-acties button { flex-direction:column; justify-content:center; gap:0.125rem; min-height:52px; padding:0.25rem 0.125rem; font-size:0.75rem; line-height:1.15; white-space:normal; text-align:center; }
+  .sel-acties button { flex-direction:column; justify-content:center; gap:0.125rem; min-height:52px; padding:0.25rem 0.125rem; font-size:0.8125rem; line-height:1.15; white-space:normal; text-align:center; }
 }
 
 /* Vensters: bewaren en splitsen */
@@ -393,7 +407,7 @@ details.explain.oc-u[open] .oc-u-pijl { transform:rotate(180deg); background:var
 
 /* op brede schermen: de stappen als kleine route, die plaats maakt voor de echte stappen bij openen */
 details.explain.oc-u .oc-u-route { display:none; align-items:center; flex-shrink:0; margin-right:0.75rem; transition:opacity 0.25s, visibility 0.25s; }
-details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.75rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
+details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.8125rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
 details.explain.oc-u .oc-u-route i:first-child { margin-left:0; }
 details.explain.oc-u .oc-u-route i + i::before { content:''; position:absolute; right:calc(100% + 1.5px); top:calc(50% - 0.75px); width:16px; height:1.5px; background:var(--u-licht); }
 details.explain.oc-u > summary:hover .oc-u-route i { border-color:var(--u-groen); }

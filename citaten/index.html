@@ -3,6 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:; frame-src 'self' blob: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<!-- oc-delen -->
+<link rel="canonical" href="https://onderconstructie.app/zakmes/citaten/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Onder Constructie">
+<meta property="og:locale" content="nl_BE">
+<meta property="og:title" content="Citaten · Onder Constructie">
+<meta property="og:description" content="Bewaar zinnen uit je boeken, met auteur, boek, bladzijde en tags. Een foto van een bladzijde wordt tekst die je kan bewerken. Oefen met kaartjes met gaten, herhaald op het juiste moment. Alles blijft op je toestel.">
+<meta property="og:url" content="https://onderconstructie.app/zakmes/citaten/">
+<meta property="og:image" content="https://onderconstructie.app/og/citaten.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Citaten. Bewaar zinnen uit je boeken en onthoud ze">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /oc-delen -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Citaten – Onder Constructie</title>
 <meta name="description" content="Bewaar zinnen uit je boeken, met auteur, boek, bladzijde en tags. Een foto van een bladzijde wordt tekst die je kan bewerken. Oefen met kaartjes met gaten, herhaald op het juiste moment. Alles blijft op je toestel.">
@@ -56,7 +70,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 
 .main { flex:1 0 auto; width:100%; max-width:1200px; margin:0 auto; padding:1.25rem clamp(1rem, 2.5vw, 2.5rem) 3rem; }
 .card { background:var(--wit); border:1px solid var(--slate-200); border-radius:16px; box-shadow:0 1px 2px rgba(15,23,42,0.04); min-width:0; }
-.label { font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--slate-500); }
+.label { font-size:0.8125rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--slate-500); }
 .fijn { font-size:0.8125rem; color:var(--slate-500); line-height:1.45; }
 
 .btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:44px; padding:0.5rem 1rem; border-radius:10px; border:1px solid var(--slate-200); background:var(--wit); font-size:0.9375rem; font-weight:600; color:var(--slate-700); text-decoration:none; line-height:1.25; text-align:center; }
@@ -99,7 +113,7 @@ dialog.bib::backdrop { background:rgba(15,23,42,0.4); }
 .bib-pillen { display:flex; flex-wrap:wrap; gap:0.5rem; padding:0.125rem 1.5rem 0.875rem; }
 .bib-pillen button { flex:none; display:inline-flex; align-items:center; gap:0.375rem; min-height:44px; padding:0 0.875rem; border-radius:999px; border:1.5px solid var(--slate-200); background:#fff; color:#334155; font:inherit; font-weight:600; font-size:0.9375rem; white-space:nowrap; cursor:pointer; box-shadow:0 1px 2px rgba(15,23,42,0.06); }
 .bib-pillen button:hover { border-color:#a7f3d0; }
-.bib-pillen button span { font-weight:600; font-size:0.75rem; min-width:1.5rem; padding:0.0625rem 0.375rem; border-radius:999px; background:#f1f5f9; color:#475569; text-align:center; }
+.bib-pillen button span { font-weight:600; font-size:0.8125rem; min-width:1.5rem; padding:0.0625rem 0.375rem; border-radius:999px; background:#f1f5f9; color:#475569; text-align:center; }
 .bib-pillen button[aria-pressed="true"] { background:#047857; border-color:#047857; color:#fff; box-shadow:0 4px 10px -4px rgba(4,120,87,0.55); }
 .bib-pillen button[aria-pressed="true"] span { background:rgba(255,255,255,0.22); color:#fff; }
 /* Uitleg van het thema en alles in één keer */
@@ -179,7 +193,7 @@ textarea.input { resize:vertical; line-height:1.5; }
 select.input { padding-right:2rem; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 0.625rem center; background-size:16px; }
 .veld { display:flex; flex-direction:column; gap:0.25rem; min-width:0; }
 .veld > label, .veld-lbl { font-size:0.875rem; font-weight:600; color:var(--slate-700); }
-.veld > label small, .veld-lbl small { font-weight:400; color:var(--slate-500); }
+.veld > label small, .veld-lbl small { font-weight:400; font-size:0.8125rem; color:var(--slate-500); }
 .serif { font-family:var(--serif); }
 
 /* Voorbeeldband (zoals in de andere tools) */
@@ -279,7 +293,7 @@ select.input { padding-right:2rem; appearance:none; -webkit-appearance:none; bac
 .pil-rij { display:flex; align-items:center; gap:0.5rem; overflow-x:auto; scrollbar-width:none; padding:0.125rem 1.25rem; }
 .pil-rij::-webkit-scrollbar { display:none; }
 @media (min-width:640px) { .pil-rij { flex-wrap:wrap; overflow:visible; } }
-.pil-lbl { flex:none; min-width:4.25rem; font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--slate-500); }
+.pil-lbl { flex:none; min-width:4.25rem; font-size:0.8125rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--slate-500); }
 .pil { flex:none; display:inline-flex; align-items:center; gap:0.4375rem; min-height:44px; max-width:16rem; padding:0 0.9375rem; border-radius:999px; background:var(--wit); color:var(--slate-600); box-shadow:inset 0 0 0 1px var(--slate-200); font-size:0.9375rem; font-weight:600; white-space:nowrap; }
 .pil .pil-t { overflow:hidden; text-overflow:ellipsis; min-width:0; }
 .pil .pil-n { font-size:0.8125rem; font-weight:600; color:var(--slate-500); font-variant-numeric:tabular-nums; }
@@ -469,7 +483,7 @@ details.explain.oc-u[open] .oc-u-pijl { transform:rotate(180deg); background:var
 
 /* op brede schermen: de stappen als kleine route, die plaats maakt voor de echte stappen bij openen */
 details.explain.oc-u .oc-u-route { display:none; align-items:center; flex-shrink:0; margin-right:0.75rem; transition:opacity 0.25s, visibility 0.25s; }
-details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.75rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
+details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.8125rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
 details.explain.oc-u .oc-u-route i:first-child { margin-left:0; }
 details.explain.oc-u .oc-u-route i + i::before { content:''; position:absolute; right:calc(100% + 1.5px); top:calc(50% - 0.75px); width:16px; height:1.5px; background:var(--u-licht); }
 details.explain.oc-u > summary:hover .oc-u-route i { border-color:var(--u-groen); }
@@ -1559,7 +1573,7 @@ function ocUndoable(restore) {
 const ocExport = (() => {
   const LIBS = {
     h2c: '/lib/html2canvas-1.4.1.min.js',
-    pdf: '/lib/jspdf-2.5.1.umd.min.js'
+    pdf: '/lib/jspdf-4.2.1.umd.min.js'
   };
   const A4 = { w: 210, h: 297 }, MARGIN = 10;   // mm
   // Grenzen van een canvas: iPad en iPhone ongeveer 16 miljoen pixels; Chrome en Edge tot 65.535 px hoog of breed; andere browsers 32.767 px.
