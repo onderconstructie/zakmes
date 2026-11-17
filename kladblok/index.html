@@ -1358,6 +1358,7 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
               <button type="button" role="radio" aria-checked="false" data-modus="naast" class="md-naast-keuze">Naast elkaar</button>
             </div>
             <button type="button" class="kb" id="zoek-knop" aria-pressed="false" aria-controls="zoekbalk" aria-label="Zoeken en vervangen" title="Zoeken en vervangen (Ctrl+F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span class="kl">Zoeken</span></button>
+            <button type="button" class="kb" id="leeg-knop" aria-label="Maak deze notitie leeg" title="Maak deze notitie leeg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg></button>
           </div>
         </div>
 
@@ -2779,6 +2780,15 @@ function sluitZoek(focus) {
   if (n && n.soort === 'tabel') { tekenRaster(); if (focus) focusCel(act.r, act.c); } else if (focus && n) $('tekst').focus();
 }
 $('zoek-knop').addEventListener('click', () => zoekOpen() ? sluitZoek(true) : openZoek());
+// Vuilbakje: maakt de inhoud van deze notitie leeg (de notitie zelf blijft). Met Ongedaan komt alles terug.
+$('leeg-knop').addEventListener('click', () => {
+  const n = cur(); if (!n) return;
+  const leegNu = n.soort === 'tabel' ? n.rijen.every(r => r.every(c => !String(c).trim())) : !n.tekst.trim();
+  if (leegNu) { toast('Deze notitie is al leeg.'); return; }
+  const oud = { tekst: n.tekst, rijen: n.rijen.map(r => r.slice()), sort: n.sort, naam: n.naam };
+  n.tekst = ''; n.rijen = leegRaster(); n.sort = null; saveLater(n); render();
+  toast('Notitie leeggemaakt', () => { Object.assign(n, oud); saveLater(n); render(); });
+});
 $('zoek-sluit').addEventListener('click', () => sluitZoek(true));
 const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 function zoekRe() { const q = $('zoek').value; if (!q) return null; return new RegExp(reEsc(q), $('zoek-aa').getAttribute('aria-pressed') === 'true' ? 'g' : 'gi'); }
