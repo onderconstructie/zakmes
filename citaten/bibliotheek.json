@@ -383,6 +383,72 @@
      "tags": [
       "tijd"
      ]
+    },
+    {
+     "id": "2dd02c8820",
+     "tekst": "We hebben niet te weinig tijd, we hebben er veel van verspild.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Over de kortheid van het leven, hoofdstuk 1",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Non exiguum temporis habemus, sed multum perdidimus.",
+     "tags": [
+      "tijd"
+     ]
+    },
+    {
+     "id": "4b7755f1e7",
+     "tekst": "Het meeste van wat we zeggen en doen, is niet nodig.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 4, 24",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: τὰ πλεῖστα γὰρ ὧν λέγομεν καὶ πράσσομεν οὐκ ἀναγκαῖα ὄντα.",
+     "tags": [
+      "focus"
+     ]
+    },
+    {
+     "id": "dbe56336d1",
+     "tekst": "Niets is zo nuttig dat het in het voorbijgaan al helpt.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 2",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: nihil tam utile est ut in transitu prosit.",
+     "tags": [
+      "focus"
+     ]
+    },
+    {
+     "id": "55e09084f5",
+     "tekst": "Vooruit willen is al een groot deel van vooruitgaan.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 71",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: magna pars est profectus velle proficere.",
+     "tags": [
+      "motivatie"
+     ]
+    },
+    {
+     "id": "477bb5fd22",
+     "tekst": "Ieder leeft alleen dit ogenblik.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 3, 10",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: μόνον ζῇ ἕκαστος τὸ παρὸν τοῦτο, τὸ ἀκαριαῖον.",
+     "tags": [
+      "nu"
+     ]
+    },
+    {
+     "id": "51d0572969",
+     "tekst": "Wie ken jij die de waarde van een dag kent?",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 1",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Quem mihi dabis qui aliquod pretium tempori ponat, qui diem aestimet.",
+     "tags": [
+      "tijd"
+     ]
     }
    ]
   },
@@ -637,6 +703,61 @@
      "noot": "Eigen vertaling uit het Chinees. Origineel: 见义不为，无勇也",
      "tags": [
       "moed"
+     ]
+    },
+    {
+     "id": "6bb3d2b7b8",
+     "tekst": "Een klap die je zag aankomen, komt zachter aan.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 76",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Praecogitati mali mollis ictus venit.",
+     "tags": [
+      "voorbereiding"
+     ]
+    },
+    {
+     "id": "9181ced5b7",
+     "tekst": "Zeg eerst tegen jezelf wie je wil zijn. Doe daarna wat je doet.",
+     "auteur": "Epictetus",
+     "jaren": "ca. 50 tot 135",
+     "bron": "Colleges, boek 3, hoofdstuk 23",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Τίς εἶναι θέλεις, σαυτῷ πρῶτον εἰπέ· εἶθ' οὕτως ποίει ἃ ποιεῖς.",
+     "tags": [
+      "kiezen"
+     ]
+    },
+    {
+     "id": "9fa8a14871",
+     "tekst": "Wat de daad hindert, helpt haar vooruit. Wat in de weg staat, helpt je op weg.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 5, 20",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: καὶ πρὸ ἔργου γίνεται τὸ τοῦ ἔργου τούτου ἐφεκτικὸν καὶ πρὸ ὁδοῦ τὸ τῆς ὁδοῦ ταύτης ἐνστατικόν.",
+     "tags": [
+      "tegenslag"
+     ]
+    },
+    {
+     "id": "21b3561416",
+     "tekst": "Denk aan alles wat kan gebeuren, en wapen je ertegen.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 91",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Cogitanda ergo sunt omnia et animus adversus ea quae possunt evenire firmandus.",
+     "tags": [
+      "voorbereiding"
+     ]
+    },
+    {
+     "id": "0225ee8a9a",
+     "tekst": "Bang voor verandering? Wat gebeurt er dan zonder verandering?",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 7, 18",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Φοβεῖταί τις μεταβολήν; τί γὰρ δύναται χωρὶς μεταβολῆς γενέσθαι.",
+     "tags": [
+      "verandering"
      ]
     }
    ]
@@ -1173,6 +1294,72 @@
      "tags": [
       "fouten",
       "leren"
+     ]
+    },
+    {
+     "id": "4e69227189",
+     "tekst": "Dit zei Zeno. En jij?",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 33",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Hoc Zenon dixit: tu quid?",
+     "tags": [
+      "denken"
+     ]
+    },
+    {
+     "id": "78b783acf4",
+     "tekst": "Dat je je eigen gebreken ziet, bewijst al dat je erop vooruitgaat.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 6",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: hoc ipsum argumentum est in melius translati animi, quod vitia sua quae adhuc ignorabat videt.",
+     "tags": [
+      "groei"
+     ]
+    },
+    {
+     "id": "44521a9156",
+     "tekst": "Het volstaat zoveel te hebben als je kunt lezen.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 2",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: cum legere non possis quantum habueris, satis est habere quantum legas.",
+     "tags": [
+      "lezen"
+     ]
+    },
+    {
+     "id": "0a0901d9f8",
+     "tekst": "Wat je al lezend verzamelde, maakt je pen tot één geheel.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 84",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: ut quidquid lectione collectum est stilus redigat in corpus.",
+     "tags": [
+      "lezen"
+     ]
+    },
+    {
+     "id": "beda4adbdb",
+     "tekst": "Dit zouden filosofen elke dag moeten opschrijven, en zich erin oefenen.",
+     "auteur": "Epictetus",
+     "jaren": "ca. 50 tot 135",
+     "bron": "Colleges, boek 1, hoofdstuk 1",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: ταῦτα ἔδει μελετᾶν τοὺς φιλοσοφοῦντας, ταῦτα καθ' ἡμέραν γράφειν, ἐν τούτοις γυμνάζεσθαι.",
+     "tags": [
+      "gewoonte"
+     ]
+    },
+    {
+     "id": "cf1756733b",
+     "tekst": "Het gaat er niet om hoeveel je er hebt, maar hoe goed ze zijn.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 45",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Non refert quam multos sed quam bonos habeas. Seneca heeft het over boeken.",
+     "tags": [
+      "lezen"
      ]
     }
    ]
@@ -1736,6 +1923,116 @@
      "tags": [
       "luisteren"
      ]
+    },
+    {
+     "id": "67109a353d",
+     "tekst": "Wat niet goed is voor de zwerm, is niet goed voor de bij.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 6, 54",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Τὸ τῷ σμήνει μὴ συμφέρον οὐδὲ τῇ μελίσσῃ συμφέρει.",
+     "tags": [
+      "samenwerken"
+     ]
+    },
+    {
+     "id": "b4acb3575d",
+     "tekst": "Taal die de waarheid dient, is eenvoudig en onopgesmukt.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 40",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: quae veritati operam dat oratio incomposita esse debet et simplex.",
+     "tags": [
+      "gesprek"
+     ]
+    },
+    {
+     "id": "22a83d1693",
+     "tekst": "Zwijg meestal, of zeg wat nodig is, in weinig woorden.",
+     "auteur": "Epictetus",
+     "jaren": "ca. 50 tot 135",
+     "bron": "Handboekje, hoofdstuk 33",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: σιωπὴ τὸ πολὺ ἔστω ἢ λαλείσθω τὰ ἀναγκαῖα καὶ δι' ὀλίγων.",
+     "tags": [
+      "gesprek"
+     ]
+    },
+    {
+     "id": "c57ba07387",
+     "tekst": "We zijn leden van één groot lichaam.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 95",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: membra sumus corporis magni.",
+     "tags": [
+      "samenwerken"
+     ]
+    },
+    {
+     "id": "ba7eaceaa9",
+     "tekst": "Vriendelijkheid is onoverwinnelijk, als ze echt is.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 11, 18",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Ἔνατον, ὅτι τὸ εὐμενὲς ἀνίκητον, ἐὰν γνήσιον ᾖ καὶ μὴ σεσηρὸς μηδὲ ὑπόκρισις.",
+     "tags": [
+      "goedheid"
+     ]
+    },
+    {
+     "id": "71b257a70f",
+     "tekst": "Een weldaad zit niet in wat je geeft, maar in de gezindheid waarmee je geeft.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Over weldaden, boek 1, hoofdstuk 6",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: beneficium non in eo, quod fit aut datur, consistit, sed in ipso dantis aut facientis animo.",
+     "tags": [
+      "delen"
+     ]
+    },
+    {
+     "id": "195ab77320",
+     "tekst": "Wat je te doen hebt, hangt af van je verhouding tot de anderen.",
+     "auteur": "Epictetus",
+     "jaren": "ca. 50 tot 135",
+     "bron": "Handboekje, hoofdstuk 30",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Τὰ καθήκοντα ὡς ἐπίπαν ταῖς σχέσεσι παραμετρεῖται.",
+     "tags": [
+      "samenwerken"
+     ]
+    },
+    {
+     "id": "d951a87228",
+     "tekst": "Zeg wat je denkt, en denk wat je zegt.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 75",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: quod sentimus loquamur, quod loquimur sentiamus.",
+     "tags": [
+      "eerlijkheid"
+     ]
+    },
+    {
+     "id": "92fb5c1b34",
+     "tekst": "Wil je jezelf opvrolijken? Denk aan het goede in wie met je samenleeft.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 6, 48",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Ὅταν εὐφρᾶναι σεαυτὸν θέλῃς, ἐνθυμοῦ τὰ προτερήματα τῶν συμβιούντων.",
+     "tags": [
+      "mensen"
+     ]
+    },
+    {
+     "id": "cfc85bd24a",
+     "tekst": "Onze woorden moeten niet behagen, maar helpen.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 75",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Non delectent verba nostra sed prosint.",
+     "tags": [
+      "gesprek"
+     ]
     }
    ]
   },
@@ -2126,6 +2423,50 @@
      "tags": [
       "rust",
       "geluk"
+     ]
+    },
+    {
+     "id": "3a0495ada4",
+     "tekst": "Wat je vooral moet mijden? De massa.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 7",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Quid tibi vitandum praecipue existimes quaeris? turbam.",
+     "tags": [
+      "mensen"
+     ]
+    },
+    {
+     "id": "e7ba204820",
+     "tekst": "Gun je geest ontspanning: uitgerust staat hij scherper op.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Over de gemoedsrust, hoofdstuk 17",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Danda est animis remissio: meliores acrioresque requieti surgent.",
+     "tags": [
+      "rust"
+     ]
+    },
+    {
+     "id": "793b2bad24",
+     "tekst": "Zeg tegen elke harde indruk: je bent een indruk, en helemaal niet wat je lijkt.",
+     "auteur": "Epictetus",
+     "jaren": "ca. 50 tot 135",
+     "bron": "Handboekje, hoofdstuk 1",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: φαντασία εἶ καὶ οὐ πάντως τὸ φαινόμενον.",
+     "tags": [
+      "denken"
+     ]
+    },
+    {
+     "id": "b180743a09",
+     "tekst": "Lach niet te veel, niet om alles, en niet uitbundig.",
+     "auteur": "Epictetus",
+     "jaren": "ca. 50 tot 135",
+     "bron": "Handboekje, hoofdstuk 33",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: γέλως μὴ πολὺς ἔστω μηδὲ ἐπὶ πολλοῖς μηδὲ ἀνειμένος.",
+     "tags": [
+      "humor"
      ]
     }
    ]
@@ -2606,6 +2947,94 @@
      "tags": [
       "verantwoordelijkheid"
      ]
+    },
+    {
+     "id": "84d3549ad8",
+     "tekst": "Bouw je leven op, daad per daad.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 8, 32",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Συντιθέναι δεῖ τὸν βίον κατὰ μίαν πρᾶξιν.",
+     "tags": [
+      "doen"
+     ]
+    },
+    {
+     "id": "826493fe23",
+     "tekst": "Het goede bereik je met kleine stappen, maar klein is het niet.",
+     "auteur": "Zeno van Citium",
+     "jaren": "ca. 334 tot 262 v.Chr.",
+     "bron": "Diogenes Laërtius, Leven en leer van beroemde filosofen, boek 7",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: τὸ εὖ γίνεσθαι μὲν παρὰ μικρόν, οὐ μὴν μικρὸν εἶναι. Diogenes Laërtius voegt eraan toe dat anderen de uitspraak aan Socrates toeschrijven.",
+     "tags": [
+      "geduld"
+     ]
+    },
+    {
+     "id": "4920a2c9b9",
+     "tekst": "Eerst moeten we onszelf bekijken.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Over de gemoedsrust, hoofdstuk 6",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Inspicere autem debebimus primum nosmet ipsos.",
+     "tags": [
+      "zelfkennis"
+     ]
+    },
+    {
+     "id": "dd6ba96ecc",
+     "tekst": "Wil je iets doen, maak er een gewoonte van. Wil je iets niet doen: doe het niet, en wen je aan iets anders.",
+     "auteur": "Epictetus",
+     "jaren": "ca. 50 tot 135",
+     "bron": "Colleges, boek 2, hoofdstuk 18",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: καθόλου οὖν εἴ τι ποιεῖν ἐθέλῃς, ἑκτικὸν ποίει αὐτό· εἴ τι μὴ ποιεῖν ἐθέλῃς, μὴ ποίει αὐτό, ἀλλ' ἔθισον ἄλλο τι πράττειν.",
+     "tags": [
+      "gewoonte"
+     ]
+    },
+    {
+     "id": "aa842a7765",
+     "tekst": "Welke fout heb je vandaag verholpen?",
+     "auteur": "Quintus Sextius",
+     "jaren": "1e eeuw v.Chr.",
+     "bron": "Bij Seneca, Over de woede, boek 3, hoofdstuk 36",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Quod hodie malum tuum sanasti? Sextius stelde zich die vraag elke avond; Seneca haalt hem aan.",
+     "tags": [
+      "geweten"
+     ]
+    },
+    {
+     "id": "87f51612a0",
+     "tekst": "Schapen tonen de herder niet hoeveel ze aten. Ze geven wol en melk.",
+     "auteur": "Epictetus",
+     "jaren": "ca. 50 tot 135",
+     "bron": "Handboekje, hoofdstuk 46",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: τὰ πρόβατα οὐ χόρτον φέροντα τοῖς ποιμέσιν ἐπιδεικνύει πόσον ἔφαγεν, ἀλλὰ τὴν νομὴν ἔσω πέψαντα ἔρια ἔξω φέρει καὶ γάλα. Ingekort: in het Grieks verteren de schapen eerst hun voer.",
+     "tags": [
+      "doen"
+     ]
+    },
+    {
+     "id": "082498379f",
+     "tekst": "Niemand schildert een gelijkenis als hij niet weet wat hij wil schilderen.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 71",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: Nemo, quamvis paratos habeat colores, similitudinem reddet, nisi iam constat quid velit pingere.",
+     "tags": [
+      "richting"
+     ]
+    },
+    {
+     "id": "7c6fa48e6d",
+     "tekst": "Wat het licht niet doorlaat, berooft zichzelf van de glans.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 8, 57",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: αὐτὸ γὰρ ἑαυτὸ στερήσει τῆς αὐγῆς τὸ μὴ παραπέμπον αὐτήν.",
+     "tags": [
+      "echtheid"
+     ]
     }
    ]
   },
@@ -2977,6 +3406,83 @@
      "noot": "Eigen vertaling uit het Engels. Origineel: Success is counted sweetest By those who ne'er succeed.",
      "tags": [
       "succes"
+     ]
+    },
+    {
+     "id": "f86d57c93a",
+     "tekst": "Wie niet weet naar welke haven hij vaart, heeft nooit de goede wind.",
+     "auteur": "Seneca",
+     "jaren": "ca. 4 v.Chr. tot 65 n.Chr.",
+     "bron": "Brieven aan Lucilius, brief 71",
+     "noot": "Eigen vertaling uit het Latijn. Origineel: ignoranti quem portum petat nullus suus ventus est.",
+     "tags": [
+      "richting"
+     ]
+    },
+    {
+     "id": "7894f277bb",
+     "tekst": "Denk vaak na over hoe alles met alles samenhangt.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 6, 38",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Πολλάκις ἐνθυμοῦ τὴν ἐπισύνδεσιν πάντων τῶν ἐν τῷ κόσμῳ καὶ σχέσιν πρὸς ἄλληλα.",
+     "tags": [
+      "samenhang"
+     ]
+    },
+    {
+     "id": "35c720e524",
+     "tekst": "Wat volgt, sluit altijd aan op wat voorafging.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 4, 45",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Τὰ ἑξῆς ἀεὶ τοῖς προηγησαμένοις οἰκείως ἐπιγίνεται.",
+     "tags": [
+      "samenhang"
+     ]
+    },
+    {
+     "id": "595a69f098",
+     "tekst": "Kijk van bovenaf.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 9, 30",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Ἄνωθεν ἐπιθεωρεῖν ἀγέλας μυρίας καὶ τελετὰς μυρίας. Het begin van een langere zin: kijk van bovenaf naar de talloze kudden en de talloze plechtigheden.",
+     "tags": [
+      "overzicht"
+     ]
+    },
+    {
+     "id": "7150e278c2",
+     "tekst": "Wat is dit, op zichzelf? Waaruit bestaat het, en wat doet het in de wereld?",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 8, 11",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Τοῦτο τί ἐστιν αὐτὸ καθ' αὑτὸ τῇ ἰδίᾳ κατασκευῇ, τί μὲν τὸ οὐσιῶδες αὐτοῦ καὶ ὑλικόν, τί δὲ τὸ αἰτιῶδες, τί δὲ ποιεῖ ἐν τῷ κόσμῳ. Ingekort: Marcus Aurelius vraagt ook naar de oorzaak en naar hoe lang het duurt.",
+     "tags": [
+      "denken"
+     ]
+    },
+    {
+     "id": "8060193b84",
+     "tekst": "Goed gedaan, Fortuna, dat je me naar de filosofie drijft.",
+     "auteur": "Zeno van Citium",
+     "jaren": "ca. 334 tot 262 v.Chr.",
+     "bron": "Diogenes Laërtius, Leven en leer van beroemde filosofen, boek 7",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Εὖ γε ποιεῖ ἡ τύχη προσελαύνουσα ἡμᾶς φιλοσοφίᾳ. Eén van twee overleveringen van wat Zeno zei toen zijn schip verging.",
+     "tags": [
+      "tegenslag"
+     ]
+    },
+    {
+     "id": "2e9c6b5a2b",
+     "tekst": "Neem altijd de korte weg: dat is de natuurlijke.",
+     "auteur": "Marcus Aurelius",
+     "jaren": "121 tot 180",
+     "bron": "Overpeinzingen, boek 4, 51",
+     "noot": "Eigen vertaling uit het Grieks. Origineel: Ἐπὶ τὴν σύντομον ἀεὶ τρέχε· σύντομος δὲ ἡ κατὰ φύσιν.",
+     "tags": [
+      "richting"
      ]
     }
    ]
