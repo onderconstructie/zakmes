@@ -2727,6 +2727,17 @@ function bibWeg(it) {
 }
 ['bib-open', 'bib-start', 'bib-lijst-k'].forEach(id => $(id).addEventListener('click', openBib));
 $('bib-zoek').addEventListener('input', () => { if (BIB) { $('bib-meld').textContent = ''; tekenBib(true); } });
+/* Een tool wijst onderaan naar haar uitspraak: /zakmes/citaten/#bib:<woorden> opent de bibliotheek met die woorden in het zoekveld. */
+(function () {
+  function vanTool() {
+    let h = location.hash; try { h = decodeURIComponent(h); } catch (e) {}
+    const m = /^#bib(?::(.*))?$/.exec(h); if (!m) return;
+    $('bib-zoek').value = (m[1] || '').slice(0, 80);
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    openBib();
+  }
+  addEventListener('hashchange', vanTool); setTimeout(vanTool, 0);
+})();
 $('bib-x').addEventListener('click', () => $('bib').close());
 $('bib').addEventListener('click', e => { if (e.target === $('bib')) $('bib').close(); });
 $('bib').addEventListener('close', () => { if (bibLaatst && document.contains(bibLaatst) && bibLaatst.offsetParent) bibLaatst.focus(); });
