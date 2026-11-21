@@ -2023,6 +2023,21 @@ const H = {
     return [hand(pad, o), hand(kop, Object.assign({}, o, { beef: 0.2, seed: (o.seed || 5) + 1 }))];
   },
   vink: (x, y, s, o) => hand([x, y + s * 0.5, x + s * 0.35, y + s * 0.88, x + s, y - s * 0.05], Object.assign({ beef: 0.15 }, o)),
+  // Geen sterren meer op de voorbeelden: een beker voor het einddoel, een vlag voor een mijlpaal of eerste stap, een pakje voor wat je oplevert.
+  beker(x, y, s, o) {
+    const kelk = [x - 0.55 * s, y - 0.8 * s, x - 0.52 * s, y - 0.35 * s, x - 0.38 * s, y + 0.02 * s, x - 0.12 * s, y + 0.2 * s, x - 0.12 * s, y + 0.5 * s, x - 0.42 * s, y + 0.5 * s, x - 0.42 * s, y + 0.78 * s, x + 0.42 * s, y + 0.78 * s, x + 0.42 * s, y + 0.5 * s, x + 0.12 * s, y + 0.5 * s, x + 0.12 * s, y + 0.2 * s, x + 0.38 * s, y + 0.02 * s, x + 0.52 * s, y - 0.35 * s, x + 0.55 * s, y - 0.8 * s, x - 0.55 * s, y - 0.8 * s];
+    const oor = k => [x + k * 0.54 * s, y - 0.62 * s, x + k * 0.86 * s, y - 0.58 * s, x + k * 0.84 * s, y - 0.3 * s, x + k * 0.46 * s, y - 0.16 * s];
+    const sd = (o && o.seed) || 5;
+    return [hand(kelk, Object.assign({ beef: 0.15 }, o)), hand(oor(-1), Object.assign({ beef: 0.15 }, o, { seed: sd + 1 })), hand(oor(1), Object.assign({ beef: 0.15 }, o, { seed: sd + 2 }))];
+  },
+  vlag(x, y, s, o) {
+    const sd = (o && o.seed) || 5;
+    return [hand([x - 0.4 * s, y + 0.9 * s, x - 0.4 * s, y - 0.9 * s], Object.assign({ beef: 0.15 }, o)), hand([x - 0.4 * s, y - 0.9 * s, x + 0.65 * s, y - 0.55 * s, x - 0.4 * s, y - 0.18 * s], Object.assign({ beef: 0.15 }, o, { seed: sd + 1 }))];
+  },
+  doos(x, y, s, o) {   // een pakje: wat je oplevert
+    const sd = (o && o.seed) || 5;
+    return [hand([x - 0.8 * s, y - 0.35 * s, x + 0.8 * s, y - 0.35 * s, x + 0.8 * s, y + 0.75 * s, x - 0.8 * s, y + 0.75 * s, x - 0.8 * s, y - 0.35 * s], Object.assign({ beef: 0.15 }, o)), hand([x, y - 0.35 * s, x, y + 0.75 * s], Object.assign({ beef: 0 }, o, { seed: sd + 1 })), hand([x - 0.45 * s, y - 0.85 * s, x, y - 0.35 * s, x + 0.45 * s, y - 0.85 * s], Object.assign({ beef: 0.1 }, o, { seed: sd + 2 }))];
+  },
   ster(x, y, s, o) { const p = []; for (let i = 0; i <= 5; i++) { const a = -Math.PI / 2 + i * Math.PI * 4 / 5; p.push(x + s * Math.cos(a), y + s * Math.sin(a)); } return hand(p, Object.assign({ beef: 0.2 }, o)); },
   golf(x, y, w, o) { const p = []; for (let i = 0; i <= 40; i++) { const t = i / 40; p.push(x + w * t, y + Math.sin(t * Math.PI * 3) * 4); } return hand(p, Object.assign({ beef: 0.3 }, o)); },
   stift(x1, y1, x2, y2, o) { return hand(boog(x1, y1, x2, y2, 0.004, 12), Object.assign({ c: '#fde047', w: 26, hl: 1, vlak: 1, beef: 0.4 }, o)); },
@@ -2081,7 +2096,7 @@ function voorbeeldBladen() {
   kop('Wat het oplevert', 364, 466, 'r'); sub('één formulier', 364, 510, 'r'); sub('sneller antwoord', 364, 542, 'r');
   b.push(H.vink(372, 507, 22, { w: 3.5, c: G, seed: 220 }));
   kop('Eerste stap', 384, 760, 'r'); sub('proef met 2 premies', 384, 806, 'r'); sub('in 3 gemeenten', 384, 838, 'r');
-  b.push(H.ster(110, 776, 20, { w: 3, c: '#ea580c', seed: 221 }));
+  b.push(...H.vlag(110, 776, 20, { w: 3, c: G, seed: 221 }));
   kop('Risico\'s', 1196, 186); sub('gegevens delen tussen diensten', 1196, 232); sub('oude systemen', 1196, 264);
   b.push(H.ellips(1276, 278, 92, 24, { w: 3, c: RD, seed: 222 }));
   kop('Wat we nodig hebben', 1226, 466); sub('afspraken met 4 afdelingen', 1226, 512); sub('budget voor de proef', 1226, 544);
@@ -2126,12 +2141,12 @@ function sjabloonDemo(id) {
   switch (id) {
     case 'leeg': return [H.ellips(520, 470, 230, 130, { w: 8, c: G }), T('Idee', 520, 440, 64, { al: 'c', vet: 1, c: G }), ...H.pijl(780, 470, 1080, 470, { w: 8, c: D, buig: -0.1, kop: 40 }), H.rect(1110, 360, 300, 220, { w: 8, c: D })];
     case 'assen': return [H.ellips(1150, 280, 60, 50, { w: 7, c: '#dc2626' }), ...[[1150, 280], [480, 300], [1050, 680], [380, 740], [600, 620]].map(([x, y], i) => hand([x - 8, y, x + 8, y], { w: 30, c: i ? D : G, beef: 0 }))];
-    case 'tijdlijn': return [H.vink(205, 380, 50, { w: 8, c: G }), H.vink(495, 380, 50, { w: 8, c: G }), H.ster(1390, 380, 50, { w: 7, c: '#ea580c' })];
+    case 'tijdlijn': return [H.vink(205, 380, 50, { w: 8, c: G }), H.vink(495, 380, 50, { w: 8, c: G }), ...H.beker(1390, 372, 62, { w: 7, c: G })];
     case 'kolommen': return [B('Planning maken', 110, 200, 380, 160, 0, -2), B('Collega\'s bellen', 110, 400, 380, 160, 2, 1.5), B('Tekst nalezen', 610, 210, 380, 160, 1, 2), B('Uitnodiging', 1110, 200, 380, 160, 3, -1.5)];
     case 'zes': return [H.ellips(290, 220, 40, 40, { w: 7, c: D }), H.lijn(290, 262, 290, 380, { w: 7, c: D }), H.rect(700, 200, 200, 180, { w: 7, c: D }), hand([680, 210, 800, 120, 920, 210], { w: 7, c: G }), ...H.pijl(1110, 280, 1340, 280, { w: 7, c: G, kop: 34 })];
     case 'takken': return [H.golf(120, 175, 160, { w: 7, c: GR }), H.golf(70, 495, 120, { w: 7, c: GR }), H.golf(1340, 175, 160, { w: 7, c: GR }), H.golf(1430, 495, 120, { w: 7, c: GR }), H.golf(1340, 815, 160, { w: 7, c: GR })];
-    case 'productboom': return [H.vink(455, 450, 34, { w: 8, c: G }), H.vink(925, 450, 34, { w: 8, c: G }), H.ster(1395, 450, 34, { w: 7, c: '#ea580c' })];
-    case 'projectkaart': return [H.ellips(800, 60, 120, 48, { w: 7, c: G }), H.ster(1500, 330, 34, { w: 7, c: '#ea580c' }), H.vink(1010, 790, 34, { w: 8, c: G })];
+    case 'productboom': return [H.vink(455, 450, 34, { w: 8, c: G }), H.vink(925, 450, 34, { w: 8, c: G }), ...H.vlag(1395, 450, 40, { w: 7, c: G })];
+    case 'projectkaart': return [H.ellips(800, 60, 120, 48, { w: 7, c: G }), ...H.doos(1500, 330, 38, { w: 7, c: G }), H.vink(1010, 790, 34, { w: 8, c: G })];
     case 'gsm': return [H.rect(380, 240, 240, 90, { w: 6, c: D }), H.lijn(380, 380, 610, 380, { w: 6, c: GR }), H.lijn(380, 420, 560, 420, { w: 6, c: GR }), H.rect(400, 700, 200, 70, { w: 6, c: G }), H.ellips(1100, 320, 80, 80, { w: 6, c: D }), H.lijn(990, 460, 1210, 460, { w: 6, c: GR }), H.rect(1000, 700, 200, 70, { w: 6, c: G })];
     case 'laptop': return [H.rect(320, 200, 960, 150, { w: 7, c: D }), H.rect(320, 400, 290, 300, { w: 7, c: GR }), H.rect(655, 400, 290, 300, { w: 7, c: GR }), H.rect(990, 400, 290, 300, { w: 7, c: GR }), H.lijn(400, 275, 800, 275, { w: 9, c: G })];
     case 'plattegrond': return [hand([560, 800, 200, 800, 200, 240, 1000, 240, 1000, 800, 700, 800], { w: 8, c: D, beef: 0.4 }), H.ellips(600, 500, 110, 110, { w: 6, c: GR }), H.rect(1160, 360, 240, 280, { w: 7, c: G })];
