@@ -100,14 +100,31 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 .bib-tegel-pijl { flex:none; width:20px; height:20px; color:#047857; }
 @media (max-width: 480px) { .oc-start-btns { flex-direction:column; align-items:stretch; max-width:22rem; margin-left:auto; margin-right:auto; } .oc-start-btns .oc-begin, .oc-start-btns .oc-vb, .bib-tegel { max-width:none; flex:none; width:100%; } }
 @media (prefers-reduced-motion: reduce) { .bib-tegel, .bib-tegel:hover { transition:none; transform:none; } }
-dialog.bib { width:min(760px, calc(100% - 2rem)); max-height:min(88vh, 960px); padding:0; border:0; border-radius:20px; background:#f8fafc; color:var(--slate-800); box-shadow:0 24px 60px rgba(15,23,42,0.24); display:none; flex-direction:column; overflow-y:auto; overscroll-behavior:contain; }
+.van-tool { position:relative; margin:0 0 1rem; padding:1.125rem 1.25rem 1.125rem; border-radius:16px; background:linear-gradient(180deg, #f0fdf7 0%, #fff 70%); border:1px solid #a7f3d0; box-shadow:0 1px 2px rgba(15,23,42,0.05), 0 8px 20px -12px rgba(4,120,87,0.35); }
+.van-tool[hidden] { display:none; }
+.van-o { margin:0 0 0.5rem; font-size:0.8125rem; font-weight:700; letter-spacing:0.02em; color:#047857; }
+.van-tool q { display:block; quotes:none; font-family:var(--serif); font-size:1.25rem; line-height:1.45; color:var(--slate-800); }
+.van-tool q::before { content:"\201C"; } .van-tool q::after { content:"\201D"; }
+.van-wie { display:block; margin-top:0.375rem; font-weight:700; font-size:0.9375rem; color:#334155; }
+.van-uitleg { margin:0.75rem 0 0; font-size:0.9375rem; line-height:1.5; color:#475569; }
+.van-knoppen { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.875rem; }
+.van-knoppen .btn { flex:1 1 12rem; justify-content:center; min-height:44px; }
+.van-meld { margin:0; font-size:0.875rem; font-weight:600; color:#047857; } .van-meld:empty { display:none; } .van-meld:not(:empty) { margin-top:0.625rem; }
+dialog.bib { width:min(760px, calc(100% - 2rem)); max-height:min(88vh, 960px); margin:auto; padding:0; border:0; border-radius:20px; background:#f8fafc; color:var(--slate-800); box-shadow:0 24px 60px rgba(15,23,42,0.24); display:none; flex-direction:column; overflow-y:auto; overscroll-behavior:contain; }
 dialog.bib[open] { display:flex; }
 dialog.bib::backdrop { background:rgba(15,23,42,0.4); }
 /* Bovenaan blijft staan: titel, zoeken en de thema's */
 .bib-top { position:sticky; top:0; z-index:2; background:#fff; box-shadow:0 1px 0 #e2e8f0, 0 8px 16px -12px rgba(15,23,42,0.25); }
 .bib-kop { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; padding:1.25rem 1.25rem 0.5rem 1.5rem; }
 .bib-kop h2 { margin:0 0 0.25rem; font-size:1.375rem; }
-.bib-zoek { padding:0 1.5rem 0.75rem; }
+.bib-zoek { position:relative; padding:0 1.5rem 0.75rem; }
+.bib-zoek svg { position:absolute; left:calc(1.5rem + 0.75rem); top:13px; width:18px; height:18px; color:#64748b; pointer-events:none; }
+.bib-zoek .input { padding-left:2.5rem; }
+.bib-kop h2:focus { outline:none; }
+.bib-thema { display:none; position:relative; padding:0 1rem 0.75rem; }
+.bib-thema select { display:block; width:100%; min-height:44px; padding:0 2.5rem 0 0.875rem; border:1.5px solid #a7f3d0; border-radius:12px; background:#ecfdf5; color:#065f46; font:inherit; font-weight:600; font-size:0.9375rem; -webkit-appearance:none; appearance:none; cursor:pointer; }
+.bib-thema select:focus-visible { outline:2px solid #047857; outline-offset:2px; }
+.bib-thema svg { position:absolute; right:1.75rem; top:13px; width:18px; height:18px; color:#047857; pointer-events:none; }
 .bib-lijstk { margin-left:auto; }
 .bib-lijstk svg { width:18px; height:18px; }
 .bib-pillen { display:flex; flex-wrap:wrap; gap:0.5rem; padding:0.125rem 1.5rem 0.875rem; }
@@ -146,14 +163,22 @@ dialog.bib::backdrop { background:rgba(15,23,42,0.4); }
   .bib-kop .fijn { display:none; }
   .bib-kop h2 { margin:0; }
   .bib-zoek { padding:0 1rem 0.625rem; }
-  /* thema's op één rij om te vegen */
-  .bib-pillen { flex-wrap:nowrap; overflow-x:auto; scroll-snap-type:x proximity; scroll-padding:0 1rem; scrollbar-width:none; padding:0.125rem 1rem 0.75rem; -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent); mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent); }
-  .bib-pillen::-webkit-scrollbar { display:none; }
-  .bib-pillen button { scroll-snap-align:start; font-size:0.875rem; padding:0 0.75rem; }
-  .bib-sub, .bib-lijst, .bib-meld { padding-left:0.75rem; padding-right:0.75rem; }
-  .bib-sub { padding-top:0.875rem; }
-  .bib-lijst { padding-bottom:calc(1.5rem + env(safe-area-inset-bottom)); }
-  .bib-lijst li { padding:1rem 0.875rem 0.75rem 1rem; }
+  /* Thema's: op de gsm één keuzelijst in plaats van zeven pillen. Je ziet ze allemaal in één tik, en de lijst met citaten begint hoger. */
+  .bib-pillen { display:none; }
+  .bib-thema { display:block; }
+  .bib-zoek svg { left:calc(1rem + 0.75rem); }
+  .bib-sub, .bib-lijst, .bib-meld { padding-left:1rem; padding-right:1rem; }
+  .bib-sub { padding-top:0.75rem; flex-wrap:nowrap; align-items:center; gap:0.5rem; }
+  .bib-sub .fijn { flex:1 1 auto; font-size:0.875rem; }
+  .bib-sub .btn { flex:none; min-height:44px; padding:0 0.25rem; border:0; background:none; font-size:0.875rem; text-decoration:underline; text-decoration-color:#a7f3d0; text-underline-offset:3px; white-space:nowrap; }
+  .bib-lijst { gap:0.625rem; padding-top:0.5rem; padding-bottom:calc(1.5rem + env(safe-area-inset-bottom)); }
+  .bib-lijst li { gap:0.5rem 0.75rem; align-items:center; padding:0.875rem 0.875rem 0.25rem 1rem; }
+  .bib-lijst li::before { left:0.875rem; top:0.25rem; font-size:2.25rem; }
+  .bib-lijst q { padding-top:0.625rem; font-size:1.0625rem; line-height:1.45; }
+  .bib-lijst button { position:relative; min-height:36px; padding:0 0.75rem 0 0.5rem; font-size:0.8125rem; background:#ecfdf5; box-shadow:inset 0 0 0 1px #a7f3d0; }
+  .bib-lijst button::after { content:""; position:absolute; inset:-4px 0; }
+  .bib-lijst button svg { width:16px; height:16px; }
+  .bib-praktijk { margin:0; font-size:0.8125rem; }
 }
 /* Van citaat naar praktijk: een rustige link naar de tool die erbij past */
 .c-praktijk, .k-praktijk { display:inline-flex; align-items:center; gap:0.375rem; min-height:44px; margin-top:0.25rem; font-size:0.875rem; color:#047857; text-decoration:none; }
@@ -1374,6 +1399,14 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
     <span class="vb-btns"><button type="button" class="vb-btn" id="vb-wis">Wis voorbeeld</button></span>
   </div>
 
+  <!-- Wie hier voor het eerst komt via de uitspraak onder een tool, krijgt eerst uitleg: de uitspraak, wat Citaten is, en twee duidelijke keuzes. -->
+  <section class="van-tool" id="van-tool" aria-labelledby="van-o" hidden>
+    <p class="van-o" id="van-o">Je tikte op deze uitspraak</p>
+    <q id="van-q"></q><span class="van-wie" id="van-wie"></span>
+    <p class="van-uitleg">Ze komt uit de bibliotheek van Citaten. Hier bewaar je zinnen die je willen bijblijven, en oefen je tot je ze kent.</p>
+    <div class="van-knoppen"><button type="button" class="btn primary" id="van-bewaar">Bewaar deze uitspraak</button><button type="button" class="btn licht" id="van-bib">Bekijk de bibliotheek</button></div>
+    <p class="van-meld" id="van-meld" role="status" aria-live="polite"></p>
+  </section>
   <div class="empty oc-start" id="ocStart" hidden>
     <strong>Bewaar de zinnen die je willen bijblijven</strong>
     <p class="start-tekst">Typ of plak een zin uit een boek, of neem een foto van de bladzijde. Daarna oefen je met kaartjes, zodat je de zin echt onthoudt.</p>
@@ -1560,11 +1593,12 @@ footer .oc-citaat-wie { display:block; margin-top:0.125rem; font-size:0.8125rem;
 <dialog class="bib" id="bib" aria-labelledby="bib-h">
   <div class="bib-top">
   <div class="bib-kop">
-    <div><h2 id="bib-h">Bibliotheek</h2><p class="fijn" id="bib-uitleg">Citaten uit het publieke domein.</p></div>
+    <div><h2 id="bib-h" tabindex="-1">Bibliotheek</h2><p class="fijn" id="bib-uitleg">Citaten uit het publieke domein.</p></div>
     <button type="button" class="icon-btn" id="bib-x" aria-label="Sluit de bibliotheek"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
-  <div class="bib-zoek"><label class="sr-only" for="bib-zoek">Zoek in de bibliotheek</label><input class="input" type="search" id="bib-zoek" placeholder="Zoek een woord, auteur of thema" autocomplete="off"></div>
+  <div class="bib-zoek"><label class="sr-only" for="bib-zoek">Zoek in de bibliotheek</label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input class="input" type="search" id="bib-zoek" placeholder="Zoek een woord, auteur of thema" autocomplete="off"></div>
   <div class="bib-pillen" id="bib-pillen" role="group" aria-label="Thema's"></div>
+  <div class="bib-thema"><label class="sr-only" for="bib-thema">Thema</label><select id="bib-thema"></select><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
   </div>
   <div class="bib-sub"><p class="fijn" id="bib-v-uitleg"></p><button type="button" class="btn licht" id="bib-alle" hidden>Voeg alle toe</button></div>
   <p class="bib-meld" id="bib-meld" role="status" aria-live="polite"></p>
@@ -2695,7 +2729,7 @@ function laadBib() {
 }
 function openBib() {
   const d = $('bib'); bibLaatst = document.activeElement; $('bib-meld').textContent = '';
-  if (!d.open) d.showModal();
+  if (!d.open) { d.showModal(); $('bib-h').focus({ preventScroll:true }); }   // de titel krijgt de focus, niet het kruisje: geen rand rond een knop die je niet koos
   if (!BIB) { $('bib-laad').hidden = false; $('bib-laad').textContent = 'Bibliotheek laden…'; }
   laadBib().then(() => { $('bib-laad').hidden = true; tekenBib(true); })
     .catch(() => { $('bib-laad').hidden = false; $('bib-laad').textContent = 'De bibliotheek laadt nu niet. Controleer je verbinding en probeer opnieuw.'; });
@@ -2708,6 +2742,10 @@ function tekenBib(eerst) {
   $('bib-uitleg').textContent = n + ' citaten uit het publieke domein. Elke zin staat woord voor woord in twee uitgaven van het werk zelf.';
   const p = $('bib-pillen'); p.textContent = '';
   vs.forEach(x => { const b = el('button', null, x.naam); b.type = 'button'; b.dataset.v = x.id; b.setAttribute('aria-pressed', String(!zoekt && x.id === v.id)); b.appendChild(el('span', null, String(x.items.length))); p.appendChild(b); });
+  const sel = $('bib-thema'); sel.textContent = '';
+  if (zoekt) { const o = el('option', null, 'Alle thema\u2019s: je zoekt'); o.value = ''; sel.appendChild(o); }
+  vs.forEach(x => { const o = el('option', null, x.naam + ' (' + x.items.length + ')'); o.value = x.id; sel.appendChild(o); });
+  sel.value = zoekt ? '' : v.id;
   const lijst = zoekt ? vs.flatMap(x => x.items.filter(it => vgl(it.tekst + ' ' + it.auteur + ' ' + it.bron + ' ' + it.tags.join(' ') + ' ' + it.noot).includes(q)).map(it => Object.assign({ v:x.id }, it))) : v.items;
   $('bib-v-uitleg').textContent = zoekt ? (lijst.length ? lijst.length + (lijst.length === 1 ? ' citaat' : ' citaten') + ' gevonden.' : 'Niets gevonden. Probeer een ander woord.') : v.uitleg;
   const rest = zoekt ? 0 : v.items.filter(it => !bibIn(it)).length, alle = $('bib-alle');
@@ -2738,15 +2776,34 @@ function bibWeg(it) {
 }
 ['bib-open', 'bib-start', 'bib-lijst-k'].forEach(id => $(id).addEventListener('click', openBib));
 $('bib-zoek').addEventListener('input', () => { if (BIB) { $('bib-meld').textContent = ''; tekenBib(true); } });
-/* Een tool wijst onderaan naar haar uitspraak: /zakmes/citaten/#bib:<woorden> opent de bibliotheek met die woorden in het zoekveld. */
+/* Een tool wijst onderaan naar haar uitspraak: /zakmes/citaten/#bib:<woorden>.
+   Wie Citaten al kent (eerder hier geweest, of al citaten bewaard), komt recht in de bibliotheek, met die woorden in het zoekveld.
+   Wie hier voor het eerst komt, zou daar verloren lopen: die ziet eerst de start, met bovenaan de uitspraak en wat Citaten is. */
 (function () {
+  const GEZIEN = 'citaten.gezien';
+  const kent = () => { try { return !!localStorage.getItem(GEZIEN) || st.citaten.length > 0; } catch (e) { return true; } };
+  const onthoud = () => { try { localStorage.setItem(GEZIEN, '1'); } catch (e) {} };
+  let vanIt = null, vanQ = '';
+  function naarBib(q) { $('bib-zoek').value = q; openBib(); }
+  function uitleg(q) {
+    vanQ = q; const k = $('van-tool');
+    laadBib().then(() => {
+      const w = vgl(q); vanIt = w.length >= 2 ? BIB.verzamelingen.flatMap(x => x.items.map(y => Object.assign({ v:x.id }, y))).find(it => vgl(it.tekst).includes(w)) || null : null;
+      if (!vanIt) { naarBib(q); return; }   // geen uitspraak gevonden: dan toch de bibliotheek
+      $('van-q').textContent = vanIt.tekst; $('van-wie').textContent = vanIt.auteur; $('van-meld').textContent = '';
+      $('van-bewaar').hidden = bibIn(vanIt); k.hidden = false;   // niet scrollen: de kop 'Citaten' met de terugpijl blijft erboven in beeld
+    }).catch(() => {});
+  }
   function vanTool() {
     let h = location.hash; try { h = decodeURIComponent(h); } catch (e) {}
-    const m = /^#bib(?::(.*))?$/.exec(h); if (!m) return;
-    $('bib-zoek').value = (m[1] || '').slice(0, 80);
+    const m = /^#bib(?::(.*))?$/.exec(h); if (!m) { onthoud(); return; }
+    const q = (m[1] || '').slice(0, 80), bekend = kent();
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
-    openBib();
+    onthoud();
+    if (bekend || !q) naarBib(q); else uitleg(q);
   }
+  $('van-bewaar').addEventListener('click', () => { if (!vanIt) return; bibToe([vanIt]); $('van-tool').hidden = true; });
+  $('van-bib').addEventListener('click', () => naarBib(vanQ));
   addEventListener('hashchange', vanTool); setTimeout(vanTool, 0);
 })();
 $('bib-x').addEventListener('click', () => $('bib').close());
@@ -2759,6 +2816,7 @@ $('bib-lijst').addEventListener('click', e => {
   if (bibIn(it)) bibWeg(it); else bibToe([it]);
   const nb = $('bib-lijst').querySelector(`[data-i="${it.id}"]`); if (nb) nb.focus();
 });
+$('bib-thema').addEventListener('change', e => { if (!e.target.value) return; bibV = e.target.value; $('bib-zoek').value = ''; $('bib-meld').textContent = ''; tekenBib(true); $('bib-thema').focus(); });
 $('bib-alle').addEventListener('click', () => { const v = BIB.verzamelingen.find(x => x.id === bibV); bibToe(v.items); })
 $('vb-wis').addEventListener('click', wisVoorbeeld);
 $('q-bewaar').addEventListener('click', bewaarNieuw);
