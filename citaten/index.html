@@ -102,6 +102,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 @media (prefers-reduced-motion: reduce) { .bib-tegel, .bib-tegel:hover { transition:none; transform:none; } }
 .van-tool { position:relative; margin:0 0 1rem; padding:1.125rem 1.25rem 1.125rem; border-radius:16px; background:linear-gradient(180deg, #f0fdf7 0%, #fff 70%); border:1px solid #a7f3d0; box-shadow:0 1px 2px rgba(15,23,42,0.05), 0 8px 20px -12px rgba(4,120,87,0.35); }
 .van-tool[hidden] { display:none; }
+.van-tool { box-sizing:border-box; width:100%; max-width:45rem; margin-left:auto; margin-right:auto; }   /* in dezelfde kolom als de kaarten eronder */
 .van-o { margin:0 0 0.5rem; font-size:0.8125rem; font-weight:700; letter-spacing:0.02em; color:#047857; }
 .van-tool q { display:block; quotes:none; font-family:var(--serif); font-size:1.25rem; line-height:1.45; color:var(--slate-800); }
 .van-tool q::before { content:"\201C"; } .van-tool q::after { content:"\201D"; }
@@ -120,7 +121,7 @@ dialog.bib::backdrop { background:rgba(15,23,42,0.4); }
 .bib-zoek { position:relative; padding:0 1.5rem 0.75rem; }
 .bib-zoek svg { position:absolute; left:calc(1.5rem + 0.75rem); top:13px; width:18px; height:18px; color:#64748b; pointer-events:none; }
 .bib-zoek .input { padding-left:2.5rem; }
-.bib-kop h2:focus { outline:none; }
+#bib-h:focus, #bib-h:focus-visible { outline:none !important; }   /* de titel krijgt de focus bij het openen, maar is geen knop: geen rand */
 .bib-thema { display:none; position:relative; padding:0 1rem 0.75rem; }
 .bib-thema select { display:block; width:100%; min-height:44px; padding:0 2.5rem 0 0.875rem; border:1.5px solid #a7f3d0; border-radius:12px; background:#ecfdf5; color:#065f46; font:inherit; font-weight:600; font-size:0.9375rem; -webkit-appearance:none; appearance:none; cursor:pointer; }
 .bib-thema select:focus-visible { outline:2px solid #047857; outline-offset:2px; }
@@ -248,7 +249,7 @@ select.input { padding-right:2rem; appearance:none; -webkit-appearance:none; bac
 .lijstzicht { display:grid; grid-template-columns:minmax(0, 1fr); gap:1rem; align-items:start; }
 .links { display:grid; gap:1rem; min-width:0; }
 @media (min-width:960px) { .lijstzicht { grid-template-columns:minmax(0, 24rem) minmax(0, 1fr); gap:1.25rem; } }
-.lijstzicht.leeg { grid-template-columns:minmax(0, 40rem); justify-content:center; }
+.lijstzicht.leeg { grid-template-columns:minmax(0, 45rem); justify-content:center; }   /* even breed als de startkaart en de uitleg: één kolom, één lijn */
 .kaart-kop { display:flex; align-items:center; gap:0.5rem; padding:0.875rem 0.75rem 0.25rem 1.25rem; min-width:0; }
 .kaart-kop h2 { flex:1; min-width:0; font-size:1.0625rem; font-weight:700; color:var(--slate-800); letter-spacing:-0.01em; }
 .kaart-in { padding:0.5rem 1.25rem 1.25rem; display:grid; gap:0.875rem; }
