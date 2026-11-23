@@ -950,6 +950,7 @@ input::placeholder, textarea::placeholder { color:#64748b; opacity:1; }
 }());
 /* oc-toegang v1 einde */
 </script>
+<style id="oc-ctrlz">@media (hover:hover) and (pointer:fine){#toast-btn::after,#ocToastBtn::after{content:" (Ctrl+Z)";font-weight:400;opacity:.8}}</style>
 </head>
 <body class="has-tray">
 <main id="app">
@@ -1426,7 +1427,7 @@ function toast(msg, undo) {
   document.getElementById('toast-btn').hidden = !undo;
   document.getElementById('toast').classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(function ocT() { const w = window.ocWacht ? ocWacht(document.getElementById('toast')) : 0; if (w) { toastTimer = setTimeout(ocT, w); return; } document.getElementById('toast').classList.remove('show'); toastUndo = null; }, undo ? 6000 : (msg.length > 70 ? 4800 : 2600));
+  toastTimer = setTimeout(function ocT() { const w = window.ocWacht ? ocWacht(document.getElementById('toast')) : 0; if (w) { toastTimer = setTimeout(ocT, w); return; } document.getElementById('toast').classList.remove('show'); toastUndo = null; }, undo ? 10000 : (msg.length > 70 ? 6000 : 4000));
 }
 (() => {
 /* ==========================================================================

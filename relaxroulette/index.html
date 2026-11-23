@@ -1237,6 +1237,7 @@ header[data-oc-kop][data-stand="compact"]::before { content:""; order:-1; flex:n
 })();
 /* oc-kop v1 einde */
 </script>
+<style id="oc-ctrlz">@media (hover:hover) and (pointer:fine){#toast-btn::after,#ocToastBtn::after{content:" (Ctrl+Z)";font-weight:400;opacity:.8}}</style>
 </head>
 <body>
 
@@ -1444,7 +1445,7 @@ footer .oc-citaat-wie { display:block; margin-top:0.125rem; font-size:0.8125rem;
   let ongedaan = null, tT = null;
   function toast(m, undo) {
     ongedaan = undo || null; $('toast-text').textContent = m; $('toast-btn').hidden = !undo; $('toast').classList.add('show');
-    clearTimeout(tT); tT = setTimeout(() => { $('toast').classList.remove('show'); ongedaan = null; }, undo ? 6000 : 2800);
+    clearTimeout(tT); tT = setTimeout(() => { $('toast').classList.remove('show'); ongedaan = null; }, undo ? 10000 : 4000);
   }
   $('toast-btn').addEventListener('click', () => { if (ongedaan) { const f = ongedaan; ongedaan = null; f(); } $('toast').classList.remove('show'); });
   addEventListener('storage', e => { if (e.key === KEY) { st = lees(); gekozen = null; teken(); } });
