@@ -454,6 +454,7 @@ header[data-oc-kop] .oc-kop-acties .menu button { white-space:normal; }
 .rr-kaart[hidden], .rr-uit[hidden] { display:none; }
 .rr-intro { margin:0 auto 0.75rem; max-width:24rem; font-size:0.9375rem; line-height:1.5; color:var(--slate-600); }
 .rr-wiel { position:relative; width:min(100%, 19rem); aspect-ratio:1; margin:0.5rem auto 1rem; }
+.rr-wiel .rr-op { transform-box:fill-box; transform-origin:50% 50%; }
 .rr-wiel svg.rr-rad { display:block; width:100%; height:100%; transform-origin:50% 50%; will-change:transform; }
 .rr-wiel button { position:absolute; inset:0; width:100%; height:100%; border-radius:50%; background:none; cursor:pointer; }
 .rr-wiel button:focus-visible { outline:2px solid #047857; outline-offset:4px; }
@@ -1369,6 +1370,8 @@ footer .oc-citaat-wie { display:block; margin-top:0.125rem; font-size:0.8125rem;
 
   /* ---------- Het rad: elk ding een even groot stuk taart, met zijn tekening erin ---------- */
   const VUL = ['#ecfdf5', '#f8fafc', '#d1fae5', '#f1f5f9'];
+  /* De tekeningen blijven rechtop: elk draait even ver terug als het rad vooruit draait, met dezelfde vaart. Zo staat er nooit een op zijn kop. */
+  let opHoek = 0;
   function tekenRad() {
     const n = st.items.length, R = 96, c = 100;
     if (!n) { $('rr-rad').innerHTML = `<circle cx="100" cy="100" r="96" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>`; return; }
@@ -1377,7 +1380,7 @@ footer .oc-citaat-wie { display:block; margin-top:0.125rem; font-size:0.8125rem;
       const a = i * stap, b = a + stap, [x1, y1] = punt(a), [x2, y2] = punt(b), mid = a + stap / 2, rm = (mid - 90) * Math.PI / 180, ix = c + 62 * Math.cos(rm), iy = c + 62 * Math.sin(rm);
       const vul = n % 2 && i === n - 1 ? VUL[2] : VUL[i % 2 ? 1 : 0];   // oneven aantal: het laatste stuk krijgt een derde tint, zo raken nooit twee gelijke kleuren elkaar
       const stuk = n === 1 ? `<circle cx="100" cy="100" r="${R}" fill="${vul}"/>` : `<path d="M100 100L${x1.toFixed(2)} ${y1.toFixed(2)}A${R} ${R} 0 ${stap > 180 ? 1 : 0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}Z" fill="${vul}" stroke="#fff" stroke-width="1.5"/>`;
-      return `<g class="rr-stuk${gekozen === it.id ? ' aan' : ''}" data-id="${esc(it.id)}">${stuk}<g transform="translate(${(ix - 11).toFixed(2)} ${(iy - 11).toFixed(2)}) rotate(${mid.toFixed(1)} 11 11) scale(0.92)" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICO[it.ico]}</g></g>`;
+      return `<g class="rr-stuk${gekozen === it.id ? ' aan' : ''}" data-id="${esc(it.id)}">${stuk}<g transform="translate(${(ix - 11).toFixed(2)} ${(iy - 11).toFixed(2)}) scale(0.92)" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><g class="rr-op" style="transform:rotate(${-opHoek}deg)">${ICO[it.ico]}</g></g></g>`;
     }).join('') + `<circle cx="100" cy="100" r="96" fill="none" stroke="#cbd5e1" stroke-width="1.5"/><circle cx="100" cy="100" r="13" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/><circle cx="100" cy="100" r="5" fill="#10b981"/>`;
   }
   function teken() {
@@ -1405,6 +1408,7 @@ footer .oc-citaat-wie { display:block; margin-top:0.125rem; font-size:0.8125rem;
     const tijd = rustig() ? 0 : 3200; hoek += (rustig() ? 0 : 360 * 4) + extra;
     draait = true; gekozen = null; teken();
     const rad = $('rr-rad'); rad.style.transition = tijd ? 'transform ' + tijd + 'ms cubic-bezier(.12,.72,.12,1)' : 'none'; rad.style.transform = 'rotate(' + hoek + 'deg)';
+    rad.getBoundingClientRect(); opHoek = hoek; rad.querySelectorAll('.rr-op').forEach(o => { o.style.transition = rad.style.transition; o.style.transform = 'rotate(' + (-hoek) + 'deg)'; });
     setTimeout(() => {
       draait = false; gekozen = st.items[i].id; $('rr-knipoog').textContent = KNIPOOG[Math.floor(Math.random() * KNIPOOG.length)];
       teken(); zeg('Het rad kiest: ' + st.items[i].t); try { navigator.vibrate && navigator.vibrate(40); } catch (e) {}
